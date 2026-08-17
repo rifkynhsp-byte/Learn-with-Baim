@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rumah Belajar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--sand:#F7E9CC;--bone:#FFFBF2;--amber:#FFB247;--kelp:#5FE0A4;--coral:#FF6B5B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);min-height:100dvh;
+ background:radial-gradient(120% 70% at 50% -10%,#2FB3C8 0%,transparent 55%),
+ linear-gradient(180deg,#0C556C 0%,#073445 46%,#04222E 100%);background-attachment:fixed;
+ display:flex;flex-direction:column}
+.wrap{width:100%;max-width:1240px;margin:0 auto;padding:16px 18px 28px;flex:1;
+ display:flex;flex-direction:column;gap:14px}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:1fr;gap:14px;align-items:center}
+@media (min-width:760px){.hero{grid-template-columns:minmax(0,44%) minmax(0,56%)}}
+.photo{border-radius:24px;overflow:hidden;border:5px solid rgba(255,255,255,.75);
+ box-shadow:0 20px 48px rgba(2,18,26,.55);background:#fff}
+.photo img{width:100%;display:block}
+.hi h1{font-family:'Fredoka',sans-serif;font-size:clamp(26px,5.4vw,44px);margin:0 0 6px;color:var(--sand);line-height:1.1}
+.hi h1 span{color:var(--amber)}
+.hi p{margin:0 0 10px;color:rgba(255,251,242,.8);font-size:15px;line-height:1.55}
+.who{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-size:12.5px;background:rgba(247,233,204,.12);border:1px solid rgba(247,233,204,.22);
+ border-radius:999px;padding:5px 11px;color:var(--sand)}
+
+/* ---------- game cards ---------- */
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.card{position:relative;display:block;text-decoration:none;color:var(--bone);border-radius:22px;padding:18px 16px 16px;
+ background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+ border:1px solid rgba(247,233,204,.22);box-shadow:0 12px 30px rgba(2,18,26,.35);
+ transition:transform .16s,box-shadow .16s;overflow:hidden;min-height:132px}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 38px rgba(2,18,26,.5)}
+.card .ic{font-size:38px;line-height:1;display:block;margin-bottom:8px}
+.card h3{font-family:'Fredoka',sans-serif;font-size:20px;margin:0 0 2px}
+.card .en{font-size:12.5px;color:rgba(255,251,242,.65);margin-bottom:6px}
+.card .nt{font-size:12.5px;color:rgba(255,251,242,.8);line-height:1.45}
+.card .bar{position:absolute;left:0;top:0;bottom:0;width:6px}
+.progstrip{background:rgba(4,34,46,.45);border:1px solid rgba(247,233,204,.2);border-radius:16px;
+ padding:11px 14px;margin-bottom:10px}
+.progstrip .g{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--amber)}
+.progstrip .x{font-size:12.5px;color:rgba(255,251,242,.72);margin-left:6px}
+.progstrip .t{margin-top:7px;height:9px;border-radius:99px;background:rgba(2,18,26,.6);overflow:hidden}
+.progstrip .t i{display:block;height:100%;border-radius:99px;
+ background:linear-gradient(90deg,var(--kelp),var(--amber));transition:width .5s}
+.progstrip .z{margin-top:6px;font-size:12px;color:rgba(255,251,242,.65)}
+
+.foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;padding-top:4px}
+.btn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;border-radius:999px;padding:11px 20px;
+ cursor:pointer;background:rgba(247,233,204,.13);color:var(--bone);border:1px solid rgba(247,233,204,.24)}
+.btn.go{background:var(--amber);color:#40230A;border-color:var(--amber)}
+.credit{text-align:center;font-size:12.5px;color:rgba(255,251,242,.62);line-height:1.6;padding:2px 8px}
+.credit b{color:var(--sand);font-weight:800}
+
+/* ---------- settings sheet ---------- */
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(3,20,27,.94);display:none;overflow-y:auto;padding:18px}
+.sheet.on{display:block}
+.panel{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;padding:20px;
+ max-width:660px;margin:0 auto}
+.panel h2{font-family:'Fredoka',sans-serif;margin:0 0 4px;font-size:22px;color:var(--sand)}
+.panel h3{font-family:'Fredoka',sans-serif;margin:18px 0 6px;font-size:15px;color:var(--amber)}
+.panel p{margin:0 0 10px;color:rgba(255,251,242,.82);font-size:13.5px;line-height:1.6}
+label{display:block;font-size:12.5px;color:rgba(255,251,242,.72);margin:10px 0 4px}
+input[type=text]{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;
+ background:rgba(4,34,46,.6);color:var(--bone);border:1px solid rgba(247,233,204,.25)}
+input[type=text]:focus{outline:2px solid var(--kelp);outline-offset:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ref{font-size:12.5px;color:rgba(255,251,242,.78);line-height:1.6;padding-left:16px;margin:0}
+.ref li{margin-bottom:5px}
+.ref b{color:var(--sand)}
+.note{background:rgba(255,178,71,.14);border:1px solid rgba(255,178,71,.4);border-radius:12px;
+ padding:10px 12px;font-size:12.5px;line-height:1.55;color:rgba(255,251,242,.85);margin-top:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="hero">
+  <div class="photo"><img src="family.jpg" alt="Our family" id="heroPhoto"></div>
+  <div class="hi">
+   <h1 id="title">Rumah Belajar <span id="childName">Baim</span></h1>
+   <p id="blurb">Reading, English, the animal encyclopedia, counting and writing.
+      Built around the Cambridge, Australian and Indonesian curriculums.</p>
+   <div class="who" id="who"></div>
+   <div id="prog" class="progstrip"></div>
+   <button class="btn" id="openSettings">⚙️ Settings &amp; names</button>
+  </div>
+ </div>
+
+ <div class="grid" id="grid"></div>
+
+ <div class="foot">
+  <button class="btn go" id="resume">▶ Continue where we left off</button>
+ </div>
+ <p class="credit" id="credit"></p>
+</div>
+
+<div class="sheet" id="sheet">
+ <div class="panel">
+  <h2>Settings</h2>
+  <p>Change the names and the whole app follows: every prompt, every bit of praise,
+     every screen. Made so another family can use it too.</p>
+
+  <h3>Who is learning?</h3>
+  <label for="nChild">The child's name</label>
+  <input type="text" id="nChild" placeholder="Baim" autocomplete="off">
+  <div class="two">
+   <div><label for="nDad">Father</label><input type="text" id="nDad" placeholder="Papi Rifky" autocomplete="off"></div>
+   <div><label for="nMum">Mother</label><input type="text" id="nMum" placeholder="Mommy Keke" autocomplete="off"></div>
+  </div>
+  <label for="nSib">Brother or sister</label>
+  <input type="text" id="nSib" placeholder="Ade Yahya" autocomplete="off">
+
+  <div class="note" id="audioNote">The Indonesian reading game also plays recorded audio.
+   Those recordings still say the original names, because they are files, not speech.
+   Everything on screen and every device voice will use your names.</div>
+
+  <h3>Built on</h3>
+  <ul class="ref" id="refs"></ul>
+
+  <h3>With love</h3>
+  <p id="creditLong"></p>
+
+  <div class="row">
+   <button class="btn go" id="saveNames">Save</button>
+   <button class="btn" id="resetNames">Reset to ours</button>
+   <button class="btn" id="closeSettings">Close</button>
+  </div>
+ </div>
+</div>
+
+<script>
+/* ============================================================
+   common.js  —  shared by every game in the super app
+   Names, settings, navigation, credits.
+   ============================================================ */
+(function (global) {
+
+  var DEFAULTS = {
+    child: "Baim",        // the learner
+    dad: "Papi Rifky",
+    mum: "Mommy Keke",
+    sib: "Ade Yahya",
+    dadShort: "Papi",
+    mumShort: "Mommy",
+    childShort: "Baim",
+    sibShort: "Ade"
+  };
+
+  function load() {
+    try {
+      var raw = JSON.parse(localStorage.getItem("super.names") || "{}");
+      var out = {};
+      for (var k in DEFAULTS) out[k] = (raw[k] && String(raw[k]).trim()) || DEFAULTS[k];
+      return out;
+    } catch (e) { return Object.assign({}, DEFAULTS); }
+  }
+  function save(n) {
+    try { localStorage.setItem("super.names", JSON.stringify(n)); } catch (e) {}
+    N = load();
+  }
+  var N = load();
+
+  /* Replace the built-in family names anywhere they appear in text or speech.
+     Longest first so "Papi Rifky" wins over "Papi". */
+  var MAP = [
+    ["Papi Rifky", "dad"], ["Mommy Keke", "mum"], ["Ade Yahya", "sib"],
+    ["Rifky", "dadShort"], ["Keke", "mumShort"], ["Yahya", "sibShort"],
+    ["Mommy", "mumShort"], ["Papi", "dadShort"], ["Baim", "child"]
+  ];
+  function P(s) {
+    if (s == null) return s;
+    s = String(s);
+    for (var i = 0; i < MAP.length; i++) {
+      var from = MAP[i][0], to = N[MAP[i][1]];
+      if (to && to !== from) s = s.split(from).join(to);
+    }
+    return s;
+  }
+
+  /* short forms derived from a full name: "Papi Rifky" -> "Papi" */
+  function shorten(full, fallback) {
+    if (!full) return fallback;
+    var bits = String(full).trim().split(/\s+/);
+    return bits[0] || fallback;
+  }
+
+  var GAMES = [
+    { id: "membaca", file: "membaca.html", icon: "\uD83D\uDCD6", en: "Reading", idn: "Membaca",
+      note: "Bahasa Indonesia, metode suku kata", tone: "#0C556C" },
+    { id: "english", file: "english.html", icon: "\uD83D\uDDE3\uFE0F", en: "English", idn: "Bahasa Inggris",
+      note: "Cambridge Starters & Movers", tone: "#2E7A55" },
+    { id: "ensiklopedia", file: "ensiklopedia.html", icon: "\uD83E\uDD81", en: "Encyclopedia", idn: "Ensiklopedia",
+      note: "Animals, Latin names, science, stories", tone: "#7A4A22" },
+    { id: "berhitung", file: "berhitung.html", icon: "\uD83D\uDD22", en: "Counting", idn: "Berhitung",
+      note: "Food webs, adding and taking away", tone: "#5A3E8A" },
+    { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
+      note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C" }
+  ];
+
+  var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
+                "for beloved Abang Baim and Ade Yahya.";
+
+  var CURRICULUM = [
+    ["Cambridge Pre A1 Starters / A1 Movers", "English vocabulary and listening papers"],
+    ["Cambridge Primary English & Science", "progression of comprehension and enquiry"],
+    ["NSW Early Stage 1 and Stage 1 (Australia)", "phonics, number sense, handwriting"],
+    ["Kurikulum Merdeka PAUD & SD (Indonesia)", "calistung, IPAS, Profil Pelajar Pancasila"],
+    ["Metode Suku Kata & SAS", "Indonesian syllable reading method"]
+  ];
+
+  /* a back button injected into any game page */
+  function mountBack(title) {
+    var a = document.createElement("a");
+    a.href = "index.html";
+    a.className = "super-back";
+    a.setAttribute("aria-label", "Back to the menu");
+    a.innerHTML = "\u2190";
+    document.body.appendChild(a);
+    var css = document.createElement("style");
+    css.textContent =
+      ".super-back{position:fixed;left:10px;bottom:10px;z-index:95;width:44px;height:44px;" +
+      "border-radius:50%;display:grid;place-items:center;font-size:22px;text-decoration:none;" +
+      "background:rgba(4,34,46,.72);color:#FFFBF2;border:1px solid rgba(247,233,204,.28);" +
+      "box-shadow:0 6px 18px rgba(2,18,26,.45)}" +
+      ".super-back:hover{background:rgba(4,34,46,.92)}" +
+      "@media (min-aspect-ratio:1/1){.super-back{left:8px;bottom:8px;width:40px;height:40px}}";
+    document.head.appendChild(css);
+    if (title) document.title = P(title);
+  }
+
+  global.SUPER = {
+    names: function () { return N; },
+    defaults: DEFAULTS,
+    save: save,
+    reset: function () { try { localStorage.removeItem("super.names"); } catch (e) {} N = load(); },
+    P: P,
+    shorten: shorten,
+    GAMES: GAMES,
+    CREDITS: CREDITS,
+    CURRICULUM: CURRICULUM,
+    mountBack: mountBack
+  };
+})(window);
+
+/* ============================================================
+   PROGRESS: xp, grade bands, the zoo and the pets
+   ============================================================ */
+(function (global) {
+  var S = global.SUPER;
+
+  var GRADES = [
+    { xp: 0,     id: "kindy-a", label: "Kindy A",        note: "getting started" },
+    { xp: 350,   id: "kindy-b", label: "Kindy B",        note: "letters, sounds, counting to 10" },
+    { xp: 900,   id: "prep",    label: "Preparatory",    note: "blending, first words, writing" },
+    { xp: 1800,  id: "g1",      label: "Primary Grade 1",note: "reading sentences, adding and taking away" },
+    { xp: 3200,  id: "g2",      label: "Primary Grade 2",note: "comprehension, groups of animals" },
+    { xp: 5200,  id: "g3",      label: "Primary Grade 3",note: "reasoning, food webs, longer writing" },
+    { xp: 8000,  id: "g4",      label: "Primary Grade 4",note: "science vocabulary, Latin names" },
+    { xp: 11500, id: "g5",      label: "Primary Grade 5",note: "systems, ethics, history" },
+    { xp: 16000, id: "g6",      label: "Primary Grade 6",note: "independent reading and writing" }
+  ];
+
+  /* 50 animals to collect. The cost rises steeply so the rare ones
+     really are rare. Kangaroo and koala are the last two. */
+  var ZOO = [
+    ["ant","\uD83D\uDC1C","Ant","Semut",40],
+    ["fish","\uD83D\uDC1F","Fish","Ikan",70],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",110],
+    ["duck","\uD83E\uDD86","Duck","Bebek",160],
+    ["cat","\uD83D\uDC08","Cat","Kucing",220],
+    ["dog","\uD83D\uDC15","Dog","Anjing",290],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",370],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",460],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",560],
+    ["frog","\uD83D\uDC38","Frog","Katak",670],
+    ["snail","\uD83D\uDC0C","Snail","Siput",790],
+    ["cow","\uD83D\uDC04","Cow","Sapi",920],
+    ["goat","\uD83D\uDC10","Goat","Kambing",1060],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",1210],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",1370],
+    ["bird","\uD83D\uDC26","Bird","Burung",1540],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",1720],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",1910],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",2110],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",2320],
+    ["squid","\uD83E\uDD91","Squid","Cumi",2540],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",2770],
+    ["snake","\uD83D\uDC0D","Snake","Ular",3010],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",3260],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",3520],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",3800],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",4100],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",4420],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4760],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",5120],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5500],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",5900],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",6330],
+    ["shark","\uD83E\uDD88","Shark","Hiu",6790],
+    ["whale","\uD83D\uDC0B","Whale","Paus",7280],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",7800],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",8360],
+    ["camel","\uD83D\uDC2A","Camel","Unta",8960],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",9600],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",10290],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",11030],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",11830],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",12690],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",13620],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",14620],
+    ["lion","\uD83E\uDD81","Lion","Singa",15700],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",16870],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",18140],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",19520],
+    ["koala","\uD83D\uDC28","Koala","Koala",21000]
+  ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
+
+  /* pets grow up as the xp goes in */
+  var PETS = [
+    { id: "cat", en: "Cat", idn: "Kucing", stages: [
+      { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 150 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 1200 } ] },
+    { id: "chick", en: "Chicken", idn: "Ayam", stages: [
+      { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 90 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 260 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 620 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 1400 } ] },
+    { id: "frog", en: "Frog", idn: "Katak", stages: [
+      { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 110 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 340 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 900 } ] },
+    { id: "tree", en: "Tree", idn: "Pohon", stages: [
+      { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 80 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 300 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 780 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 1600 } ] }
+  ];
+
+  function pget() {
+    try { return JSON.parse(localStorage.getItem("super.progress") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function pset(o) { try { localStorage.setItem("super.progress", JSON.stringify(o)); } catch (e) {} }
+
+  function addXp(game, n) {
+    var p = pget();
+    p.xp = (p.xp || 0) + n;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + n;
+    p.answers = (p.answers || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + n;
+    pset(p);
+    return p.xp;
+  }
+  function gradeFor(xp) {
+    var g = GRADES[0];
+    for (var i = 0; i < GRADES.length; i++) if (xp >= GRADES[i].xp) g = GRADES[i];
+    return g;
+  }
+  function nextGrade(xp) {
+    for (var i = 0; i < GRADES.length; i++) if (xp < GRADES[i].xp) return GRADES[i];
+    return null;
+  }
+  function unlockedZoo(xp) { return ZOO.filter(function (z) { return xp >= z.xp; }); }
+  function petStage(pet, xp) {
+    var s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (xp >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+  function stats() {
+    var p = pget(), xp = p.xp || 0;
+    return { xp: xp, answers: p.answers || 0, games: p.games || {}, days: p.days || {},
+             grade: gradeFor(xp), next: nextGrade(xp),
+             zoo: unlockedZoo(xp).length, zooTotal: ZOO.length };
+  }
+
+
+  /* ============================================================
+     SCORING
+     Research note: streaks help young learners, but rewards that
+     pay for volume alone push guessing. So points are paid for
+     QUALITY: first time right is worth full marks, a second try
+     less than half, and a third barely anything. The streak only
+     counts clean first-time answers, so it cannot be farmed.
+     ============================================================ */
+  var FOOD_COST = 12;      /* one feed */
+  var FOOD_VALUE = 30;     /* how much the pet grows per feed */
+
+  function award(game, o) {
+    o = o || {};
+    var level = o.level || 1, wrongs = o.wrongs || 0;
+    var base = 4 + level * 2;
+    var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    var p = pget();
+    var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
+    var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
+    var xp = Math.max(1, Math.round(base * quality * mult));
+    p.streak = streak;
+    p.best = Math.max(p.best || 0, streak);
+    p.food = (p.food || 0) + Math.max(0, Math.round(xp / 2));
+    p.xp = (p.xp || 0) + xp;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + xp;
+    p.answers = (p.answers || 0) + 1;
+    if (wrongs === 0) p.clean = (p.clean || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + xp;
+    pset(p);
+    return { xp: xp, streak: streak, mult: mult, food: p.food, total: p.xp };
+  }
+  function food() { return pget().food || 0; }
+  function streakNow() { return pget().streak || 0; }
+  function petFed(id) { var p = pget(); return (p.fed || {})[id] || 0; }
+  function feed(id) {
+    var p = pget();
+    if ((p.food || 0) < FOOD_COST) return null;
+    p.food -= FOOD_COST;
+    p.fed = p.fed || {};
+    p.fed[id] = (p.fed[id] || 0) + FOOD_VALUE;
+    pset(p);
+    return { food: p.food, fed: p.fed[id] };
+  }
+  function stageOf(pet) {
+    var f = petFed(pet.id), s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (f >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+
+  /* ============================================================
+     THE STRIP  —  a Touch Bar style row of live, contextual keys
+     ============================================================ */
+  function mountBar(actions) {
+    if (document.getElementById("superbar")) return;
+    var css = document.createElement("style");
+    css.textContent =
+     "#superbar{position:fixed;left:0;right:0;bottom:0;z-index:96;display:flex;align-items:center;gap:6px;" +
+     "padding:6px 10px;background:linear-gradient(180deg,rgba(6,20,28,.86),rgba(3,12,18,.96));" +
+     "border-top:1px solid rgba(247,233,204,.18);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}" +
+     "#superbar::-webkit-scrollbar{display:none}" +
+     "#superbar .k{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:12px;" +
+     "background:rgba(247,233,204,.10);border:1px solid rgba(247,233,204,.18);color:#FFFBF2;cursor:pointer;" +
+     "font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:14px;white-space:nowrap;transition:.15s}" +
+     "#superbar .k:hover{background:rgba(247,233,204,.2)}#superbar .k:active{transform:scale(.95)}" +
+     "#superbar .k.stat{cursor:default;background:rgba(6,20,28,.5)}" +
+     "#superbar .k .em{font-size:17px}" +
+     "#superbar .k.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}" +
+     "#superbar .grow{flex:1 1 auto;min-width:4px}" +
+     "#superbar .gain{position:fixed;pointer-events:none;font-family:Fredoka,sans-serif;font-weight:700;" +
+     "font-size:18px;color:#5FE0A4;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+     "@keyframes floatup{to{transform:translateY(-46px);opacity:0}}" +
+     "body{padding-bottom:56px}.super-back{bottom:60px!important}" +
+     "@media (min-aspect-ratio:1/1){#superbar{padding:4px 8px}#superbar .k{height:36px;font-size:13px;padding:0 11px}" +
+     "body{padding-bottom:48px}.super-back{bottom:52px!important}}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div");
+    bar.id = "superbar";
+    document.body.appendChild(bar);
+    barActions = actions || [];
+    renderBar();
+    return bar;
+  }
+  var barActions = [];
+  function renderBar() {
+    var bar = document.getElementById("superbar"); if (!bar) return;
+    var st = stats(), fd = food(), sk = streakNow();
+    var pet = PETS[0], stage = stageOf(pet);
+    var html = "";
+    barActions.forEach(function (a, i) {
+      html += '<button class="k' + (a.hot ? " hot" : "") + '" data-i="' + i + '">' +
+              '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
+    });
+    html += '<span class="grow"></span>';
+    html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
+            (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
+    html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
+    html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
+            stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
+    bar.innerHTML = html;
+    bar.querySelectorAll("button[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = barActions[Number(b.dataset.i)];
+        if (a && a.fn) a.fn();
+      });
+    });
+  }
+  function flyXp(n, streak) {
+    var bar = document.getElementById("superbar");
+    var g = document.createElement("div");
+    g.className = "gain";
+    g.textContent = "+" + n + (streak >= 3 ? "  \uD83D\uDD25" + streak : "");
+    g.style.right = "18px";
+    g.style.bottom = "60px";
+    g.style.animation = "floatup 1s ease-out forwards";
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 1000);
+    renderBar();
+  }
+
+  S.score = { award: award, food: food, streak: streakNow, feed: feed,
+              stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
+  S.bar = { mount: mountBar, render: renderBar, fly: flyXp,
+            set: function (a) { barActions = a || []; renderBar(); } };
+
+  S.GRADES = GRADES; S.ZOO = ZOO; S.PETS = PETS;
+  S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
+           unlockedZoo: unlockedZoo, petStage: petStage,
+           reset: function () { pset({}); } };
+})(window);
+
+</script>
+<script>
+const $=id=>document.getElementById(id);
+const N=()=>SUPER.names();
+
+function paint(){
+ const n=N();
+ $("childName").textContent=n.child;
+ document.title="Rumah Belajar "+n.child;
+ $("who").innerHTML=[n.dad,n.mum,n.child,n.sib]
+   .map(x=>'<span class="chip">'+x+'</span>').join("");
+ $("credit").innerHTML="Created with love and care by <b>"+n.dad+"</b> and <b>"+n.mum+
+   "</b><br>for beloved <b>"+n.child+"</b> and <b>"+n.sib+"</b>.";
+ $("creditLong").innerHTML="Created with love and care by <b>"+n.dad+"</b> and <b>"+n.mum+
+   "</b> for beloved <b>"+n.child+"</b> and <b>"+n.sib+"</b>. "+
+   "Free to copy and share for any family who needs it.";
+ const g=$("grid");g.innerHTML="";
+ SUPER.GAMES.forEach(gm=>{
+  const a=document.createElement("a");
+  a.className="card";a.href=gm.file;
+  a.innerHTML='<span class="bar" style="background:'+gm.tone+'"></span>'+
+   '<span class="ic">'+gm.icon+'</span>'+
+   '<h3>'+gm.idn+'</h3><div class="en">'+gm.en+'</div>'+
+   '<div class="nt">'+SUPER.P(gm.note)+'</div>';
+  a.addEventListener("click",()=>{try{localStorage.setItem("super.last",gm.file)}catch(e){}});
+  g.appendChild(a);
+ });
+ $("refs").innerHTML=SUPER.CURRICULUM
+   .map(r=>'<li><b>'+r[0]+'</b> — '+r[1]+'</li>').join("");
+ const st=SUPER.xp.stats();
+ const lo=st.grade.xp,hi=st.next?st.next.xp:st.grade.xp+1;
+ const pct=st.next?Math.max(3,Math.min(100,(st.xp-lo)/(hi-lo)*100)):100;
+ $("prog").innerHTML='<span class="g">'+st.grade.label+'</span>'+
+  '<span class="x">'+st.xp.toLocaleString()+' XP · '+st.zoo+'/'+st.zooTotal+' animals</span>'+
+  '<div class="t"><i style="width:'+pct+'%"></i></div>'+
+  '<div class="z">'+(st.next?((st.next.xp-st.xp).toLocaleString()+' XP to '+st.next.label):'Every level reached')+'</div>';
+ const last=(function(){try{return localStorage.getItem("super.last")}catch(e){return null}})();
+ $("resume").textContent=last?("▶ Continue "+(SUPER.GAMES.find(x=>x.file===last)||{idn:""}).idn):"▶ Start with Membaca";
+ $("resume").onclick=()=>{location.href=last||"membaca.html"};
+}
+
+function openS(){
+ const n=N();
+ $("nChild").value=n.child;$("nDad").value=n.dad;$("nMum").value=n.mum;$("nSib").value=n.sib;
+ $("sheet").classList.add("on");
+}
+$("openSettings").onclick=openS;
+$("closeSettings").onclick=()=>$("sheet").classList.remove("on");
+$("saveNames").onclick=()=>{
+ const child=$("nChild").value.trim()||SUPER.defaults.child;
+ const dad=$("nDad").value.trim()||SUPER.defaults.dad;
+ const mum=$("nMum").value.trim()||SUPER.defaults.mum;
+ const sib=$("nSib").value.trim()||SUPER.defaults.sib;
+ SUPER.save({child:child,dad:dad,mum:mum,sib:sib,
+  childShort:SUPER.shorten(child,child),
+  dadShort:SUPER.shorten(dad,"Papi"),
+  mumShort:SUPER.shorten(mum,"Mommy"),
+  sibShort:SUPER.shorten(sib,"Ade")});
+ paint();$("sheet").classList.remove("on");
+};
+$("resetNames").onclick=()=>{SUPER.reset();openS();paint()};
+$("sheet").addEventListener("click",e=>{if(e.target.id==="sheet")$("sheet").classList.remove("on")});
+paint();
+</script>
+</body>
+</html>
