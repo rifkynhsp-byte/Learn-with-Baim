@@ -29,11 +29,21 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
 .progress{margin:8px 0 2px;height:7px;border-radius:99px;background:rgba(10,6,26,.55);overflow:hidden}
 .progress i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--kelp),var(--amber));transition:width .45s ease}
 
-.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:0}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+ gap:12px;min-height:0;padding-top:4px;overflow-y:auto}
 @media (min-aspect-ratio:1/1){
- .stage{display:grid;grid-template-columns:minmax(0,56%) minmax(0,44%);align-items:center;gap:26px;width:100%}
- .board{width:100%}
- .opt{width:min(11vw,min(15vh,110px));height:min(11vw,min(15vh,110px))}
+ .app{padding:6px 16px 6px}
+ .stage{display:grid;grid-template-columns:minmax(0,54%) minmax(0,46%);align-items:center;
+  gap:20px;width:100%;padding-top:0;overflow:hidden}
+ .board{width:100%;padding:12px 14px 10px}
+ .tale{font-size:clamp(13px,1.8vw,17px);min-height:2.2em;margin-bottom:6px}
+ .crit{font-size:min(4.6vh,34px)}
+ .row{min-height:min(6vh,40px)}
+ .qline{font-size:clamp(17px,2.6vw,24px);margin-top:5px}
+ .opt{width:min(10vw,min(14vh,100px));height:min(10vw,min(14vh,100px));font-size:min(7vh,38px)}
+ .buddy{width:min(7vw,64px)}
+ .fact{font-size:12px;padding:7px 11px}
+ .controls{display:none}          /* the strip carries these now */
 }
 .left,.right{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;min-width:0}
 
@@ -79,6 +89,7 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
  50%{transform:translateX(10px) rotate(7deg)}80%{transform:translateX(-5px)}}
 
 .controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+body.hasbar .controls{display:none}
 .big{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;border-radius:999px;padding:11px 20px;
  cursor:pointer;background:rgba(247,233,204,.13);color:var(--bone);border:1px solid rgba(247,233,204,.24)}
 .big.go{background:var(--amber);color:#40230A;border-color:var(--amber)}
@@ -205,6 +216,7 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
 
   /* a back button injected into any game page */
   function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
     var a = document.createElement("a");
     a.href = "index.html";
     a.className = "super-back";
@@ -243,97 +255,100 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
 (function (global) {
   var S = global.SUPER;
 
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
   var GRADES = [
-    { xp: 0,     id: "kindy-a", label: "Kindy A",        note: "getting started" },
-    { xp: 350,   id: "kindy-b", label: "Kindy B",        note: "letters, sounds, counting to 10" },
-    { xp: 900,   id: "prep",    label: "Preparatory",    note: "blending, first words, writing" },
-    { xp: 1800,  id: "g1",      label: "Primary Grade 1",note: "reading sentences, adding and taking away" },
-    { xp: 3200,  id: "g2",      label: "Primary Grade 2",note: "comprehension, groups of animals" },
-    { xp: 5200,  id: "g3",      label: "Primary Grade 3",note: "reasoning, food webs, longer writing" },
-    { xp: 8000,  id: "g4",      label: "Primary Grade 4",note: "science vocabulary, Latin names" },
-    { xp: 11500, id: "g5",      label: "Primary Grade 5",note: "systems, ethics, history" },
-    { xp: 16000, id: "g6",      label: "Primary Grade 6",note: "independent reading and writing" }
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
   ];
 
   /* 50 animals to collect. The cost rises steeply so the rare ones
      really are rare. Kangaroo and koala are the last two. */
   var ZOO = [
     ["ant","\uD83D\uDC1C","Ant","Semut",40],
-    ["fish","\uD83D\uDC1F","Fish","Ikan",70],
-    ["chicken","\uD83D\uDC13","Chicken","Ayam",110],
-    ["duck","\uD83E\uDD86","Duck","Bebek",160],
-    ["cat","\uD83D\uDC08","Cat","Kucing",220],
-    ["dog","\uD83D\uDC15","Dog","Anjing",290],
-    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",370],
-    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",460],
-    ["bee","\uD83D\uDC1D","Bee","Lebah",560],
-    ["frog","\uD83D\uDC38","Frog","Katak",670],
-    ["snail","\uD83D\uDC0C","Snail","Siput",790],
-    ["cow","\uD83D\uDC04","Cow","Sapi",920],
-    ["goat","\uD83D\uDC10","Goat","Kambing",1060],
-    ["horse","\uD83D\uDC0E","Horse","Kuda",1210],
-    ["sheep","\uD83D\uDC11","Sheep","Domba",1370],
-    ["bird","\uD83D\uDC26","Bird","Burung",1540],
-    ["owl","\uD83E\uDD89","Owl","Burung hantu",1720],
-    ["turtle","\uD83D\uDC22","Turtle","Penyu",1910],
-    ["crab","\uD83E\uDD80","Crab","Kepiting",2110],
-    ["shrimp","\uD83E\uDD90","Shrimp","Udang",2320],
-    ["squid","\uD83E\uDD91","Squid","Cumi",2540],
-    ["octopus","\uD83D\uDC19","Octopus","Gurita",2770],
-    ["snake","\uD83D\uDC0D","Snake","Ular",3010],
-    ["lizard","\uD83E\uDD8E","Lizard","Kadal",3260],
-    ["monkey","\uD83D\uDC12","Monkey","Monyet",3520],
-    ["deer","\uD83E\uDD8C","Deer","Rusa",3800],
-    ["fox","\uD83E\uDD8A","Fox","Rubah",4100],
-    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",4420],
-    ["penguin","\uD83D\uDC27","Penguin","Penguin",4760],
-    ["peacock","\uD83E\uDD9A","Peacock","Merak",5120],
-    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5500],
-    ["eagle","\uD83E\uDD85","Eagle","Elang",5900],
-    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",6330],
-    ["shark","\uD83E\uDD88","Shark","Hiu",6790],
-    ["whale","\uD83D\uDC0B","Whale","Paus",7280],
-    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",7800],
-    ["zebra","\uD83E\uDD93","Zebra","Zebra",8360],
-    ["camel","\uD83D\uDC2A","Camel","Unta",8960],
-    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",9600],
-    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",10290],
-    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",11030],
-    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",11830],
-    ["elephant","\uD83D\uDC18","Elephant","Gajah",12690],
-    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",13620],
-    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",14620],
-    ["lion","\uD83E\uDD81","Lion","Singa",15700],
-    ["tiger","\uD83D\uDC05","Tiger","Harimau",16870],
-    ["panda","\uD83D\uDC3C","Giant panda","Panda",18140],
-    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",19520],
-    ["koala","\uD83D\uDC28","Koala","Koala",21000]
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
   ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
 
   /* pets grow up as the xp goes in */
   var PETS = [
     { id: "cat", en: "Cat", idn: "Kucing", stages: [
       { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
-      { emo: "\uD83D\uDC08", en: "Young cat", xp: 150 },
-      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 500 },
-      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 1200 } ] },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
     { id: "chick", en: "Chicken", idn: "Ayam", stages: [
       { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
-      { emo: "\uD83D\uDC23", en: "Hatching", xp: 90 },
-      { emo: "\uD83D\uDC24", en: "Chick", xp: 260 },
-      { emo: "\uD83D\uDC14", en: "Hen", xp: 620 },
-      { emo: "\uD83D\uDC13", en: "Rooster", xp: 1400 } ] },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
     { id: "frog", en: "Frog", idn: "Katak", stages: [
       { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
-      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 110 },
-      { emo: "\uD83D\uDC38", en: "Young frog", xp: 340 },
-      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 900 } ] },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
     { id: "tree", en: "Tree", idn: "Pohon", stages: [
       { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
-      { emo: "\uD83C\uDF31", en: "Sprout", xp: 80 },
-      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 300 },
-      { emo: "\uD83C\uDF33", en: "Big tree", xp: 780 },
-      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 1600 } ] }
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
   ];
 
   function pget() {
@@ -385,21 +400,24 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
      less than half, and a third barely anything. The streak only
      counts clean first-time answers, so it cannot be farmed.
      ============================================================ */
-  var FOOD_COST = 12;      /* one feed */
-  var FOOD_VALUE = 30;     /* how much the pet grows per feed */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
 
   function award(game, o) {
     o = o || {};
     var level = o.level || 1, wrongs = o.wrongs || 0;
-    var base = 4 + level * 2;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
     var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
     var p = pget();
     var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
     var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
     var xp = Math.max(1, Math.round(base * quality * mult));
     p.streak = streak;
     p.best = Math.max(p.best || 0, streak);
-    p.food = (p.food || 0) + Math.max(0, Math.round(xp / 2));
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
     p.xp = (p.xp || 0) + xp;
     p.games = p.games || {};
     p.games[game] = (p.games[game] || 0) + xp;
@@ -473,12 +491,16 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
               '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
     });
     html += '<span class="grow"></span>';
+    html += '<a class="k" href="index.html" title="Home"><span class="em">\uD83C\uDFE0</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
     html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
             (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
     html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
     html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
             stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
     bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
     bar.querySelectorAll("button[data-i]").forEach(function (b) {
       b.addEventListener("click", function () {
         var a = barActions[Number(b.dataset.i)];
@@ -498,6 +520,90 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;fl
     setTimeout(function () { g.remove(); }, 1000);
     renderBar();
   }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
 
   S.score = { award: award, food: food, streak: streakNow, feed: feed,
               stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
@@ -526,6 +632,7 @@ const NM=(window.SUPER&&SUPER.P)||(x=>x);
   const d=Object.getOwnPropertyDescriptor(proto,p); if(!d||!d.set)return;
   Object.defineProperty(el,p,{configurable:true,get(){return d.get.call(el)},set(v){d.set.call(el,NM(v))}});});})();
 if(window.SUPER&&SUPER.mountBack)SUPER.mountBack();
+document.body.classList.add("hasbar");
 if(window.SUPER&&SUPER.bar)SUPER.bar.mount([
  {icon:"\uD83D\uDD08",label:"Again",fn:()=>{const b=$("again");if(b)b.click()}},
  {icon:"\u27A1\uFE0F",label:"Next",hot:true,fn:()=>{const b=$("next");if(b&&!b.hidden)b.click()}}
@@ -592,7 +699,11 @@ const LEVELS={
  5:{name:"Missing number",  max:10, ops:["missA","missB"],    opts:4},
  6:{name:"Two steps",       max:12, ops:["two"],              opts:4},
  7:{name:"Share it out",    max:12, ops:["share"],            opts:4},
- 8:{name:"Food web sense",  max:12, ops:["web"],              opts:3}
+ 8:{name:"Food web sense",  max:12, ops:["web"],              opts:3},
+ 9:{name:"Bigger numbers",  max:20, ops:["add","sub"],        opts:4},
+ 10:{name:"Doubles",        max:10, ops:["double","half"],    opts:4},
+ 11:{name:"Which sign?",    max:15, ops:["sign"],             opts:2},
+ 12:{name:"Story problems", max:20, ops:["story"],            opts:4}
 };
 const LEVEL_KEYS=Object.keys(LEVELS).map(Number);
 
@@ -667,8 +778,8 @@ function build(level){
  }
  else if(op==="sub"){
   const a=rnd(2,max),b=rnd(1,a-1);
-  q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:1}];
   const one=pred.name.replace(/e?s$/,"");
+  q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:b}];
   q.tale=pick([
    `${a} ${herb.name} are in the field. A hungry ${one} eats ${b}.`,
    `${a} ${herb.name} are eating. The ${one} comes and takes ${b}.`,
@@ -687,15 +798,15 @@ function build(level){
  }
  else if(op==="missB"){
   const a=rnd(2,max),b=rnd(1,a-1);
-  q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:1}];
-  q.tale=`${a} ${herb.name} were in the field. The ${pred.name.replace(/e?s$/,"")} ate some. Now ${a-b} are left.`;
+  q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:b}];
+  q.tale=`${a} ${herb.name} were in the field. ${b===1?"A":b} ${b===1?pred.name.replace(/e?s$/,""):pred.name} ate some. Now ${a-b} are left.`;
   q.qline=`${a} − ? = ${a-b}`;
   q.say=`${a} ${herb.name}. Now only ${a-b} are left. How many were eaten?`;
   q.ans=b;
  }
  else if(op==="two"){
-  const a=rnd(2,6),b=rnd(1,4),c=rnd(1,Math.max(1,a+b-1));
-  q.rows=[{emo:herb.emo,n:a},{sign:"➕"},{emo:herb.emo,n:b,added:true},{sign:"➖"},{emo:pred.emo,n:1}];
+  const a=rnd(2,6),b=rnd(1,4);const c=rnd(1,Math.max(1,a+b-1));
+  q.rows=[{emo:herb.emo,n:a},{sign:"➕"},{emo:herb.emo,n:b,added:true},{sign:"➖"},{emo:pred.emo,n:c}];
   q.tale=`${a} ${herb.name} are eating. ${b} more join. Then the ${pred.name.replace(/e?s$/,"")} eats ${c}.`;
   q.qline=`${a} + ${b} − ${c} = ?`;
   q.say=`${a} ${herb.name}, ${b} more come, then ${c} are eaten. How many are left?`;
@@ -709,12 +820,62 @@ function build(level){
   q.say=`${tot} ${plant?plant.name:"plants"} shared fairly between ${groups} ${herb.name}. How many each?`;
   q.ans=each;
  }
+ else if(op==="double"){
+  const a=rnd(1,Math.min(9,max));
+  q.rows=[{emo:herb.emo,n:a},{sign:"➕"},{emo:herb.emo,n:a,added:true}];
+  q.tale=`${a} ${herb.name} are here. The same number come again.`;
+  q.qline=`${a} + ${a} = ?`;
+  q.say=`Double ${a}. What is ${a} plus ${a}?`;
+  q.ans=a+a;
+ }
+ else if(op==="half"){
+  const half=rnd(1,Math.min(9,Math.floor(max/2))),a=half*2;
+  q.rows=[{emo:herb.emo,n:a,eat:half},{sign:"➖"},{emo:pred.emo,n:half}];
+  q.tale=`${a} ${herb.name} are here. Exactly half of them are eaten.`;
+  q.qline=`half of ${a} = ?`;
+  q.say=`Half of ${a}. How many are left?`;
+  q.ans=half;
+ }
+ else if(op==="sign"){
+  const a=rnd(2,9),b=rnd(1,a-1),plus=Math.random()<.5;
+  const res=plus?a+b:a-b;
+  q.rows=plus?[{emo:herb.emo,n:a},{sign:"❓"},{emo:herb.emo,n:b,added:true}]
+             :[{emo:herb.emo,n:a,eat:b},{sign:"❓"},{emo:pred.emo,n:b}];
+  q.tale=plus?`${b} more ${herb.name} came to join.`:`${b} ${herb.name} were eaten.`;
+  q.qline=`${a} ? ${b} = ${res}`;
+  q.say=`${a} something ${b} makes ${res}. Is it plus or minus?`;
+  q.ans=plus?1:2;
+  q.choices=[1,2];q.signMode=true;
+  q.chain=[plant,herb,pred].filter(Boolean);
+  return q;
+ }
+ else if(op==="story"){
+  const a=rnd(3,10),b=rnd(1,4),c=rnd(1,Math.max(1,a-1));
+  const kind=pick(["morning","share","escape"]);
+  if(kind==="morning"){
+   q.rows=[{emo:herb.emo,n:a},{sign:"➕"},{emo:herb.emo,n:b,added:true}];
+   q.tale=`In the morning ${a} ${herb.name} were eating. At noon ${b} more arrived.`;
+   q.qline=`${a} + ${b} = ?`;q.say=`In the morning ${a} ${herb.name}. At noon ${b} more came. How many altogether?`;
+   q.ans=a+b;
+  }else if(kind==="share"){
+   const g=rnd(2,3),each=rnd(1,4),tot=g*each;
+   q.rows=[{emo:plant?plant.emo:"🌿",n:tot}];
+   q.tale=`${tot} ${plant?plant.name:"plants"} must be shared fairly between ${g} ${herb.name}.`;
+   q.qline=`${tot} shared by ${g} = ?`;q.say=`${tot} shared fairly between ${g}. How many each?`;
+   q.ans=each;
+  }else{
+   q.rows=[{emo:herb.emo,n:a,eat:c},{sign:"➖"},{emo:pred.emo,n:c}];
+   q.tale=`${a} ${herb.name} were resting. ${c} ran away when the ${pred.name.replace(/e?s$/,"")} came.`;
+   q.qline=`${a} − ${c} = ?`;q.say=`${a} ${herb.name}, ${c} ran away. How many stayed?`;
+   q.ans=a-c;
+  }
+ }
  else { /* web: reasoning about the chain, answer is still a number */
   const a=rnd(3,8);
   const kind=pick(["allEaten","noPlants","howManyLeftIfNone"]);
   if(kind==="allEaten"){
-   q.rows=[{emo:herb.emo,n:a,eat:a},{sign:"➖"},{emo:pred.emo,n:1}];
-   q.tale=`${a} ${herb.name} live here. The ${pred.name.replace(/e?s$/,"")} eats every one of them.`;
+   q.rows=[{emo:herb.emo,n:a,eat:a},{sign:"➖"},{emo:pred.emo,n:a}];
+   q.tale=`${a} ${herb.name} live here. ${a} ${pred.name} come and eat every one of them.`;
    q.qline=`${a} − ${a} = ?`;
    q.say=`If the ${pred.name.replace(/e?s$/,"")} eats all ${a} ${herb.name}, how many are left?`;
    q.ans=0;
@@ -726,7 +887,7 @@ function build(level){
    q.ans=0;
   } else {
    const b=rnd(1,a-1);
-   q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:1}];
+   q.rows=[{emo:herb.emo,n:a,eat:b},{sign:"➖"},{emo:pred.emo,n:b}];
    q.tale=`${a} ${herb.name}. The ${pred.name.replace(/e?s$/,"")} eats ${b} and then leaves.`;
    q.qline=`${a} − ${b} = ?`;
    q.say=`${a} ${herb.name}, ${b} are eaten. How many keep eating the ${plant?plant.name:"plants"}?`;
@@ -796,7 +957,8 @@ async function loadRound(){
  renderRows(S.q);
  const box=$("opts");box.innerHTML="";
  S.q.choices.forEach(v=>{
-  const b=document.createElement("button");b.className="opt";b.dataset.num=String(v);b.textContent=v;
+  const b=document.createElement("button");b.className="opt";b.dataset.num=String(v);
+  b.textContent=S.q.signMode?(v===1?"➕":"➖"):v;
   box.appendChild(b);
  });
  $("prompt").textContent="Listen, then count.";

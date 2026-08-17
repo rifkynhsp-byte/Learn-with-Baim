@@ -41,7 +41,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 .target b{color:#B0521E}
 .pill{margin-left:auto;font-size:12px;color:#8A6438;background:rgba(255,255,255,.7);
  border-radius:999px;padding:4px 10px;pointer-events:none}
-.doneflag{position:absolute;inset:0;z-index:4;display:none;place-items:center;flex-direction:column;
+.doneflag{position:absolute;inset:0;z-index:4;display:none;place-items:center;flex-direction:column;pointer-events:none;
  background:rgba(255,253,246,.72);font-size:clamp(50px,11vw,110px)}
 .letters{display:flex;gap:5px;align-items:center;pointer-events:none}
 .lt{position:relative;font-family:'Fredoka',sans-serif;font-weight:600;font-size:clamp(13px,2vw,17px);
@@ -60,9 +60,17 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
  cursor:pointer;background:rgba(247,233,204,.13);color:var(--bone);border:1px solid rgba(247,233,204,.24)}
 .big.go{background:var(--amber);color:#40230A;border-color:var(--amber)}
 .big[hidden]{display:none}
+body.hasbar .bottom .big,body.hasbar .bottom .swatch{display:none}
 .swatch{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.6);cursor:pointer}
 .swatch[aria-pressed="true"]{outline:3px solid var(--kelp);outline-offset:2px}
-@media (min-aspect-ratio:1/1){ .sheet{width:min(97vw,1400px)} .bottom{gap:8px} .big{padding:8px 15px;font-size:13.5px} }
+@media (min-aspect-ratio:1/1){
+ .app{padding:6px 14px 4px}
+ .sheet{width:min(98vw,1500px)}
+ .bottom .big,.bottom .swatch{display:none}   /* the strip carries these */
+ .bottom{gap:8px}
+ .prompt{font-size:clamp(13px,1.8vw,17px)}
+ .buddy{width:min(6vw,52px)}
+}
 </style>
 </head>
 <body>
@@ -93,7 +101,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
    <button class="swatch" id="c1" style="background:#1F6FEB" aria-pressed="true"></button>
    <button class="swatch" id="c2" style="background:#E0483B" aria-pressed="false"></button>
    <button class="swatch" id="c3" style="background:#159B62" aria-pressed="false"></button>
-   <button class="big go" id="next" hidden>Next ➜</button>
+   <button class="big go" id="next">Next ➜</button>
   </div>
  </main>
 </div>
@@ -182,6 +190,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 
   /* a back button injected into any game page */
   function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
     var a = document.createElement("a");
     a.href = "index.html";
     a.className = "super-back";
@@ -220,97 +229,100 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 (function (global) {
   var S = global.SUPER;
 
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
   var GRADES = [
-    { xp: 0,     id: "kindy-a", label: "Kindy A",        note: "getting started" },
-    { xp: 350,   id: "kindy-b", label: "Kindy B",        note: "letters, sounds, counting to 10" },
-    { xp: 900,   id: "prep",    label: "Preparatory",    note: "blending, first words, writing" },
-    { xp: 1800,  id: "g1",      label: "Primary Grade 1",note: "reading sentences, adding and taking away" },
-    { xp: 3200,  id: "g2",      label: "Primary Grade 2",note: "comprehension, groups of animals" },
-    { xp: 5200,  id: "g3",      label: "Primary Grade 3",note: "reasoning, food webs, longer writing" },
-    { xp: 8000,  id: "g4",      label: "Primary Grade 4",note: "science vocabulary, Latin names" },
-    { xp: 11500, id: "g5",      label: "Primary Grade 5",note: "systems, ethics, history" },
-    { xp: 16000, id: "g6",      label: "Primary Grade 6",note: "independent reading and writing" }
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
   ];
 
   /* 50 animals to collect. The cost rises steeply so the rare ones
      really are rare. Kangaroo and koala are the last two. */
   var ZOO = [
     ["ant","\uD83D\uDC1C","Ant","Semut",40],
-    ["fish","\uD83D\uDC1F","Fish","Ikan",70],
-    ["chicken","\uD83D\uDC13","Chicken","Ayam",110],
-    ["duck","\uD83E\uDD86","Duck","Bebek",160],
-    ["cat","\uD83D\uDC08","Cat","Kucing",220],
-    ["dog","\uD83D\uDC15","Dog","Anjing",290],
-    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",370],
-    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",460],
-    ["bee","\uD83D\uDC1D","Bee","Lebah",560],
-    ["frog","\uD83D\uDC38","Frog","Katak",670],
-    ["snail","\uD83D\uDC0C","Snail","Siput",790],
-    ["cow","\uD83D\uDC04","Cow","Sapi",920],
-    ["goat","\uD83D\uDC10","Goat","Kambing",1060],
-    ["horse","\uD83D\uDC0E","Horse","Kuda",1210],
-    ["sheep","\uD83D\uDC11","Sheep","Domba",1370],
-    ["bird","\uD83D\uDC26","Bird","Burung",1540],
-    ["owl","\uD83E\uDD89","Owl","Burung hantu",1720],
-    ["turtle","\uD83D\uDC22","Turtle","Penyu",1910],
-    ["crab","\uD83E\uDD80","Crab","Kepiting",2110],
-    ["shrimp","\uD83E\uDD90","Shrimp","Udang",2320],
-    ["squid","\uD83E\uDD91","Squid","Cumi",2540],
-    ["octopus","\uD83D\uDC19","Octopus","Gurita",2770],
-    ["snake","\uD83D\uDC0D","Snake","Ular",3010],
-    ["lizard","\uD83E\uDD8E","Lizard","Kadal",3260],
-    ["monkey","\uD83D\uDC12","Monkey","Monyet",3520],
-    ["deer","\uD83E\uDD8C","Deer","Rusa",3800],
-    ["fox","\uD83E\uDD8A","Fox","Rubah",4100],
-    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",4420],
-    ["penguin","\uD83D\uDC27","Penguin","Penguin",4760],
-    ["peacock","\uD83E\uDD9A","Peacock","Merak",5120],
-    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5500],
-    ["eagle","\uD83E\uDD85","Eagle","Elang",5900],
-    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",6330],
-    ["shark","\uD83E\uDD88","Shark","Hiu",6790],
-    ["whale","\uD83D\uDC0B","Whale","Paus",7280],
-    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",7800],
-    ["zebra","\uD83E\uDD93","Zebra","Zebra",8360],
-    ["camel","\uD83D\uDC2A","Camel","Unta",8960],
-    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",9600],
-    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",10290],
-    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",11030],
-    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",11830],
-    ["elephant","\uD83D\uDC18","Elephant","Gajah",12690],
-    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",13620],
-    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",14620],
-    ["lion","\uD83E\uDD81","Lion","Singa",15700],
-    ["tiger","\uD83D\uDC05","Tiger","Harimau",16870],
-    ["panda","\uD83D\uDC3C","Giant panda","Panda",18140],
-    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",19520],
-    ["koala","\uD83D\uDC28","Koala","Koala",21000]
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
   ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
 
   /* pets grow up as the xp goes in */
   var PETS = [
     { id: "cat", en: "Cat", idn: "Kucing", stages: [
       { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
-      { emo: "\uD83D\uDC08", en: "Young cat", xp: 150 },
-      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 500 },
-      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 1200 } ] },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
     { id: "chick", en: "Chicken", idn: "Ayam", stages: [
       { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
-      { emo: "\uD83D\uDC23", en: "Hatching", xp: 90 },
-      { emo: "\uD83D\uDC24", en: "Chick", xp: 260 },
-      { emo: "\uD83D\uDC14", en: "Hen", xp: 620 },
-      { emo: "\uD83D\uDC13", en: "Rooster", xp: 1400 } ] },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
     { id: "frog", en: "Frog", idn: "Katak", stages: [
       { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
-      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 110 },
-      { emo: "\uD83D\uDC38", en: "Young frog", xp: 340 },
-      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 900 } ] },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
     { id: "tree", en: "Tree", idn: "Pohon", stages: [
       { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
-      { emo: "\uD83C\uDF31", en: "Sprout", xp: 80 },
-      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 300 },
-      { emo: "\uD83C\uDF33", en: "Big tree", xp: 780 },
-      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 1600 } ] }
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
   ];
 
   function pget() {
@@ -362,21 +374,24 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
      less than half, and a third barely anything. The streak only
      counts clean first-time answers, so it cannot be farmed.
      ============================================================ */
-  var FOOD_COST = 12;      /* one feed */
-  var FOOD_VALUE = 30;     /* how much the pet grows per feed */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
 
   function award(game, o) {
     o = o || {};
     var level = o.level || 1, wrongs = o.wrongs || 0;
-    var base = 4 + level * 2;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
     var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
     var p = pget();
     var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
     var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
     var xp = Math.max(1, Math.round(base * quality * mult));
     p.streak = streak;
     p.best = Math.max(p.best || 0, streak);
-    p.food = (p.food || 0) + Math.max(0, Math.round(xp / 2));
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
     p.xp = (p.xp || 0) + xp;
     p.games = p.games || {};
     p.games[game] = (p.games[game] || 0) + xp;
@@ -450,12 +465,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
               '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
     });
     html += '<span class="grow"></span>';
+    html += '<a class="k" href="index.html" title="Home"><span class="em">\uD83C\uDFE0</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
     html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
             (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
     html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
     html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
             stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
     bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
     bar.querySelectorAll("button[data-i]").forEach(function (b) {
       b.addEventListener("click", function () {
         var a = barActions[Number(b.dataset.i)];
@@ -475,6 +494,90 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
     setTimeout(function () { g.remove(); }, 1000);
     renderBar();
   }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
 
   S.score = { award: award, food: food, streak: streakNow, feed: feed,
               stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
@@ -499,13 +602,14 @@ const NM=(window.SUPER&&SUPER.P)||(x=>x);
   const d=Object.getOwnPropertyDescriptor(proto,p);if(!d||!d.set)return;
   Object.defineProperty(el,p,{configurable:true,get(){return d.get.call(el)},set(v){d.set.call(el,NM(v))}});});})();
 if(window.SUPER&&SUPER.mountBack)SUPER.mountBack();
+document.body.classList.add("hasbar");
 if(window.SUPER&&SUPER.bar)SUPER.bar.mount([
  {icon:"\uD83D\uDD08",label:"Say it",fn:()=>$("say").click()},
  {icon:"\u21BA",label:"Clear",fn:()=>$("clear").click()},
  {icon:"\uD83D\uDD35",fn:()=>$("c1").click()},
  {icon:"\uD83D\uDD34",fn:()=>$("c2").click()},
  {icon:"\uD83D\uDFE2",fn:()=>$("c3").click()},
- {icon:"\u27A1\uFE0F",label:"Next",hot:true,fn:()=>{const b=$("next");if(b&&!b.hidden)b.click()}}
+ {icon:"\u27A1\uFE0F",label:"Next",hot:true,fn:()=>$("next").click()}
 ]);
 
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
@@ -519,16 +623,29 @@ const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1])
    then numbers, then whole words he can already read.
    ============================================================ */
 const LEVELS={
- 1:{name:"Lines and curves", items:["|","—","／","＼","○","∪","∩","〜"], mode:"shape", label:"Follow the line"},
- 2:{name:"Round letters",    items:["c","o","a","d","g","q","e","s"], mode:"letter"},
- 3:{name:"Tall letters",     items:["l","t","i","h","b","k","f","j"], mode:"letter"},
- 4:{name:"The rest",         items:["m","n","r","u","v","w","x","y","z","p"], mode:"letter"},
- 5:{name:"Capitals",         items:["A","B","C","D","E","I","M","O","R","S","T"], mode:"letter"},
- 6:{name:"Numbers",          items:["0","1","2","3","4","5","6","7","8","9"], mode:"letter"},
- 7:{name:"Suku kata",        items:["ma","pa","ba","ku","di","sa","na","ti","lo","ru"], mode:"word"},
- 8:{name:"Kata",             items:["mama","papa","baim","kuda","bola","buku","ikan","sapi","batu","roti"], mode:"word"},
- 9:{name:"English words",    items:["cat","dog","sun","fish","bird","tree","star","book","hand","milk"], mode:"word"},
- 10:{name:"My family",       items:["Baim","Papi","Mommy","Ade","I love you"], mode:"word"}
+ 1:{name:"Lines and curves", mode:"shape", items:["|","—","／","＼","○","∪","∩","〜","+","×","△","□"]},
+ 2:{name:"Round letters",    mode:"letter", items:["c","o","a","d","g","q","e","s"]},
+ 3:{name:"Tall letters",     mode:"letter", items:["l","t","i","h","b","k","f","j"]},
+ 4:{name:"The rest",         mode:"letter", items:["m","n","r","u","v","w","x","y","z","p"]},
+ 5:{name:"Capitals",         mode:"letter", items:["A","B","C","D","E","F","H","I","L","M","O","P","R","S","T"]},
+ 6:{name:"Numbers",          mode:"letter", items:["0","1","2","3","4","5","6","7","8","9"]},
+ 7:{name:"Draw the picture", mode:"draw",   items:["🍎","🐟","⭐","🌙","🏠","🌳","🍌","🥚","☂️","🎈","🍞","🦴","🧊","🍋","🐛","🌵"]},
+ 8:{name:"Suku kata",        mode:"word",   items:["ma","pa","ba","ku","di","sa","na","ti","lo","ru","ka","mi","bu","te","no","ya"]},
+ 9:{name:"Kata",             mode:"word",   items:["mama","papa","kuda","bola","buku","ikan","sapi","batu","roti","topi","gigi","mata","susu","dino","hiu","pari","lele","kaki"]},
+ 10:{name:"English words",   mode:"word",   items:["cat","dog","sun","fish","bird","tree","star","book","hand","milk","ball","cake","frog","moon","rain","bee","cow","egg"]},
+ 11:{name:"Longer words",    mode:"word",   items:["gajah","kucing","burung","pisang","sekolah","rabbit","flower","school","yellow","monkey"]},
+ 12:{name:"My family",       mode:"word",   items:["Baim","Papi","Mommy","Ade","Abang","Adik","Ibu","Ayah",
+   "I love you","Aku sayang Papi","Aku sayang Mommy","Aku sayang Ade"]},
+ 13:{name:"Kalimat pendek",  mode:"word",   items:["ini bola","ini buku","aku suka","aku bisa","ibu masak",
+   "ayah kerja","adik tidur","kucing lari","ikan besar","bunga merah","aku baca buku","kuda itu tinggi",
+   "burung bisa terbang","ikan hidup di laut"]},
+ 14:{name:"Short sentences", mode:"word",   items:["I can read","I like fish","the cat sat","a big dog",
+   "my mum is kind","the sun is hot","birds can fly","fish live in water","I love my family",
+   "we go to school","the tree is tall","this is my book"]},
+ 15:{name:"Numbers in words",mode:"word",   items:["one","two","three","four","five","six","seven","eight",
+   "nine","ten","satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan","sepuluh"]},
+ 16:{name:"Draw more",       mode:"draw",   items:["🐘","🦁","🐢","🦋","🐝","🌻","🍉","🥕","🚗","⛵","🏔️",
+   "🌈","⚽","🎂","🦕","🐧","🦀","🌺","🍍","🐬"]}
 };
 const KEYS=Object.keys(LEVELS).map(Number);
 
@@ -567,7 +684,7 @@ const guide=$("guide"),ink=$("ink");
 const gx=guide.getContext("2d"),ix=ink.getContext("2d");
 let W=0,H=0,DPR=1;
 let colour="#1F6FEB";
-let cellSize=22;
+let cellSize=18;
 
 function resize(){
  const r=$("sheet").getBoundingClientRect();
@@ -613,13 +730,6 @@ function drawGuide(){
  gx.setLineDash([size*0.09,size*0.075]);
  gx.strokeText(t,W/2,midY);
  gx.restore();
- /* green start dot at the left of the glyph */
- const m=gx.measureText(t);
- const startX=W/2-m.width/2, startY=midY-size*0.30;
- gx.fillStyle="#159B62";
- gx.beginPath();gx.arc(startX,startY,Math.max(6,size*0.055),0,7);gx.fill();
- gx.fillStyle="#fff";gx.font="600 "+Math.max(9,size*0.06)+"px Nunito";
- gx.fillText("1",startX,startY+Math.max(3,size*0.022));
  buildHitMap(t,midY,font);
 }
 
@@ -648,12 +758,18 @@ function buildHitMap(t,midY,font){
    for(let y=0;y<off.height;y+=3){
     for(let x=0;x<off.width;x+=3){
      if(data[(y*off.width+x)*4+3]>40){
-      const idx=Math.floor(y/cellSize)*cols+Math.floor(x/cellSize);
+      const cxi=Math.floor(x/cellSize);
+      /* a cell belongs to ONE letter only: the one its centre sits in.
+         Without this, the cell straddling "p" and "i" would count twice. */
+      const centre=cxi*cellSize+cellSize/2;
+      if(centre<cursor||centre>=cursor+wch)continue;
+      const idx=Math.floor(y/cellSize)*cols+cxi;
       if(!cells[idx]){cells[idx]=1;need++}
      }
     }
    }
-   if(need>0)parts.push({ch:ch,cells:cells,need:need,hit:new Uint8Array(cols*rows),got:0,cols:cols});
+   if(need>0)parts.push({ch:ch,cells:cells,need:need,hit:new Uint8Array(cols*rows),got:0,cols:cols,
+                          x0:cursor,x1:cursor+wch});
   }
   cursor+=wch;
  }
@@ -662,18 +778,29 @@ function buildHitMap(t,midY,font){
 }
 let parts=[],inkCells=new Set(),inkOn=0,inkTotal=0,gridCols=1;
 
+const BRUSH=1;   /* the pen marks a band around itself, not the whole letter */
 function markCovered(x,y){
  if(!parts.length)return;
- const idx=Math.floor(y/cellSize)*gridCols+Math.floor(x/cellSize);
- if(idx<0)return;
+ const cx=Math.floor(x/cellSize), cy=Math.floor(y/cellSize);
  let onGlyph=false;
- for(const p of parts){
-  if(idx<p.cells.length&&p.cells[idx]){
-   onGlyph=true;
-   if(!p.hit[idx]){p.hit[idx]=1;p.got++}
+ for(let dy=-BRUSH;dy<=BRUSH;dy++){
+  for(let dx=-BRUSH;dx<=BRUSH;dx++){
+   const gxi=cx+dx, gyi=cy+dy;
+   if(gxi<0||gyi<0||gxi>=gridCols)continue;
+   const idx=gyi*gridCols+gxi;
+   for(const p of parts){
+    /* only the letter the pen is actually inside may be credited,
+       otherwise tracing "a" would half-finish the "p" beside it */
+    if(x<p.x0-3||x>p.x1+3)continue;
+    if(idx<p.cells.length&&p.cells[idx]){
+     onGlyph=true;
+     if(!p.hit[idx]){p.hit[idx]=1;p.got++}
+    }
+   }
   }
  }
- if(!inkCells.has(idx)){inkCells.add(idx);inkTotal++;if(onGlyph)inkOn++}
+ const c=cy*gridCols+cx;
+ if(!inkCells.has(c)){inkCells.add(c);inkTotal++;if(onGlyph)inkOn++}
 }
 /* how much of each letter is done; the weakest letter drives the bar */
 function partScores(){return parts.map(p=>p.need?p.got/p.need:1)}
@@ -681,11 +808,11 @@ function coverage(){const s=partScores();return s.length?Math.min(...s):0}
 function coverageAvg(){const s=partScores();return s.length?s.reduce((a,b)=>a+b,0)/s.length:0}
 function precision(){return inkTotal?inkOn/inkTotal:0}
 /* neat writing = covered the letters AND stayed on them */
-function accuracy(){return Math.max(0,Math.min(1,coverageAvg()*0.7+precision()*0.3))}
+function accuracy(){return Math.max(0,Math.min(1,coverageAvg()*0.55+precision()*0.45))}
 function starsFor(acc){
- if(acc>=0.95)return 4;
- if(acc>=0.85)return 3;
- if(acc>=0.72)return 2;
+ if(acc>=0.92)return 4;
+ if(acc>=0.80)return 3;
+ if(acc>=0.66)return 2;
  return 1;
 }
 
@@ -756,7 +883,7 @@ function updateProgress(){
    '<i style="width:'+Math.round(Math.min(1,each[i])*100)+'%"></i></span>').join("");
 }
 
-const LETTER_PASS=0.60;
+const LETTER_PASS=0.38;   /* follow most of the line, not just a corner of it */
 
 function checkDone(){
  if(S.done)return;
@@ -772,32 +899,29 @@ function checkDone(){
  buddy("happy");sfxWin();
  $("prompt").textContent=st>=4?"Beautiful writing, Baim!":st>=3?"Very neat, Baim!":
    st>=2?"Good. Try to stay on the line.":"You finished it. Try to follow the dots more closely.";
- $("next").hidden=false;
  const k=String(S.level);
  doneCount[k]=(doneCount[k]||0)+1;store.set("menulis.done",doneCount);
- if(window.SUPER&&SUPER.score){
-   const r=SUPER.score.award("menulis",{level:S.level,wrongs:st>=3?0:(st===2?1:2)});
-   if(SUPER.bar&&SUPER.bar.fly)SUPER.bar.fly(r.xp,r.streak);
- }
+ payOut();
  sayTarget(true);
 }
 
 function sayTarget(after){
  const t=current(),cfg=LEVELS[S.level];
- if(cfg.mode==="shape"){speak(after?"Nice line!":"Follow the line from the green dot.");return}
+ if(cfg.mode==="shape"){speak(after?"Nice line!":"Trace over the line.");return}
+ if(cfg.mode==="draw"){speak(after?"Lovely drawing!":"Draw over the picture.");return}
  if(cfg.mode==="letter"){speak((after?"That is ":"Write the letter ")+t.split("").join(" "));return}
- speak((after?"You wrote ":"Write the word ")+t, S.level===7||S.level===8?"id":"en");
+ speak((after?"You wrote ":"Write the word ")+t,(S.level===8||S.level===9||S.level===11)?"id":"en");
 }
 
 /* ---------- flow ---------- */
 function loadItem(){
- S.done=false;S.strokes=0;strokesInk=[];
+ S.done=false;S.paid=false;S.strokes=0;strokesInk=[];
  $("doneflag").classList.remove("on");
- $("next").hidden=true;
  buddyWho=CAST[Math.floor(Math.random()*CAST.length)];buddy("thinking");
  const cfg=LEVELS[S.level],t=current();
- $("target").innerHTML=cfg.mode==="shape"?"Trace the shape":("Write:  <b>"+t+"</b>");
- $("prompt").textContent="Start at the green dot.";
+ $("target").innerHTML=cfg.mode==="shape"?"Trace the shape":
+   cfg.mode==="draw"?"Draw it:  <b>"+t+"</b>":("Write:  <b>"+t+"</b>");
+ $("prompt").textContent="Trace over the letters.";
  resize();
  updateProgress();
  sayTarget(false);
@@ -806,7 +930,23 @@ function startLevel(lv){
  S.level=lv;S.queue=shuffle(LEVELS[lv].items.slice());S.idx=0;
  renderLevels();loadItem();
 }
+/* he may always move on. He is paid for what he actually traced. */
+function payOut(){
+ if(S.paid)return;
+ S.paid=true;
+ const each=partScores();
+ if(!each.length)return;
+ const acc=accuracy();
+ const covered=each.reduce((a,b)=>a+Math.min(1,b),0)/each.length;
+ if(covered<0.08)return;                 /* nothing drawn, nothing earned */
+ if(window.SUPER&&SUPER.score){
+  const r=SUPER.score.award("menulis",{level:S.level,partial:covered,
+    wrongs:acc>=0.78?0:(acc>=0.55?1:2)});
+  if(SUPER.bar&&SUPER.bar.fly)SUPER.bar.fly(r.xp,r.streak);
+ }
+}
 function nextItem(){
+ payOut();
  S.idx++;
  if(S.idx>=S.queue.length){S.queue=shuffle(S.queue);S.idx=0}
  loadItem();
@@ -824,7 +964,7 @@ function renderLevels(){
 $("clear").addEventListener("click",()=>{strokesInk=[];ix.clearRect(0,0,W,H);
  parts.forEach(p=>{p.hit=new Uint8Array(p.cells.length);p.got=0});
  inkCells=new Set();inkOn=0;inkTotal=0;S.done=false;
- $("doneflag").classList.remove("on");$("next").hidden=true;updateProgress();});
+ $("doneflag").classList.remove("on");updateProgress();});
 $("next").addEventListener("click",nextItem);
 $("say").addEventListener("click",()=>sayTarget(false));
 $("buddy").addEventListener("click",()=>{buddy("happy");speak("You can do it, Baim!")});
