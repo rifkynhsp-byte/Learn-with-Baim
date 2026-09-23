@@ -21,6 +21,7 @@ the names are changeable in Settings.
 | `membaca.html` | Reading Bahasa Indonesia by syllable | 634 words, 6 levels |
 | `english.html` | English words, listening, conversation, reasoning | 583 items, 6 levels |
 | `ensiklopedia.html` | Animals, Latin names, science, ethics, stories, Indonesia | 2,066 items, 10 levels |
+| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 4 stories, 31 scenes |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
 | `menulis.html` | Handwriting and drawing with the Apple Pencil | 219 items, 16 levels |
 | `koleksi.html` | The zoo, the pets, and the parent view | 50 animals, 4 pets |
@@ -95,6 +96,33 @@ tarsius, trenggiling.
 
 **Story time** has eight public domain tales heard scene by scene, each ending
 with a comprehension question and a question about the lesson.
+
+## Dongeng Hewan — interactive animal stories
+
+Picture-book stories set in Indonesia. Every page is an illustrated scene: a
+layered background (forest, river, meadow, beach or a prehistoric volcano),
+animals that walk, hop and swim between pages, and something to do.
+
+| Story | Level | Setting |
+|---|---|---|
+| **Kancil dan Buaya** / The Mouse-deer and the Crocodiles | 1 | A river in Kalimantan |
+| **Ruru Mencari Ibu** / Ruru Looks for Mama (a Bawean deer) | 1 | Bawean Island, East Java |
+| **Dido si Dinosaurus Kecil** / Dido the Little Dinosaur | 2 | Long, long ago |
+| **Koko si Komodo Baik Hati** / Koko the Kind Komodo | 2 | Komodo Island |
+
+- **Three language modes**: 🇮🇩 only, 🇬🇧 only, or both. In "both" every line is
+  shown and read in Indonesian first, then English. Tap a line to hear it again.
+- **Things to do on the page**: tap to count mangoes, butterflies, leaves and
+  shells; hop Kancil across the crocodiles in order; tap an egg until it hatches;
+  free a cockatoo from a thorny bush; answer questions about feelings, choices
+  and what happened in the story.
+- Tap any animal to hear its name. Tap the sky or the ground for sparkles.
+- Next unlocks once the page's activity is done. Wrong answers explain why,
+  and the choices reshuffle after every tap.
+- Every story ends with its lesson, a true fact about the animal, and up to
+  three stars, kept on the story shelf.
+
+To add a story, copy one entry in `const STORIES` and change the scenes.
 
 ## Berhitung — counting through food webs
 
