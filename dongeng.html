@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Dongeng Hewan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--sand:#F7E9CC;--bone:#FFFBF2;--amber:#FFB247;--coral:#FF6B5B;--kelp:#5FE0A4;
+ --sky1:#2F6B3F;--sky2:#1B4429;--sky3:#0C2416;--glow:#9BE8A8;
+ --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overscroll-behavior:none}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;flex-direction:column;
+ min-height:100dvh;user-select:none;-webkit-user-select:none;touch-action:manipulation;overflow:hidden;
+ background:radial-gradient(130% 80% at 50% -14%,var(--glow) 0%,transparent 56%),
+ linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 46%,var(--sky3) 100%);background-attachment:fixed}
+button{font-family:inherit}
+.app{position:relative;flex:1;display:flex;flex-direction:column;max-width:1400px;width:100%;
+ margin:0 auto;padding:8px 14px 8px;overflow:hidden;min-height:0}
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;color:var(--sand);margin-right:auto}
+.brand span{color:var(--amber)}
+.seg{display:flex;gap:3px;background:rgba(4,20,10,.5);padding:4px;border-radius:999px;border:1px solid rgba(247,233,204,.16)}
+.seg button{font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px;color:rgba(255,251,242,.6);
+ background:none;border:0;padding:6px 11px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--amber);color:#40230A}
+.icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:18px;flex:none;
+ background:rgba(247,233,204,.1);border:1px solid rgba(247,233,204,.2);color:var(--bone);cursor:pointer}
+
+/* ---------- library ---------- */
+#lib{flex:1;overflow-y:auto;padding:10px 2px 20px}
+#lib h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 2px;color:var(--sand)}
+#lib .sub{margin:0 0 14px;color:rgba(255,251,242,.75);font-size:14.5px}
+.shelf{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.book{position:relative;border:0;text-align:left;cursor:pointer;border-radius:24px;overflow:hidden;color:var(--bone);
+ padding:0;display:flex;flex-direction:column;align-items:stretch;background:#0B1F14;box-shadow:0 14px 30px rgba(0,0,0,.35);transition:transform .2s}
+.book:hover{transform:translateY(-4px) rotate(-.4deg)}
+.book:active{transform:scale(.97)}
+.book .art{height:150px;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding-bottom:12px;
+ font-family:var(--emoji);font-size:54px;position:relative}
+.book .art i{font-style:normal;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+.book .art i:nth-child(2){animation-delay:.4s}.book .art i:nth-child(3){animation-delay:.8s}
+.book .art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:rgba(0,0,0,.14)}
+.book .txt{flex:1;padding:12px 16px 16px;background:rgba(3,14,8,.55)}
+.book h3{font-family:'Fredoka',sans-serif;margin:0;font-size:21px}
+.book .en{font-size:13px;color:rgba(255,251,242,.7);margin-top:1px}
+.book .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12.5px}
+.book .lvl{background:rgba(247,233,204,.16);padding:3px 9px;border-radius:99px}
+.book .st{font-size:16px;letter-spacing:1px}
+
+/* ---------- play ---------- */
+#play{flex:1;display:none;flex-direction:column;align-items:center;gap:8px;min-height:0;padding-top:6px}
+#play.on{display:flex}#lib.off{display:none}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:rgba(247,233,204,.22);transition:.3s}
+.dots i.done{background:var(--kelp)}.dots i.now{background:var(--amber);transform:scale(1.35)}
+.scene{position:relative;width:min(100%,calc((100dvh - 290px) * 16 / 9));aspect-ratio:16/9;flex:none;
+ border-radius:22px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);container-type:inline-size;isolation:isolate;
+ background:#6EC6FF;border:3px solid rgba(255,251,242,.18)}
+.scene.shake{animation:quake .12s linear 8}
+.bg{position:absolute;inset:0;transition:opacity 1s}
+.bg svg{width:100%;height:100%;display:block}
+.layer{position:absolute;inset:0}
+.actor{position:absolute;transform:translateX(-50%);line-height:1;cursor:pointer;
+ transition-property:left,bottom,font-size,opacity;transition-duration:1.4s,1.4s,.6s,.6s;transition-timing-function:ease-in-out}
+.actor .fl{display:inline-block;transition:transform .5s}
+.actor.flip .fl{transform:scaleX(-1)}
+.actor .an{display:inline-block;font-family:var(--emoji);transform-origin:50% 100%;
+ filter:drop-shadow(0 .06em .05em rgba(0,0,0,.35))}
+.actor::after{content:"";position:absolute;left:15%;right:15%;bottom:-.04em;height:.12em;border-radius:50%;
+ background:rgba(0,0,0,.22);filter:blur(2px);z-index:-1}
+.actor.noshadow::after,.actor.a-fly::after{display:none}
+.a-bob .an{animation:bob 2.4s ease-in-out infinite}
+.a-hop .an{animation:hop 1.6s ease-in-out infinite}
+.a-walk .an{animation:walk .5s ease-in-out infinite}
+.a-sway .an{animation:sway 3s ease-in-out infinite}
+.a-fly .an{animation:fly 3s ease-in-out infinite}
+.a-swim .an{animation:swim 2.6s ease-in-out infinite}
+.a-shake .an{animation:shiver .35s linear infinite}
+.a-stomp .an{animation:stomp .9s ease-in-out infinite}
+.actor.poke .an{animation:poke .5s ease-out}
+.actor.jump .an{animation:jump .6s ease-in-out}
+.actor.glow .an{animation:glowpulse 1s ease-in-out infinite}
+.actor.nope .an{animation:nope .4s linear}
+.actor.hidden{opacity:0}
+.item{position:absolute;transform:translate(-50%,0);font-family:var(--emoji);line-height:1;cursor:pointer;
+ transition:left .7s ease-in,bottom .7s ease-in,transform .7s ease-in,opacity .7s;
+ filter:drop-shadow(0 0 .18em rgba(255,240,150,.95))}
+.item .in{display:inline-block;animation:glowbob 1.4s ease-in-out infinite}
+.item.flutter .in{animation:flutter 4s ease-in-out infinite}
+.item.got{transform:translate(-50%,0) scale(.3);opacity:0;pointer-events:none}
+.count{position:absolute;font-family:'Fredoka',sans-serif;font-weight:700;color:#fff;pointer-events:none;
+ text-shadow:0 3px 8px rgba(0,0,0,.6);font-size:6cqw;transform:translate(-50%,0);animation:rise 1.1s ease-out forwards}
+.spark{position:absolute;pointer-events:none;font-family:var(--emoji);transform:translate(-50%,50%);animation:spark .9s ease-out forwards}
+.pill{position:absolute;left:50%;top:3%;transform:translateX(-50%);z-index:5;max-width:92%;
+ background:rgba(255,251,242,.94);color:#2D2410;border-radius:999px;padding:.55em 1.1em;text-align:center;
+ font-family:'Fredoka',sans-serif;font-weight:600;font-size:max(14px,2.1cqw);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.pill small{display:block;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78em;color:#6A5A3A}
+.pill.done{background:var(--kelp);color:#063A22}
+.pill.nudge{animation:nudge .5s}
+.choice{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:1.4cqw 2cqw 2cqw;
+ background:linear-gradient(180deg,rgba(6,18,12,0),rgba(6,18,12,.82) 22%);}
+.choice .q{text-align:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:max(15px,2.3cqw);margin:1.6cqw 0 1.2cqw;
+ text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.choice .q small{display:block;font-family:'Nunito',sans-serif;font-size:.75em;color:rgba(255,251,242,.8)}
+.opts{display:flex;gap:1.4cqw;justify-content:center}
+.opt{flex:1 1 0;max-width:30%;border:0;cursor:pointer;border-radius:18px;padding:1cqw .8cqw 1.1cqw;
+ background:var(--bone);color:#2D2410;box-shadow:0 6px 0 #D7C6A2,0 10px 20px rgba(0,0,0,.3);transition:transform .15s}
+.opt:active{transform:translateY(3px)}
+.opt .e{font-family:var(--emoji);font-size:max(26px,4.6cqw);line-height:1.1;display:block}
+.opt b{display:block;font-family:'Fredoka',sans-serif;font-weight:600;font-size:max(13px,1.7cqw);line-height:1.2}
+.opt span{display:block;font-size:max(11px,1.35cqw);color:#6A5A3A;font-weight:800;line-height:1.2}
+.opt.wrong{background:#FFD9D2;animation:nope .4s;box-shadow:0 6px 0 #E6A89C}
+.opt.right{background:var(--kelp);box-shadow:0 6px 0 #2E9C68}
+.why{text-align:center;margin-top:1cqw;font-size:max(13px,1.6cqw);color:#FFE3A6;min-height:1.2em;font-weight:800}
+
+.card{width:min(100%,calc((100dvh - 290px) * 16 / 9));min-width:min(100%,560px);display:flex;gap:10px;align-items:center;
+ background:rgba(255,251,242,.95);color:#2D2410;border-radius:20px;padding:10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.card .lines{flex:1;min-width:0}
+.line{display:flex;gap:8px;align-items:flex-start;cursor:pointer;border-radius:10px;padding:3px 4px}
+.line:hover{background:rgba(0,0,0,.05)}
+.line .fg{font-family:var(--emoji);font-size:18px;line-height:1.35}
+.line p{margin:0;font-size:clamp(15px,2vw,20px);line-height:1.4;font-weight:800}
+.line.en p{font-weight:600;color:#5A4B30;font-size:clamp(14px,1.8vw,18px)}
+.line.speaking{background:rgba(255,178,71,.25)}
+.nav{display:flex;flex-direction:column;gap:6px}
+.nb{width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;font-size:24px;display:grid;place-items:center;
+ background:#EFE3C8;color:#2D2410}
+.nb.go{background:var(--amber);box-shadow:0 0 0 0 rgba(255,178,71,.7);animation:ping 1.6s infinite}
+.nb.locked{opacity:.45}
+@media (max-aspect-ratio:1/1){.scene,.card{width:100%}#play.on{justify-content:center}}
+
+/* ---------- ending ---------- */
+.end{position:fixed;inset:0;z-index:200;display:none;place-items:center;background:rgba(3,14,8,.82);padding:18px;overflow-y:auto}
+.end.on{display:grid}
+.end .box{background:#FFFBF2;color:#2D2410;border-radius:28px;padding:22px;max-width:620px;width:100%;text-align:center;
+ box-shadow:0 20px 50px rgba(0,0,0,.5);animation:popin .5s cubic-bezier(.2,1.6,.4,1)}
+.end .big{font-family:var(--emoji);font-size:72px;line-height:1}
+.end h2{font-family:'Fredoka',sans-serif;margin:6px 0 0;font-size:28px}
+.end .stars{font-size:40px;letter-spacing:6px;margin:6px 0}
+.end .stars i{font-style:normal;display:inline-block;animation:popin .5s both}
+.end .stars i:nth-child(2){animation-delay:.25s}.end .stars i:nth-child(3){animation-delay:.5s}
+.end .lesson{background:#FFF1D6;border-radius:16px;padding:12px 14px;margin:12px 0 8px;text-align:left}
+.end .fact{background:#DDF6E9;border-radius:16px;padding:12px 14px;text-align:left}
+.end .lesson b,.end .fact b{font-family:'Fredoka',sans-serif;display:block;margin-bottom:4px}
+.end p{margin:3px 0;font-size:15.5px;line-height:1.45;font-weight:700}
+.end p.en{font-weight:600;color:#5A4B30;font-size:14.5px}
+.end .row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.btn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;border-radius:999px;padding:12px 20px;cursor:pointer;
+ background:#EFE3C8;color:#2D2410;border:0}
+.btn.go{background:var(--amber);color:#40230A}
+.confetti{position:fixed;top:-20px;z-index:90;pointer-events:none;width:10px;height:14px;border-radius:2px;animation:fall 2.4s linear forwards}
+
+/* ---------- svg scenery ---------- */
+.drift{animation:drift 60s linear infinite}
+.drift.slow{animation-duration:95s}
+.tw{animation:twinkle 2.4s ease-in-out infinite}
+.ff{animation:firefly 5s ease-in-out infinite}
+.smoke{animation:smoke 5s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.wave{animation:wave 3s ease-in-out infinite}
+.swayp{animation:sway 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+
+@keyframes bob{50%{transform:translateY(-6%)}}
+@keyframes hop{0%,55%,100%{transform:translateY(0)}70%{transform:translateY(-22%)}85%{transform:translateY(0) scaleY(.92)}}
+@keyframes walk{50%{transform:translateY(-8%) rotate(-3deg)}}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes fly{0%,100%{transform:translate(0,0)}25%{transform:translate(8%,-14%)}50%{transform:translate(0,-4%)}75%{transform:translate(-8%,-14%)}}
+@keyframes swim{50%{transform:translateY(8%) rotate(2deg)}}
+@keyframes shiver{25%{transform:translateX(-3%)}75%{transform:translateX(3%)}}
+@keyframes stomp{0%,100%{transform:translateY(0)}40%{transform:translateY(-6%) rotate(-2deg)}55%{transform:translateY(0) scaleY(.95)}}
+@keyframes poke{30%{transform:scale(1.25,.8)}60%{transform:scale(.9,1.15) translateY(-12%)}}
+@keyframes jump{50%{transform:translateY(-70%) rotate(-8deg)}}
+@keyframes glowpulse{50%{filter:drop-shadow(0 0 .25em #FFE66B) drop-shadow(0 0 .12em #fff);transform:scale(1.08)}}
+@keyframes nope{20%{transform:translateX(-8%)}40%{transform:translateX(8%)}60%{transform:translateX(-5%)}80%{transform:translateX(5%)}}
+@keyframes glowbob{50%{transform:translateY(-12%) scale(1.08)}}
+@keyframes flutter{0%,100%{transform:translate(0,0) rotate(0)}20%{transform:translate(60%,-50%) rotate(12deg)}45%{transform:translate(-30%,-90%) rotate(-10deg)}70%{transform:translate(-70%,-20%) rotate(8deg)}}
+@keyframes rise{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-120%);opacity:0}}
+@keyframes spark{from{opacity:1;transform:translate(-50%,50%) scale(.4)}to{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(50% + var(--dy))) scale(1.3)}}
+@keyframes quake{25%{transform:translate(-6px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-4px)}}
+@keyframes ping{70%{box-shadow:0 0 0 14px rgba(255,178,71,0)}100%{box-shadow:0 0 0 0 rgba(255,178,71,0)}}
+@keyframes nudge{25%{transform:translateX(-50%) scale(1.12)}50%{transform:translateX(-50%) rotate(-3deg)}75%{transform:translateX(-50%) rotate(3deg)}}
+@keyframes popin{from{transform:scale(.3);opacity:0}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes drift{from{transform:translateX(-400px)}to{transform:translateX(1900px)}}
+@keyframes twinkle{50%{opacity:.2}}
+@keyframes firefly{0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate(30px,-25px);opacity:1}}
+@keyframes smoke{from{transform:translateY(0) scale(.5);opacity:.8}to{transform:translateY(-160px) scale(1.8);opacity:0}}
+@keyframes wave{50%{transform:translateX(26px)}}
+@keyframes heart{from{transform:translate(-50%,0) scale(.5);opacity:1}to{transform:translate(-50%,-260%) scale(1.3);opacity:0}}
+.heart{position:absolute;font-family:var(--emoji);pointer-events:none;animation:heart 2.2s ease-out forwards}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<script>
+/* ============================================================
+   common.js  —  shared by every game in the super app
+   Names, settings, navigation, credits.
+   ============================================================ */
+(function (global) {
+
+  var DEFAULTS = {
+    child: "Baim",        // the learner
+    dad: "Papi Rifky",
+    mum: "Mommy Keke",
+    sib: "Ade Yahya",
+    dadShort: "Papi",
+    mumShort: "Mommy",
+    childShort: "Baim",
+    sibShort: "Ade"
+  };
+
+  function load() {
+    try {
+      var raw = JSON.parse(localStorage.getItem("super.names") || "{}");
+      var out = {};
+      for (var k in DEFAULTS) out[k] = (raw[k] && String(raw[k]).trim()) || DEFAULTS[k];
+      return out;
+    } catch (e) { return Object.assign({}, DEFAULTS); }
+  }
+  function save(n) {
+    try { localStorage.setItem("super.names", JSON.stringify(n)); } catch (e) {}
+    N = load();
+  }
+  var N = load();
+
+  /* Replace the built-in family names anywhere they appear in text or speech.
+     Longest first so "Papi Rifky" wins over "Papi". */
+  var MAP = [
+    ["Papi Rifky", "dad"], ["Mommy Keke", "mum"], ["Ade Yahya", "sib"],
+    ["Rifky", "dadShort"], ["Keke", "mumShort"], ["Yahya", "sibShort"],
+    ["Mommy", "mumShort"], ["Papi", "dadShort"], ["Baim", "child"]
+  ];
+  function P(s) {
+    if (s == null) return s;
+    s = String(s);
+    for (var i = 0; i < MAP.length; i++) {
+      var from = MAP[i][0], to = N[MAP[i][1]];
+      if (to && to !== from) s = s.split(from).join(to);
+    }
+    return s;
+  }
+
+  /* short forms derived from a full name: "Papi Rifky" -> "Papi" */
+  function shorten(full, fallback) {
+    if (!full) return fallback;
+    var bits = String(full).trim().split(/\s+/);
+    return bits[0] || fallback;
+  }
+
+  var GAMES = [
+    { id: "membaca", file: "membaca.html", icon: "\uD83D\uDCD6", en: "Reading", idn: "Membaca",
+      note: "Bahasa Indonesia, metode suku kata", tone: "#0C556C" },
+    { id: "english", file: "english.html", icon: "\uD83D\uDDE3\uFE0F", en: "English", idn: "Bahasa Inggris",
+      note: "Cambridge Starters & Movers", tone: "#2E7A55" },
+    { id: "ensiklopedia", file: "ensiklopedia.html", icon: "\uD83E\uDD81", en: "Encyclopedia", idn: "Ensiklopedia",
+      note: "Animals, Latin names, science, stories", tone: "#7A4A22" },
+    { id: "dongeng", file: "dongeng.html", icon: "\uD83E\uDD95", en: "Animal Stories", idn: "Dongeng Hewan",
+      note: "Interactive tales of Kancil, deer, dinosaurs and Komodo", tone: "#2F6B3F" },
+    { id: "berhitung", file: "berhitung.html", icon: "\uD83D\uDD22", en: "Counting", idn: "Berhitung",
+      note: "Food webs, adding and taking away", tone: "#5A3E8A" },
+    { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
+      note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C" }
+  ];
+
+  var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
+                "for beloved Abang Baim and Ade Yahya.";
+
+  var CURRICULUM = [
+    ["Cambridge Pre A1 Starters / A1 Movers", "English vocabulary and listening papers"],
+    ["Cambridge Primary English & Science", "progression of comprehension and enquiry"],
+    ["NSW Early Stage 1 and Stage 1 (Australia)", "phonics, number sense, handwriting"],
+    ["Kurikulum Merdeka PAUD & SD (Indonesia)", "calistung, IPAS, Profil Pelajar Pancasila"],
+    ["Metode Suku Kata & SAS", "Indonesian syllable reading method"]
+  ];
+
+  /* a back button injected into any game page */
+  function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
+    var a = document.createElement("a");
+    a.href = "index.html";
+    a.className = "super-back";
+    a.setAttribute("aria-label", "Back to the menu");
+    a.innerHTML = "\u2190";
+    document.body.appendChild(a);
+    var css = document.createElement("style");
+    css.textContent =
+      ".super-back{position:fixed;left:10px;bottom:10px;z-index:95;width:44px;height:44px;" +
+      "border-radius:50%;display:grid;place-items:center;font-size:22px;text-decoration:none;" +
+      "background:rgba(4,34,46,.72);color:#FFFBF2;border:1px solid rgba(247,233,204,.28);" +
+      "box-shadow:0 6px 18px rgba(2,18,26,.45)}" +
+      ".super-back:hover{background:rgba(4,34,46,.92)}" +
+      "@media (min-aspect-ratio:1/1){.super-back{left:8px;bottom:8px;width:40px;height:40px}}";
+    document.head.appendChild(css);
+    if (title) document.title = P(title);
+  }
+
+  global.SUPER = {
+    names: function () { return N; },
+    defaults: DEFAULTS,
+    save: save,
+    reset: function () { try { localStorage.removeItem("super.names"); } catch (e) {} N = load(); },
+    P: P,
+    shorten: shorten,
+    GAMES: GAMES,
+    CREDITS: CREDITS,
+    CURRICULUM: CURRICULUM,
+    mountBack: mountBack
+  };
+})(window);
+
+/* ============================================================
+   PROGRESS: xp, grade bands, the zoo and the pets
+   ============================================================ */
+(function (global) {
+  var S = global.SUPER;
+
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
+  var GRADES = [
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
+  ];
+
+  /* 50 animals to collect. The cost rises steeply so the rare ones
+     really are rare. Kangaroo and koala are the last two. */
+  var ZOO = [
+    ["ant","\uD83D\uDC1C","Ant","Semut",40],
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
+  ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
+
+  /* pets grow up as the xp goes in */
+  var PETS = [
+    { id: "cat", en: "Cat", idn: "Kucing", stages: [
+      { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
+    { id: "chick", en: "Chicken", idn: "Ayam", stages: [
+      { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
+    { id: "frog", en: "Frog", idn: "Katak", stages: [
+      { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
+    { id: "tree", en: "Tree", idn: "Pohon", stages: [
+      { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
+  ];
+
+  function pget() {
+    try { return JSON.parse(localStorage.getItem("super.progress") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function pset(o) { try { localStorage.setItem("super.progress", JSON.stringify(o)); } catch (e) {} }
+
+  function addXp(game, n) {
+    var p = pget();
+    p.xp = (p.xp || 0) + n;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + n;
+    p.answers = (p.answers || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + n;
+    pset(p);
+    return p.xp;
+  }
+  function gradeFor(xp) {
+    var g = GRADES[0];
+    for (var i = 0; i < GRADES.length; i++) if (xp >= GRADES[i].xp) g = GRADES[i];
+    return g;
+  }
+  function nextGrade(xp) {
+    for (var i = 0; i < GRADES.length; i++) if (xp < GRADES[i].xp) return GRADES[i];
+    return null;
+  }
+  function unlockedZoo(xp) { return ZOO.filter(function (z) { return xp >= z.xp; }); }
+  function petStage(pet, xp) {
+    var s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (xp >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+  function stats() {
+    var p = pget(), xp = p.xp || 0;
+    return { xp: xp, answers: p.answers || 0, games: p.games || {}, days: p.days || {},
+             grade: gradeFor(xp), next: nextGrade(xp),
+             zoo: unlockedZoo(xp).length, zooTotal: ZOO.length };
+  }
+
+
+  /* ============================================================
+     SCORING
+     Research note: streaks help young learners, but rewards that
+     pay for volume alone push guessing. So points are paid for
+     QUALITY: first time right is worth full marks, a second try
+     less than half, and a third barely anything. The streak only
+     counts clean first-time answers, so it cannot be farmed.
+     ============================================================ */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
+
+  function award(game, o) {
+    o = o || {};
+    var level = o.level || 1, wrongs = o.wrongs || 0;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
+    var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
+    var p = pget();
+    var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
+    var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
+    var xp = Math.max(1, Math.round(base * quality * mult));
+    p.streak = streak;
+    p.best = Math.max(p.best || 0, streak);
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
+    p.xp = (p.xp || 0) + xp;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + xp;
+    p.answers = (p.answers || 0) + 1;
+    if (wrongs === 0) p.clean = (p.clean || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + xp;
+    pset(p);
+    return { xp: xp, streak: streak, mult: mult, food: p.food, total: p.xp };
+  }
+  function food() { return pget().food || 0; }
+  function streakNow() { return pget().streak || 0; }
+  function petFed(id) { var p = pget(); return (p.fed || {})[id] || 0; }
+  function feed(id) {
+    var p = pget();
+    if ((p.food || 0) < FOOD_COST) return null;
+    p.food -= FOOD_COST;
+    p.fed = p.fed || {};
+    p.fed[id] = (p.fed[id] || 0) + FOOD_VALUE;
+    pset(p);
+    return { food: p.food, fed: p.fed[id] };
+  }
+  function stageOf(pet) {
+    var f = petFed(pet.id), s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (f >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+
+  /* ============================================================
+     THE STRIP  —  a Touch Bar style row of live, contextual keys
+     ============================================================ */
+  function mountBar(actions) {
+    if (document.getElementById("superbar")) return;
+    var css = document.createElement("style");
+    css.textContent =
+     "#superbar{position:fixed;left:0;right:0;bottom:0;z-index:96;display:flex;align-items:center;gap:6px;" +
+     "padding:6px 10px;background:linear-gradient(180deg,rgba(6,20,28,.86),rgba(3,12,18,.96));" +
+     "border-top:1px solid rgba(247,233,204,.18);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}" +
+     "#superbar::-webkit-scrollbar{display:none}" +
+     "#superbar .k{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:12px;" +
+     "background:rgba(247,233,204,.10);border:1px solid rgba(247,233,204,.18);color:#FFFBF2;cursor:pointer;" +
+     "font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:14px;white-space:nowrap;transition:.15s}" +
+     "#superbar .k:hover{background:rgba(247,233,204,.2)}#superbar .k:active{transform:scale(.95)}" +
+     "#superbar .k.stat{cursor:default;background:rgba(6,20,28,.5)}" +
+     "#superbar .k .em{font-size:17px}" +
+     "#superbar .k.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}" +
+     "#superbar .grow{flex:1 1 auto;min-width:4px}" +
+     "#superbar .gain{position:fixed;pointer-events:none;font-family:Fredoka,sans-serif;font-weight:700;" +
+     "font-size:18px;color:#5FE0A4;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+     "@keyframes floatup{to{transform:translateY(-46px);opacity:0}}" +
+     "body{padding-bottom:56px}.super-back{bottom:60px!important}" +
+     "@media (min-aspect-ratio:1/1){#superbar{padding:4px 8px}#superbar .k{height:36px;font-size:13px;padding:0 11px}" +
+     "body{padding-bottom:48px}.super-back{bottom:52px!important}}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div");
+    bar.id = "superbar";
+    document.body.appendChild(bar);
+    barActions = actions || [];
+    renderBar();
+    return bar;
+  }
+  var barActions = [];
+  function renderBar() {
+    var bar = document.getElementById("superbar"); if (!bar) return;
+    var st = stats(), fd = food(), sk = streakNow();
+    var pet = PETS[0], stage = stageOf(pet);
+    var html = "";
+    barActions.forEach(function (a, i) {
+      html += '<button class="k' + (a.hot ? " hot" : "") + '" data-i="' + i + '">' +
+              '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
+    });
+    html += '<span class="grow"></span>';
+    html += '<a class="k" href="index.html" title="Home"><span class="em">\uD83C\uDFE0</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
+    html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
+            (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
+    html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
+    html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
+            stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
+    bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
+    bar.querySelectorAll("button[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = barActions[Number(b.dataset.i)];
+        if (a && a.fn) a.fn();
+      });
+    });
+  }
+  function flyXp(n, streak) {
+    var bar = document.getElementById("superbar");
+    var g = document.createElement("div");
+    g.className = "gain";
+    g.textContent = "+" + n + (streak >= 3 ? "  \uD83D\uDD25" + streak : "");
+    g.style.right = "18px";
+    g.style.bottom = "60px";
+    g.style.animation = "floatup 1s ease-out forwards";
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 1000);
+    renderBar();
+  }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
+
+  S.score = { award: award, food: food, streak: streakNow, feed: feed,
+              stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
+  S.bar = { mount: mountBar, render: renderBar, fly: flyXp,
+            set: function (a) { barActions = a || []; renderBar(); } };
+
+  S.GRADES = GRADES; S.ZOO = ZOO; S.PETS = PETS;
+  S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
+           unlockedZoo: unlockedZoo, petStage: petStage,
+           reset: function () { pset({}); } };
+})(window);
+
+</script>
+<div class="app">
+ <div class="topbar">
+  <button class="icon" id="toLib" title="Semua cerita / All stories" hidden>📚</button>
+  <div class="brand">📖 Dongeng <span>Hewan</span> · Animal Stories</div>
+  <div class="dots" id="dots"></div>
+  <div class="seg" id="lang">
+   <button data-l="id">🇮🇩 ID</button><button data-l="both">🇮🇩+🇬🇧</button><button data-l="en">🇬🇧 EN</button>
+  </div>
+  <button class="icon" id="sound" aria-pressed="true" title="Suara / Sound">🔊</button>
+ </div>
+
+ <div id="lib">
+  <h1>Pilih cerita · Pick a story</h1>
+  <p class="sub">Dengarkan, ketuk, dan bantu hewan-hewan! · Listen, tap and help the animals!</p>
+  <div class="shelf" id="shelf"></div>
+ </div>
+
+ <div id="play">
+  <div class="scene" id="scene">
+   <div class="bg" id="bgA"></div><div class="bg" id="bgB" style="opacity:0"></div>
+   <div class="layer" id="actors"></div>
+   <div class="layer" id="items"></div>
+   <div class="layer" id="fx" style="pointer-events:none"></div>
+  </div>
+  <div class="card">
+   <div class="lines" id="lines"></div>
+   <div class="nav">
+    <button class="nb" id="prev" title="Kembali / Back">◀</button>
+    <button class="nb go" id="next" title="Lanjut / Next">▶</button>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="end" id="end"><div class="box" id="endBox"></div></div>
+
+<script>
+/* ============================================================
+   DONGENG HEWAN — interactive animal stories, Bahasa Indonesia and English.
+   Each story is a list of scenes. A scene has a background, actors
+   (emoji with a key, position in % of the scene, size in % of its width)
+   and an optional activity: tap, hop, tapmany or choice.
+   Actors that keep the same key between scenes walk to their new spot.
+   ============================================================ */
+const A=(k,e,x,y,s,o)=>Object.assign({k,e,x,y,s},o||{});
+const STORIES=[
+{id:"kancil",level:1,cover:["🦌","🐊","🥭"],tone:["#3E8E5A","#1D5C3A"],
+ title:["Kancil dan Buaya","The Mouse-deer and the Crocodiles"],
+ lesson:["Kancil memakai akalnya, bukan kekuatannya. Tapi ingat, kita juga harus selalu jujur, ya!",
+         "Kancil used his brain, not his muscles. But remember, we should always be honest too!"],
+ fact:["Kancil adalah hewan menyusui kecil dari hutan Indonesia. Tingginya hanya sekitar 20 sentimeter!",
+       "The mouse-deer is a tiny mammal from the forests of Indonesia. It is only about 20 centimetres tall!"],
+ scenes:[
+ {bg:"forest",time:"day",actors:[A("kancil","🦌",42,16,8,{flip:1,anim:"hop",n:["Kancil","Mouse-deer"]}),A("b1","🐦",72,68,4,{anim:"fly"}),A("mk","🐒",15,52,6,{anim:"sway"})],
+  t:["Di hutan Kalimantan, hiduplah seekor kancil kecil yang sangat cerdik.","In the forest of Borneo lived a little mouse-deer who was very clever."]},
+ {bg:"river",time:"day",actors:[A("kancil","🦌",9,26,7,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
+   A("m1","🥭",86,52,3.5,{anim:"bob",shadow:0,z:95}),A("m2","🥭",93,47,3.5,{anim:"bob",shadow:0,z:95})],
+  t:["Kancil lapar. Di seberang sungai ada pohon mangga yang buahnya manis sekali.","Kancil was hungry. Across the river was a mango tree full of sweet mangoes."],
+  act:{type:"choice",q:["Bagaimana Kancil bisa menyeberang?","How can Kancil get across?"],opts:[
+   {e:"🏊",t:["Berenang saja","Just swim"],why:["Sungainya dalam dan deras. Bahaya!","The river is deep and fast. Dangerous!"]},
+   {e:"💡",t:["Pakai akal yang cerdik","Think of a clever plan"],ok:1},
+   {e:"😴",t:["Tidur dulu","Go to sleep"],why:["Kalau tidur, Kancil tetap lapar.","If he sleeps, he will still be hungry."]}]}},
+ {bg:"river",time:"day",actors:[A("kancil","🦌",9,26,7,{flip:1,anim:"shake",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
+   A("c1","🐊",30,20,8,{anim:"swim"}),A("c2","🐊",52,31,7,{anim:"swim",flip:1}),A("c3","🐊",66,19,8,{anim:"swim"}),A("c4","🐊",42,27,7,{anim:"swim",flip:1}),A("c5","🐊",76,29,7,{anim:"swim"})],
+  t:["Tapi di sungai itu ada banyak buaya yang lapar! Mereka ingin memakan Kancil.","But the river was full of hungry crocodiles! They wanted to eat Kancil."]},
+ {bg:"river",time:"day",actors:[A("kancil","🦌",9,26,7,{flip:1,anim:"hop",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
+   A("c1","🐊",24,23,8,{anim:"swim"}),A("c2","🐊",36,23,8,{anim:"swim"}),A("c3","🐊",48,23,8,{anim:"swim"}),A("c4","🐊",60,23,8,{anim:"swim"}),A("c5","🐊",72,23,8,{anim:"swim"})],
+  t:["Kancil berkata, “Raja Hutan menyuruhku menghitung kalian. Ayo berbaris!” Buaya-buaya itu percaya dan berbaris rapi.",
+     "Kancil said, “The King of the Forest asked me to count you. Line up, please!” The crocodiles believed him and lined up neatly."]},
+ {bg:"river",time:"day",actors:[A("kancil","🦌",9,26,7,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
+   A("c1","🐊",24,23,8,{anim:"swim"}),A("c2","🐊",36,23,8,{anim:"swim"}),A("c3","🐊",48,23,8,{anim:"swim"}),A("c4","🐊",60,23,8,{anim:"swim"}),A("c5","🐊",72,23,8,{anim:"swim"})],
+  t:["Sekarang Kancil melompat dari punggung buaya satu ke buaya berikutnya.","Now Kancil hops from one crocodile's back to the next."],
+  act:{type:"hop",hopper:"kancil",stones:["c1","c2","c3","c4","c5"],lift:4,end:[87,26],
+   p:["Bantu Kancil melompat! Ketuk buaya satu per satu dan hitung.","Help Kancil hop! Tap the crocodiles one by one and count."]}},
+ {bg:"river",time:"day",fx:"confetti",actors:[A("kancil","🦌",87,26,7,{anim:"hop",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
+   A("c1","🐊",24,23,8,{anim:"shake"}),A("c2","🐊",36,23,8,{anim:"shake"}),A("c3","🐊",48,23,8,{anim:"shake"}),A("c4","🐊",60,23,8,{anim:"shake"}),A("c5","🐊",72,23,8,{anim:"shake"})],
+  t:["Hore! Kancil sampai di seberang. “Terima kasih, buaya!” katanya sambil tertawa.","Hooray! Kancil reached the other side. “Thank you, crocodiles!” he laughed."]},
+ {bg:"forest",time:"day",actors:[A("t1","🌳",28,14,26,{anim:"sway",shadow:0}),A("t2","🌳",70,14,24,{anim:"sway",shadow:0}),
+   A("kancil","🦌",50,14,8,{flip:1,anim:"hop",n:["Kancil","Mouse-deer"]})],
+  t:["Sekarang Kancil bisa makan mangga sepuasnya.","Now Kancil can eat as many mangoes as he likes."],
+  act:{type:"tap",item:"🥭",to:"kancil",size:4.5,spots:[[21,52],[30,60],[36,46],[64,50],[72,58],[78,45]],
+   p:["Petik 6 mangga untuk Kancil!","Pick 6 mangoes for Kancil!"]}},
+ {bg:"forest",time:"dusk",actors:[A("kancil","🦌",50,16,9,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("zz","💤",57,34,4,{anim:"fly",shadow:0})],
+  t:["Perut Kancil kenyang. Sekarang waktunya berpikir!","Kancil's tummy is full. Now it's time to think!"],
+  act:{type:"choice",q:["Berapa buaya yang dihitung Kancil?","How many crocodiles did Kancil count?"],opts:[
+   {e:"5️⃣",t:["Lima","Five"],ok:1},
+   {e:"3️⃣",t:["Tiga","Three"],why:["Coba hitung lagi: satu, dua, tiga, empat, lima!","Count again: one, two, three, four, five!"]},
+   {e:"8️⃣",t:["Delapan","Eight"],why:["Terlalu banyak. Coba ingat barisan buayanya.","That's too many. Remember the line of crocodiles."]}]}},
+ {bg:"forest",time:"dusk",actors:[A("kancil","🦌",50,16,9,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("crown","👑",50,40,5,{anim:"bob",shadow:0})],
+  t:["Satu pertanyaan lagi!","One more question!"],
+  act:{type:"choice",q:["Kenapa buaya mau berbaris?","Why did the crocodiles line up?"],opts:[
+   {e:"👑",t:["Kancil bilang Raja menyuruh menghitung","Kancil said the King wanted them counted"],ok:1},
+   {e:"😴",t:["Buaya mau tidur","They wanted to sleep"],why:["Bukan. Ingat apa yang Kancil katakan.","No. Remember what Kancil said."]},
+   {e:"🥭",t:["Buaya suka mangga","They like mangoes"],why:["Buaya tidak makan mangga!","Crocodiles don't eat mangoes!"]}]}}
+ ]},
+
+{id:"ruru",level:1,cover:["🦌","🦋","💞"],tone:["#C2803A","#7A4A22"],
+ title:["Ruru Mencari Ibu","Ruru Looks for Mama"],
+ lesson:["Kalau tersesat, jangan panik. Minta tolong dengan sopan kepada orang yang bisa dipercaya.",
+         "If you get lost, stay calm. Ask someone you can trust for help, and ask politely."],
+ fact:["Rusa Bawean hanya hidup di Pulau Bawean, Jawa Timur. Jumlahnya tinggal sedikit, jadi kita harus menjaganya.",
+       "Bawean deer live only on Bawean Island in East Java. Very few are left, so we must protect them."],
+ scenes:[
+ {bg:"meadow",time:"day",actors:[A("mama","🦌",58,14,14,{anim:"bob",n:["Ibu Rusa","Mama Deer"]}),A("ruru","🦌",40,14,7,{flip:1,anim:"hop",n:["Ruru","Ruru"]}),A("fl","🌼",20,10,4,{anim:"sway",shadow:0})],
+  t:["Di Pulau Bawean, ada anak rusa bernama Ruru. Ruru tinggal bersama Ibu.","On Bawean Island lived a baby deer named Ruru. Ruru lived with Mama."]},
+ {bg:"meadow",time:"day",actors:[A("ruru","🦌",30,14,7,{flip:1,anim:"hop",n:["Ruru","Ruru"]}),A("mama","🦌",105,14,14,{anim:"walk",n:["Ibu Rusa","Mama Deer"]})],
+  t:["Ruru melihat kupu-kupu yang cantik. Ruru mengejarnya jauh sekali.","Ruru saw some pretty butterflies and chased them far, far away."],
+  act:{type:"tap",item:"🦋",flutter:1,to:"ruru",size:5,spots:[[20,55],[42,70],[58,45],[74,62],[88,40]],
+   p:["Ketuk 5 kupu-kupu!","Tap 5 butterflies!"]}},
+ {bg:"forest",time:"dusk",actors:[A("ruru","🦌",45,14,7,{flip:1,anim:"shake",n:["Ruru","Ruru"]}),A("owl","🦉",80,62,5,{anim:"bob",shadow:0,n:["Burung hantu","Owl"]})],
+  t:["Oh tidak! Hari mulai gelap. Ruru tersesat. “Ibu, di mana?”","Oh no! It's getting dark. Ruru is lost. “Mama, where are you?”"]},
+ {bg:"forest",time:"dusk",actors:[A("ruru","🦌",10,12,7,{flip:1,anim:"bob",n:["Ruru","Ruru"]}),
+   A("p1","🐾",26,8,4,{shadow:0,rot:90}),A("p2","🐾",42,12,4,{shadow:0,rot:90}),A("p3","🐾",58,8,4,{shadow:0,rot:90}),A("p4","🐾",74,12,4,{shadow:0,rot:90})],
+  t:["Ruru melihat jejak kaki di tanah.","Ruru saw footprints on the ground."],
+  act:{type:"hop",hopper:"ruru",stones:["p1","p2","p3","p4"],lift:0,end:[88,14],
+   p:["Ikuti jejak kaki Ibu! Ketuk jejaknya satu per satu.","Follow Mama's footprints! Tap them one by one."]}},
+ {bg:"forest",time:"dusk",actors:[A("ruru","🦌",40,14,7,{flip:1,anim:"bob",n:["Ruru","Ruru"]}),A("tr","🌳",72,12,28,{anim:"sway",shadow:0}),A("monkey","🐒",70,40,7,{anim:"sway",shadow:0,n:["Monyet","Monkey"]})],
+  t:["Jejaknya hilang. Tapi di pohon, ada seekor monyet.","The footprints stopped. But up in a tree sat a monkey."],
+  act:{type:"choice",q:["Apa yang sebaiknya Ruru katakan?","What should Ruru say?"],opts:[
+   {e:"🙏",t:["“Permisi, bisa tolong aku?”","“Excuse me, can you help me?”"],ok:1},
+   {e:"😠",t:["“Minggir!”","“Move!”"],why:["Itu tidak sopan. Coba cara yang lebih baik.","That's not polite. Try a kinder way."]},
+   {e:"🙈",t:["Diam dan bersembunyi","Hide and say nothing"],why:["Kalau diam, tidak ada yang tahu Ruru butuh bantuan.","If Ruru says nothing, nobody knows he needs help."]}]}},
+ {bg:"forest",time:"dusk",actors:[A("ruru","🦌",40,14,7,{flip:1,anim:"hop",n:["Ruru","Ruru"]}),A("tr","🌳",72,12,28,{anim:"sway",shadow:0}),A("monkey","🐒",72,74,6,{anim:"sway",shadow:0,n:["Monyet","Monkey"]})],
+  t:["Monyet memanjat pohon yang tinggi. “Aku lihat ibumu di dekat air!”","Monkey climbed to the top of the tree. “I can see your Mama near the water!”"],
+  act:{type:"choice",q:["Jalan mana yang menuju ke air?","Which path goes to the water?"],opts:[
+   {e:"💧",t:["Jalan yang ada suara air","The path with the sound of water"],ok:1},
+   {e:"🏜️",t:["Jalan yang kering berbatu","The dry rocky path"],why:["Di sana tidak ada air.","There is no water there."]},
+   {e:"🕳️",t:["Gua yang gelap","The dark cave"],why:["Gua itu gelap dan jauh dari air.","The cave is dark and far from the water."]}]}},
+ {bg:"river",time:"dusk",fx:"hearts",actors:[A("mama","🦌",58,26,14,{anim:"bob",n:["Ibu Rusa","Mama Deer"]}),A("ruru","🦌",46,26,7,{flip:1,anim:"hop",n:["Ruru","Ruru"],from:[2,26]})],
+  t:["Itu Ibu! Ruru berlari dan memeluk Ibu erat-erat.","There's Mama! Ruru ran and gave Mama a great big hug."]},
+ {bg:"meadow",time:"dusk",actors:[A("mama","🦌",58,14,14,{anim:"bob",n:["Ibu Rusa","Mama Deer"]}),A("ruru","🦌",46,14,7,{flip:1,anim:"bob",n:["Ruru","Ruru"]})],
+  t:["Ruru dan Ibu pulang bersama.","Ruru and Mama went home together."],
+  act:{type:"choice",q:["Siapa yang membantu Ruru?","Who helped Ruru?"],opts:[
+   {e:"🐒",t:["Monyet","Monkey"],ok:1},
+   {e:"🐊",t:["Buaya","Crocodile"],why:["Tidak ada buaya di cerita ini!","There was no crocodile in this story!"]},
+   {e:"🦉",t:["Burung hantu","Owl"],why:["Burung hantu hanya melihat saja.","The owl only watched."]}]}}
+ ]},
+
+{id:"dido",level:2,cover:["🥚","🦕","🌋"],tone:["#D06A3A","#7A2F1C"],
+ title:["Dido si Dinosaurus Kecil","Dido the Little Dinosaur"],
+ lesson:["Bersama-sama, kita lebih kuat. Keluarga dan teman saling menjaga.",
+         "Together we are stronger. Family and friends look after each other."],
+ fact:["Dinosaurus leher panjang disebut sauropoda. Ada yang lebih panjang dari tiga bus!",
+       "Long-necked dinosaurs are called sauropods. Some were longer than three buses!"],
+ scenes:[
+ {bg:"pre",time:"day",actors:[A("mama","🦕",70,12,24,{anim:"walk",n:["Ibu Dinosaurus","Mama Dinosaur"]}),A("d2","🦕",28,14,15,{anim:"bob",flip:1,n:["Dinosaurus","Dinosaur"]}),A("bird","🦅",50,72,5,{anim:"fly",shadow:0,n:["Burung","Bird"]})],
+  t:["Dahulu kala, jutaan tahun yang lalu, bumi dihuni oleh dinosaurus.","Long, long ago, millions of years ago, dinosaurs lived on Earth."]},
+ {bg:"pre",time:"day",actors:[A("mama","🦕",72,12,24,{anim:"bob",n:["Ibu Dinosaurus","Mama Dinosaur"]}),A("dido","🥚",42,12,8,{n:["Telur","Egg"]})],
+  t:["Ibu Dinosaurus menjaga sebutir telur besar.","Mama Dinosaur was looking after a big egg."],
+  act:{type:"tapmany",k:"dido",n:6,end:{e:"🦕",s:7,flip:1,anim:"hop",n:["Dido","Dido"]},
+   p:["Ketuk telurnya 6 kali supaya menetas!","Tap the egg 6 times to help it hatch!"]}},
+ {bg:"pre",time:"day",actors:[A("mama","🦕",72,12,24,{anim:"bob",n:["Ibu Dinosaurus","Mama Dinosaur"]}),A("dido","🦕",42,12,7,{flip:1,anim:"hop",n:["Dido","Dido"]}),A("shell","🥚",34,12,3,{shadow:0,rot:-30})],
+  t:["Krek, krek! Keluarlah dinosaurus kecil. “Halo! Namaku Dido. Aku lapar!”","Crack, crack! Out came a little dinosaur. “Hello! My name is Dido. I'm hungry!”"],
+  act:{type:"choice",q:["Dido dinosaurus leher panjang. Dia pemakan tumbuhan. Apa makanannya?","Dido is a long-necked dinosaur. He eats plants. What does he eat?"],opts:[
+   {e:"🌿",t:["Daun","Leaves"],ok:1},
+   {e:"🍖",t:["Daging","Meat"],why:["Dido herbivora, pemakan tumbuhan, bukan daging.","Dido is a herbivore. He eats plants, not meat."]},
+   {e:"🪨",t:["Batu","Rocks"],why:["Batu bukan makanan!","Rocks are not food!"]}]}},
+ {bg:"pre",time:"day",actors:[A("p1","🌴",18,10,28,{anim:"sway",shadow:0}),A("p2","🌴",82,10,26,{anim:"sway",shadow:0}),A("dido","🦕",50,12,7,{flip:1,anim:"hop",n:["Dido","Dido"]})],
+  t:["Dido makan daun dan tumbuh semakin besar.","Dido ate leaves and grew bigger and bigger."],
+  act:{type:"tap",item:"🌿",to:"dido",grow:1.2,size:4.5,spots:[[12,52],[22,60],[18,40],[78,50],[88,58]],
+   p:["Beri Dido 5 daun!","Feed Dido 5 leaves!"]}},
+ {bg:"pre",time:"dusk",fx:"shake",actors:[A("dido","🦕",38,12,13,{flip:1,anim:"shake",n:["Dido","Dido"]}),A("rex","🦖",84,12,22,{anim:"stomp",from:[118,12],n:["T-Rex","T-Rex"]})],
+  t:["Tiba-tiba tanah bergetar. BUM! BUM! Seekor T-Rex datang!","Suddenly the ground shook. BOOM! BOOM! A T-Rex was coming!"],
+  act:{type:"choice",q:["Apa yang sebaiknya Dido lakukan?","What should Dido do?"],opts:[
+   {e:"🦕",t:["Lari ke Ibu dan kawanannya","Run to Mama and the herd"],ok:1},
+   {e:"🥊",t:["Melawan T-Rex sendirian","Fight the T-Rex alone"],why:["T-Rex terlalu besar untuk Dido sendirian.","The T-Rex is too big for Dido alone."]},
+   {e:"😴",t:["Tidur siang","Take a nap"],why:["Ini bukan waktunya tidur!","This is no time for a nap!"]}]}},
+ {bg:"pre",time:"dusk",actors:[A("mama","🦕",16,12,24,{flip:1,anim:"bob",n:["Ibu Dinosaurus","Mama Dinosaur"],from:[-20,12]}),A("h2","🦕",33,14,20,{flip:1,anim:"bob",from:[-25,14]}),
+   A("dido","🦕",46,12,13,{flip:1,anim:"hop",n:["Dido","Dido"]}),A("rex","🦖",82,12,22,{anim:"stomp",n:["T-Rex","T-Rex"]})],
+  t:["Dido berlari ke Ibu. Kawanan dinosaurus datang dan berdiri bersama.","Dido ran to Mama. The whole herd came and stood together."],
+  act:{type:"tap",item:"📣",to:"rex",size:5,spots:[[16,58],[33,62],[48,48]],
+   p:["Ketuk 3 kali untuk mengaum bersama! ROAR!","Tap 3 times to roar together! ROAR!"]}},
+ {bg:"pre",time:"day",fx:"confetti",actors:[A("mama","🦕",16,12,24,{flip:1,anim:"bob",n:["Ibu Dinosaurus","Mama Dinosaur"]}),A("h2","🦕",33,14,20,{flip:1,anim:"bob"}),
+   A("dido","🦕",46,12,13,{flip:1,anim:"hop",n:["Dido","Dido"]}),A("rex","🦖",120,12,22,{anim:"walk",flip:1,n:["T-Rex","T-Rex"]})],
+  t:["T-Rex takut dan lari pergi. Hore!","The T-Rex got scared and ran away. Hooray!"],
+  act:{type:"choice",q:["Kenapa T-Rex pergi?","Why did the T-Rex go away?"],opts:[
+   {e:"🤝",t:["Karena para dinosaurus bersatu","Because the dinosaurs stood together"],ok:1},
+   {e:"🌧️",t:["Karena hujan","Because it rained"],why:["Tidak ada hujan. Coba ingat lagi!","There was no rain. Think again!"]},
+   {e:"🍃",t:["T-Rex mau makan daun","T-Rex wanted leaves"],why:["T-Rex pemakan daging, karnivora.","The T-Rex ate meat. It was a carnivore."]}]}}
+ ]},
+
+{id:"koko",level:2,cover:["🦎","🦜","🐚"],tone:["#2F87A8","#154D66"],
+ title:["Koko si Komodo Baik Hati","Koko the Kind Komodo"],
+ lesson:["Jangan menilai teman dari luarnya saja. Yang penting adalah hatinya.",
+         "Don't judge someone by how they look. What matters is their heart."],
+ fact:["Komodo adalah kadal terbesar di dunia dan hanya hidup di Indonesia. Komodo asli itu liar, jadi lihat dari jauh saja, ya!",
+       "The Komodo dragon is the biggest lizard in the world and lives only in Indonesia. Real komodos are wild, so we only watch them from far away!"],
+ scenes:[
+ {bg:"beach",time:"day",actors:[A("koko","🦎",40,14,12,{flip:1,anim:"walk",n:["Koko","Koko"]}),A("deer","🦌",70,16,9,{anim:"bob",n:["Rusa","Deer"]}),A("b1","🐦",60,24,4,{anim:"hop"}),A("b2","🐦",80,22,4,{anim:"hop",flip:1})],
+  t:["Di Pulau Komodo, hiduplah seekor komodo muda bernama Koko.","On Komodo Island lived a young Komodo dragon named Koko."]},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",40,14,12,{flip:1,anim:"shake",n:["Koko","Koko"]}),A("deer","🦌",115,16,9,{anim:"walk",flip:1}),A("b1","🐦",75,95,4,{anim:"fly"}),A("b2","🐦",100,90,4,{anim:"fly",flip:1})],
+  t:["Tapi semua hewan lari kalau melihat Koko. “Dia besar dan menakutkan!” kata mereka.","But all the animals ran away when they saw Koko. “He's so big and scary!” they said."]},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",32,14,12,{flip:1,anim:"bob",n:["Koko","Koko"]}),A("bush","🌵",66,14,15,{n:["Semak berduri","Thorny bush"]}),A("parrot","🦜",66,24,5.5,{anim:"shake",shadow:0,z:95,n:["Kakatua","Cockatoo"]})],
+  t:["Suatu hari, Koko mendengar suara. Seekor burung kakatua tersangkut di semak berduri!","One day, Koko heard a cry. A little cockatoo was stuck in a thorny bush!"],
+  act:{type:"tapmany",k:"bush",also:["parrot"],n:5,end:{e:"🌿",s:12},after:[["parrot",54,40,"fly"]],
+   p:["Ketuk semaknya 5 kali untuk menolong kakatua!","Tap the bush 5 times to free the cockatoo!"]}},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",32,14,12,{flip:1,anim:"bob",n:["Koko","Koko"]}),A("bush","🌿",66,14,12),A("parrot","🦜",50,40,5.5,{anim:"fly",shadow:0,n:["Kakatua","Cockatoo"]})],
+  t:["Kakatua itu bebas dan terbang di dekat Koko.","The cockatoo was free and flew near Koko."],
+  act:{type:"choice",q:["Bagaimana perasaan kakatua sekarang?","How does the cockatoo feel now?"],opts:[
+   {e:"😊",t:["Senang","Happy"],ok:1},
+   {e:"😠",t:["Marah","Angry"],why:["Koko menolongnya, jadi kakatua tidak marah.","Koko helped, so the cockatoo is not angry."]},
+   {e:"😢",t:["Sedih","Sad"],why:["Kakatua sudah bebas, jadi tidak sedih lagi.","The cockatoo is free now, so it is not sad."]}]}},
+ {bg:"beach",time:"day",fx:"hearts",actors:[A("koko","🦎",38,14,12,{flip:1,anim:"hop",n:["Koko","Koko"]}),A("parrot","🦜",46,34,5.5,{anim:"bob",shadow:0,n:["Kakatua","Cockatoo"]})],
+  t:["“Terima kasih, Koko! Kamu baik sekali. Ayo kita berteman!” kata kakatua.","“Thank you, Koko! You are so kind. Let's be friends!” said the cockatoo."]},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",50,14,12,{flip:1,anim:"walk",n:["Koko","Koko"]}),A("parrot","🦜",58,34,5.5,{anim:"fly",shadow:0,n:["Kakatua","Cockatoo"]})],
+  t:["Koko dan kakatua bermain di pantai.","Koko and the cockatoo played on the beach."],
+  act:{type:"tap",item:"🐚",to:"koko",size:4,spots:[[10,8],[22,16],[33,6],[68,10],[78,18],[88,7],[94,15]],
+   p:["Kumpulkan 7 kerang!","Collect 7 seashells!"]}},
+ {bg:"beach",time:"dusk",fx:"confetti",actors:[A("koko","🦎",45,14,12,{flip:1,anim:"hop",n:["Koko","Koko"]}),A("parrot","🦜",52,34,5.5,{anim:"fly",shadow:0,n:["Kakatua","Cockatoo"]}),
+   A("deer","🦌",74,16,9,{anim:"bob",from:[112,16]}),A("b1","🐦",22,20,4,{anim:"hop",flip:1,from:[-8,60]}),A("b2","🐦",85,22,4,{anim:"hop",from:[108,70]}),A("mk","🐒",15,15,6,{anim:"hop",flip:1,from:[-10,15],n:["Monyet","Monkey"]})],
+  t:["Hewan-hewan lain melihatnya. Ternyata Koko baik hati! Sekarang Koko punya banyak teman.","The other animals saw it all. Koko was kind after all! Now Koko has lots of friends."],
+  act:{type:"choice",q:["Kenapa hewan lain mau berteman dengan Koko?","Why did the animals become Koko's friends?"],opts:[
+   {e:"💛",t:["Karena Koko baik hati","Because Koko was kind"],ok:1},
+   {e:"💪",t:["Karena Koko besar","Because Koko was big"],why:["Dulu mereka justru takut karena Koko besar.","His size used to scare them."]},
+   {e:"🐚",t:["Karena Koko punya kerang","Because Koko had shells"],why:["Bukan kerangnya. Coba ingat lagi!","It wasn't the shells. Think again!"]}]}}
+ ]}
+];
+
+const NAMES={"🦌":["Rusa","Deer"],"🐊":["Buaya","Crocodile"],"🐦":["Burung","Bird"],"🐒":["Monyet","Monkey"],"🦕":["Dinosaurus","Dinosaur"],
+ "🦖":["T-Rex","T-Rex"],"🦎":["Komodo","Komodo dragon"],"🦜":["Kakatua","Cockatoo"],"🦉":["Burung hantu","Owl"],"🥚":["Telur","Egg"],
+ "🌳":["Pohon","Tree"],"🌴":["Pohon palem","Palm tree"],"🥭":["Mangga","Mango"],"🦋":["Kupu-kupu","Butterfly"],"🐾":["Jejak kaki","Footprint"],
+ "🌼":["Bunga","Flower"],"🌿":["Daun","Leaves"],"🐚":["Kerang","Seashell"],"👑":["Mahkota","Crown"],"🦅":["Burung","Bird"]};
+const NUM=[["satu","one"],["dua","two"],["tiga","three"],["empat","four"],["lima","five"],["enam","six"],["tujuh","seven"],["delapan","eight"],["sembilan","nine"],["sepuluh","ten"]];
+const PRAISE=[["Hebat!","Great job!"],["Pintar sekali, Baim!","So clever, Baim!"],["Betul!","That's right!"],["Keren!","Awesome!"]];
+
+/* ============================================================
+   SOUND: device voices, like the English game
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const NM=(window.SUPER&&SUPER.P)||(x=>x);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={lang:LS.get("dongeng.lang","both"),sound:true,story:null,at:0,act:null,wrongs:0,done:{}};
+let AC=null,vEN=null,vID=null;
+function pickVoices(){
+  if(!("speechSynthesis" in window))return;
+  const vs=speechSynthesis.getVoices()||[];
+  vEN=vs.find(v=>/^en[-_]?(GB|US)/i.test(v.lang)&&/female|samantha|karen|google/i.test(v.name))
+    ||vs.find(v=>/^en[-_]/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
+  vID=vs.find(v=>/^id[-_]?/i.test(v.lang))||vs.find(v=>/indones/i.test(v.name))||null;
+}
+if("speechSynthesis" in window){pickVoices();speechSynthesis.addEventListener("voiceschanged",pickVoices);setTimeout(pickVoices,800)}
+let sayToken=0;
+function stopAudio(){sayToken++;try{speechSynthesis.cancel()}catch(e){}}
+function speak1(text,lang,rate){
+  text=NM(text);
+  return new Promise(res=>{
+    if(!S.sound||!("speechSynthesis" in window)||!text){res();return}
+    if(lang==="id"&&!vID){res();return}
+    try{
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang=lang==="id"?"id-ID":"en-GB";u.voice=lang==="id"?vID:vEN;
+      u.rate=rate||(lang==="id"?.9:.85);u.pitch=1.08;
+      let done=false;const fin=()=>{if(!done){done=true;res()}};
+      u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);
+      setTimeout(fin,Math.max(2200,text.length*85));
+    }catch(e){res()}
+  });
+}
+/* pair = [indonesian, english]; speaks whichever the language mode asks for */
+async function say(pairs,opts){
+  opts=opts||{};
+  if(!opts.keep)stopAudio();
+  const tok=sayToken;
+  for(const p of pairs){
+    if(!p)continue;
+    for(const l of (S.lang==="both"?["id","en"]:[S.lang])){
+      if(tok!==sayToken)return;
+      if(opts.mark)mark(l,p);
+      await speak1(l==="id"?p[0]:p[1],l,opts.rate);
+    }
+  }
+  if(tok===sayToken&&opts.mark)mark(null);
+}
+function tone(f,d,type,g){
+  if(!S.sound)return;
+  try{
+    if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    const o=AC.createOscillator(),gn=AC.createGain();
+    o.type=type||"sine";o.frequency.value=f;
+    gn.gain.setValueAtTime(0,AC.currentTime);gn.gain.linearRampToValueAtTime(g||.16,AC.currentTime+.02);
+    gn.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);
+    o.connect(gn).connect(AC.destination);o.start();o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.3,"triangle",.16),i*110));
+const sfxWrong=()=>{tone(200,.22,"sawtooth",.1);setTimeout(()=>tone(150,.26,"sawtooth",.08),110)};
+const sfxPop=n=>{const f=440+(n||0)*70;tone(f,.14,"sine",.18);setTimeout(()=>tone(f*1.5,.14,"sine",.14),70)};
+const sfxBoing=()=>{tone(300,.12,"triangle",.14);setTimeout(()=>tone(520,.16,"triangle",.12),80)};
+const sfxBoom=()=>{tone(70,.5,"sawtooth",.2);setTimeout(()=>tone(55,.5,"sawtooth",.18),260)};
+let unlocked=false;
+function unlockAudio(){
+  if(unlocked)return;unlocked=true;
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume()}catch(e){}
+  if("speechSynthesis" in window){try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}pickVoices()}
+}
+document.addEventListener("pointerdown",unlockAudio,{once:true});
+
+/* ============================================================
+   SCENERY: layered SVG, 1600 x 900
+   ============================================================ */
+const SKY={day:["#62BDF5","#CDEEFF"],dusk:["#5B3F8C","#F58E6E","#FFD39A"],night:["#081634","#1E3A6B"]};
+const SKYPRE={day:["#FF9F5A","#FFE0A8"],dusk:["#6A2F4F","#E8663F","#FFB36B"]};
+let uid=0;
+function tree(x,y,s,c1,c2){
+  s=s||1;c1=c1||"#2F8A45";c2=c2||"#48A95A";
+  return `<g class="swayp" style="animation-delay:${(x%7)/3}s"><rect x="${x-9*s}" y="${y-110*s}" width="${18*s}" height="${110*s}" rx="${5*s}" fill="#7A4E2A"/>
+  <circle cx="${x}" cy="${y-150*s}" r="${70*s}" fill="${c1}"/><circle cx="${x-50*s}" cy="${y-115*s}" r="${48*s}" fill="${c1}"/>
+  <circle cx="${x+50*s}" cy="${y-118*s}" r="${50*s}" fill="${c2}"/><circle cx="${x-15*s}" cy="${y-175*s}" r="${40*s}" fill="${c2}"/></g>`;
+}
+function cloud(x,y,s,cls){return `<g class="drift ${cls||""}" style="animation-delay:-${x/30}s"><g transform="translate(0 ${y}) scale(${s})" fill="#fff" opacity=".9">
+  <ellipse cx="0" cy="0" rx="90" ry="34"/><ellipse cx="-50" cy="8" rx="55" ry="26"/><ellipse cx="55" cy="6" rx="60" ry="28"/><ellipse cx="10" cy="-24" rx="50" ry="32"/></g></g>`}
+function emo(x,y,sz,e,cls){return `<text x="${x}" y="${y}" font-size="${sz}" text-anchor="middle" class="${cls||""}" style="font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji'">${e}</text>`}
+function bgSVG(type,time){
+  const id="g"+(uid++);
+  const cols=(type==="pre"?SKYPRE:SKY)[time]||SKY.day;
+  let stops=cols.map((c,i)=>`<stop offset="${i/(cols.length-1)}" stop-color="${c}"/>`).join("");
+  let s=`<svg viewBox="0 0 1600 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><defs>
+   <linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1">${stops}</linearGradient>
+   <linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FB3D9"/><stop offset="1" stop-color="#1F6F9A"/></linearGradient>
+   <radialGradient id="${id}sun"><stop offset="0" stop-color="#FFF6B0"/><stop offset=".55" stop-color="#FFD23F"/><stop offset="1" stop-color="#FFD23F" stop-opacity="0"/></radialGradient></defs>
+   <rect width="1600" height="900" fill="url(#${id}s)"/>`;
+  if(time==="night"){for(let i=0;i<40;i++)s+=`<circle class="tw" style="animation-delay:${(i%9)/3}s" cx="${(i*397)%1600}" cy="${(i*131)%420}" r="${1+i%3}" fill="#fff"/>`;
+    s+=`<circle cx="1320" cy="150" r="60" fill="#FFF6D8"/>`}
+  else s+=time==="dusk"?`<circle cx="1180" cy="470" r="150" fill="url(#${id}sun)"/>`:`<circle cx="1330" cy="150" r="140" fill="url(#${id}sun)"/>`;
+  if(time!=="night")s+=cloud(200,120,1)+cloud(900,80,.7,"slow")+cloud(1400,170,.8);
+  const dark=time==="dusk";
+  if(type==="forest"||type==="meadow"||type==="river"){
+    s+=`<path d="M0 520 Q200 400 420 480 T860 450 T1300 470 T1600 430 V900 H0Z" fill="${dark?"#4E6F63":"#8CC98A"}"/>`;
+    s+=`<path d="M0 600 Q300 520 620 590 T1200 560 T1600 580 V900 H0Z" fill="${dark?"#3E5E48":"#68B56A"}"/>`;
+  }
+  if(type==="forest"){
+    for(let i=0;i<9;i++)s+=tree(60+i*190,640-(i%2)*30,.9+(i%3)*.15,dark?"#1F5A35":"#23733A",dark?"#2D6E42":"#35904A");
+    s+=`<rect y="680" width="1600" height="220" fill="${dark?"#4A6A38":"#6FAE45"}"/><path d="M0 690 Q400 660 800 690 T1600 685 V700 H0Z" fill="${dark?"#557A40":"#7EBD52"}"/>`;
+    s+=emo(120,860,70,"🍄")+emo(1480,860,80,"🌿")+emo(760,880,60,"🌱");
+  }
+  if(type==="meadow"){
+    s+=tree(1450,640,1.1)+tree(150,620,.8);
+    s+=`<rect y="700" width="1600" height="200" fill="${dark?"#5E8A45":"#8FCB5A"}"/>`;
+    for(let i=0;i<22;i++)s+=`<circle cx="${(i*263)%1600}" cy="${730+(i*47)%150}" r="9" fill="${["#FFE45C","#FF8FB1","#FFFFFF","#C79BFF"][i%4]}"/>`;
+  }
+  if(type==="river"){
+    s+=tree(80,560,.8)+tree(1520,560,.85)+tree(1330,540,.6);
+    s+=`<rect y="560" width="1600" height="340" fill="url(#${id}w)"/>`;
+    for(let i=0;i<7;i++)s+=`<path class="wave" style="animation-delay:${i/2}s" d="M${i*240-60} ${620+(i%3)*60} q30 -14 60 0 t60 0" stroke="#BFE9FF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    s+=`<path d="M0 560 H250 Q300 700 260 900 H0Z" fill="${dark?"#5E7A3F":"#7DB24F"}"/><path d="M1600 560 H1340 Q1290 700 1330 900 H1600Z" fill="${dark?"#5E7A3F":"#7DB24F"}"/>`;
+    s+=emo(90,870,70,"🌾")+emo(1520,880,70,"🌾")+emo(240,640,50,"🪨");
+  }
+  if(type==="pre"){
+    s+=`<path d="M0 560 L220 380 L420 540 L640 360 L900 560Z" fill="${dark?"#5A3A4A":"#B7775A"}" opacity=".7"/>`;
+    s+=`<path d="M950 620 L1180 300 L1260 300 L1500 620Z" fill="${dark?"#4A2A30":"#7B4A3A"}"/><path d="M1180 300 L1260 300 L1245 330 Q1220 380 1200 330Z" fill="#FF6A2B"/>`;
+    for(let i=0;i<4;i++)s+=`<circle class="smoke" style="animation-delay:${i*1.2}s" cx="${1210+i*8}" cy="280" r="40" fill="#8A7A78" opacity=".7"/>`;
+    s+=`<path d="M0 600 Q400 540 800 610 T1600 590 V900 H0Z" fill="${dark?"#5B6B3A":"#8BA84A"}"/><rect y="700" width="1600" height="200" fill="${dark?"#6B5A38":"#A58A52"}"/>`;
+    s+=emo(420,700,130,"🌴","swayp")+emo(1000,720,110,"🌿")+emo(140,880,90,"🌿")+emo(1480,890,90,"🌿")+emo(700,860,50,"🪨");
+  }
+  if(type==="beach"){
+    s+=`<rect y="470" width="1600" height="260" fill="#2E9BC6"/><rect y="470" width="1600" height="30" fill="#6FCDE8"/>`;
+    for(let i=0;i<8;i++)s+=`<path class="wave" style="animation-delay:${i/3}s" d="M${i*210} ${540+(i%3)*45} q30 -14 60 0 t60 0" stroke="#D9F4FF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    s+=`<path d="M1100 480 Q1300 330 1600 400 V520 H1100Z" fill="${dark?"#5E6A48":"#8FA55A"}"/>`;
+    s+=`<path d="M0 640 Q400 600 800 650 T1600 630 V900 H0Z" fill="${dark?"#D7B27A":"#F2D59A"}"/>`;
+    s+=emo(1380,470,120,"🌴","swayp")+emo(1500,480,100,"🌴","swayp")+emo(90,860,60,"🪨")+emo(1520,880,50,"🦀");
+  }
+  if(dark&&(type==="forest"||type==="river"))for(let i=0;i<12;i++)s+=`<circle class="ff" style="animation-delay:${i*.4}s" cx="${100+i*125}" cy="${500+(i*73)%260}" r="6" fill="#FFF27A"/>`;
+  if(dark)s+=`<rect width="1600" height="900" fill="#3A1F5A" opacity=".18"/>`;
+  return s+"</svg>";
+}
+
+/* ============================================================
+   ACTORS
+   ============================================================ */
+const ACT={};           /* key -> {el, data} */
+let front="bgA";
+function setBg(type,time){
+  const key=type+"|"+time,cur=$(front);
+  if(cur.dataset.k===key)return;
+  const other=$(front==="bgA"?"bgB":"bgA");
+  other.innerHTML=bgSVG(type,time);other.dataset.k=key;
+  other.style.opacity=1;cur.style.opacity=0;
+  front=other.id;$("scene").insertBefore(other,cur);   /* new one behind, old fades out on top */
+}
+function actorHTML(a){return `<span class="fl"><span class="an" style="${a.rot?"transform:rotate("+a.rot+"deg)":""}">${a.e}</span></span>`}
+function place(el,a){el.style.left=a.x+"%";el.style.bottom=a.y+"%";el.style.fontSize="calc("+a.s+"cqw)"}
+function styleActor(el,a){
+  el.className="actor"+(a.flip?" flip":"")+(a.anim?" a-"+a.anim:"")+(a.shadow===0?" noshadow":"");
+}
+function setActors(list){
+  const keep={};
+  list.forEach(a=>{
+    keep[a.k]=1;
+    let o=ACT[a.k];
+    if(!o){
+      const el=document.createElement("div");
+      el.dataset.k=a.k;el.innerHTML=actorHTML(a);styleActor(el,a);
+      const st=a.from?{x:a.from[0],y:a.from[1],s:a.s}:a;
+      el.style.transitionDuration="0s";place(el,st);
+      if(!a.from)el.style.opacity=0;
+      $("actors").appendChild(el);
+      el.addEventListener("pointerdown",e=>{e.stopPropagation();tapActor(a.k)});
+      o=ACT[a.k]={el,data:a};
+      void el.offsetWidth;
+      el.style.transitionDuration="";
+      requestAnimationFrame(()=>{el.style.opacity=1;place(el,a)});
+    }else{
+      if(o.data.e!==a.e||o.data.rot!==a.rot)o.el.innerHTML=actorHTML(a);
+      o.data=a;styleActor(o.el,a);o.el.style.opacity=1;place(o.el,a);
+    }
+    o.el.style.zIndex=a.z||Math.round(100-a.y);
+  });
+  Object.keys(ACT).forEach(k=>{if(!keep[k]){const el=ACT[k].el;el.style.opacity=0;delete ACT[k];setTimeout(()=>el.remove(),700)}});
+}
+function pos(k){const a=ACT[k]&&ACT[k].data;return a?{x:a.x,y:a.y,s:a.s}:{x:50,y:20,s:8}}
+function moveActor(k,x,y,dur,cls){
+  const o=ACT[k];if(!o)return;
+  o.data=Object.assign({},o.data,{x,y});
+  o.el.style.transitionDuration=dur?`${dur}s,${dur}s,.6s,.6s`:"";
+  place(o.el,o.data);o.el.style.zIndex=Math.round(100-y)+50;
+  if(cls){o.el.classList.remove(cls);void o.el.offsetWidth;o.el.classList.add(cls)}
+}
+function pulse(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),650)}
+function nameOf(a){return a.n||NAMES[a.e]}
+function tapActor(k){
+  const o=ACT[k];if(!o)return;
+  const act=S.act;
+  if(act&&!act.done){
+    if(act.type==="hop"&&act.stones.includes(k))return hopTap(k);
+    if(act.type==="tapmany"&&(act.k===k||(act.also||[]).includes(k)))return manyTap();
+  }
+  pulse(o.el,"poke");sfxBoing();
+  const nm=nameOf(o.data);if(nm)say([nm]);
+}
+
+/* ---------- effects ---------- */
+function sparkle(x,y,n,e){
+  for(let i=0;i<(n||6);i++){
+    const d=document.createElement("div");d.className="spark";d.textContent=e||["✨","⭐","💫"][i%3];
+    d.style.left=x+"%";d.style.bottom=y+"%";d.style.fontSize="3cqw";
+    const ang=i/(n||6)*Math.PI*2;d.style.setProperty("--dx",Math.cos(ang)*60+"px");d.style.setProperty("--dy",-Math.sin(ang)*60+"px");
+    $("fx").appendChild(d);setTimeout(()=>d.remove(),950);
+  }
+}
+function countPop(x,y,txt){const d=document.createElement("div");d.className="count";d.textContent=txt;d.style.left=x+"%";d.style.bottom=y+"%";$("fx").appendChild(d);setTimeout(()=>d.remove(),1150)}
+function hearts(k){const p=pos(k||"");for(let i=0;i<10;i++)setTimeout(()=>{const h=document.createElement("div");h.className="heart";
+  h.textContent=["💖","💕","💗"][i%3];h.style.left=(40+Math.random()*25)+"%";h.style.bottom=(30+Math.random()*10)+"%";h.style.fontSize=(3+Math.random()*2)+"cqw";
+  $("fx").appendChild(h);setTimeout(()=>h.remove(),2300)},i*180)}
+function confetti(){const c=["#FFB247","#5FE0A4","#FF6B5B","#7FC8FF","#F7E9CC","#C79BFF"];
+  for(let i=0;i<60;i++){const d=document.createElement("div");d.className="confetti";d.style.left=Math.random()*100+"vw";
+   d.style.background=c[i%c.length];d.style.animationDelay=Math.random()*.6+"s";d.style.animationDuration=(1.8+Math.random()*1.4)+"s";
+   document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}}
+$("scene").addEventListener("pointerdown",e=>{
+  if(e.target.closest(".choice,.item"))return;
+  const r=$("scene").getBoundingClientRect();
+  sparkle((e.clientX-r.left)/r.width*100,(r.bottom-e.clientY)/r.height*100,5);tone(900+Math.random()*400,.1,"sine",.08);
+});
+
+/* ============================================================
+   STORY FLOW
+   ============================================================ */
+function scene(){return S.story.scenes[S.at]}
+function renderLines(){
+  const sc=scene();let h="";
+  const row=(l,txt)=>`<div class="line ${l}" data-l="${l}"><span class="fg">${l==="id"?"🇮🇩":"🇬🇧"}</span><p>${NM(txt)}</p></div>`;
+  if(S.lang!=="en")h+=row("id",sc.t[0]);
+  if(S.lang!=="id")h+=row("en",sc.t[1]);
+  $("lines").innerHTML=h;
+  $("lines").querySelectorAll(".line").forEach(el=>el.onclick=()=>{
+    const l=el.dataset.l;stopAudio();mark(l,sc.t);speak1(l==="id"?sc.t[0]:sc.t[1],l).then(()=>mark(null));
+  });
+}
+function mark(l,p){$("lines").querySelectorAll(".line").forEach(el=>el.classList.toggle("speaking",el.dataset.l===l&&p===scene().t))}
+function renderDots(){
+  $("dots").innerHTML=S.story.scenes.map((_,i)=>`<i class="${i<S.at?"done":i===S.at?"now":""}"></i>`).join("");
+}
+function clearAct(){
+  $("items").innerHTML="";
+  const sc=$("scene");sc.querySelectorAll(".pill,.choice").forEach(e=>e.remove());
+  Object.values(ACT).forEach(o=>o.el.classList.remove("glow"));
+}
+function openStory(st){
+  S.story=st;S.at=0;S.wrongs=0;S.done={};
+  Object.keys(ACT).forEach(k=>{ACT[k].el.remove();delete ACT[k]});
+  $("lib").classList.add("off");$("play").classList.add("on");$("toLib").hidden=false;
+  document.title=st.title[0]+" · Dongeng Hewan";
+  showScene();
+}
+function showScene(){
+  const sc=scene();
+  clearAct();stopAudio();
+  setBg(sc.bg,sc.time);
+  setActors(sc.actors);
+  renderLines();renderDots();
+  $("prev").disabled=S.at===0;$("prev").style.visibility=S.at===0?"hidden":"visible";
+  if(sc.fx==="shake"){setTimeout(()=>{pulse($("scene"),"shake");sfxBoom()},700)}
+  if(sc.fx==="hearts")setTimeout(hearts,1200);
+  if(sc.fx==="confetti")setTimeout(confetti,600);
+  S.act=sc.act?Object.assign({},sc.act,{done:!!S.done[S.at],i:0,wrongs:0}):null;
+  updateNext();
+  const token=++showToken;
+  setTimeout(async()=>{
+    if(token!==showToken)return;
+    if(S.act&&!S.act.done)startAct();
+    await say([sc.t],{mark:true});
+    if(token!==showToken||!S.act||S.act.done)return;
+    await say([S.act.p||S.act.q],{keep:true});
+  },sc.actors.some(a=>a.from)?900:450);
+}
+let showToken=0;
+function updateNext(){
+  const locked=S.act&&!S.act.done;
+  $("next").classList.toggle("locked",!!locked);$("next").classList.toggle("go",!locked);
+  if(window.SUPER&&SUPER.bar&&SUPER.bar.set)SUPER.bar.set(barKeys(!locked));
+}
+function next(){
+  if(S.act&&!S.act.done){const p=$("scene").querySelector(".pill");if(p)pulse(p,"nudge");
+    const c=$("scene").querySelector(".choice");if(c)pulse(c,"nudge");
+    say([S.act.p||S.act.q]);return}
+  if(S.at<S.story.scenes.length-1){S.at++;showScene()}else finish();
+}
+function prev(){if(S.at>0){S.at--;showScene()}}
+$("next").onclick=next;$("prev").onclick=prev;
+
+/* ---------- activities ---------- */
+function pill(p,extra){
+  const d=document.createElement("div");d.className="pill";
+  const main=S.lang==="en"?p[1]:p[0],sub=S.lang==="both"?p[1]:"";
+  d.innerHTML=`👆 ${NM(main)}${extra||""}${sub?"<small>"+NM(sub)+"</small>":""}`;
+  $("scene").appendChild(d);return d;
+}
+function startAct(){
+  const a=S.act;
+  if(a.type==="choice")return showChoice();
+  a.pill=pill(a.p,a.type==="tap"?` <b class="cnt">0/${a.spots.length}</b>`:"");
+  if(a.type==="tap"){
+    a.spots.forEach((sp,i)=>{
+      const it=document.createElement("div");it.className="item"+(a.flutter?" flutter":"");
+      it.innerHTML=`<span class="in" style="animation-delay:${-i*.7}s">${a.item}</span>`;
+      it.style.left=sp[0]+"%";it.style.bottom=sp[1]+"%";it.style.fontSize=(a.size||4.5)+"cqw";it.style.zIndex=120;
+      it.addEventListener("pointerdown",e=>{e.stopPropagation();itemTap(it,sp)});
+      $("items").appendChild(it);
+    });
+  }
+  if(a.type==="hop")glowNext();
+  if(a.type==="tapmany"){a.i=0;ACT[a.k]&&ACT[a.k].el.classList.add("glow")}
+}
+function itemTap(it,sp){
+  const a=S.act;if(!a||a.done||it.classList.contains("got"))return;
+  a.i++;sfxPop(a.i);countPop(sp[0],sp[1]+6,a.i);sparkle(sp[0],sp[1]+3,5);
+  const t=pos(a.to);
+  it.style.left=t.x+"%";it.style.bottom=(t.y+t.s*0.8)+"%";it.classList.add("got");
+  a.pill.querySelector(".cnt").textContent=a.i+"/"+a.spots.length;
+  setTimeout(()=>{
+    const o=ACT[a.to];if(o){pulse(o.el,"poke");if(a.grow){o.data=Object.assign({},o.data,{s:o.data.s+a.grow});place(o.el,o.data)}}
+  },650);
+  say([NUM[a.i-1]]);
+  if(a.i>=a.spots.length)setTimeout(complete,900);
+}
+function glowNext(){const a=S.act;Object.values(ACT).forEach(o=>o.el.classList.remove("glow"));
+  const k=a.stones[a.i];if(k&&ACT[k])ACT[k].el.classList.add("glow")}
+function hopTap(k){
+  const a=S.act;
+  if(k!==a.stones[a.i]){a.wrongs++;sfxWrong();pulse(ACT[k].el,"nope");say([["Yang bersinar dulu, ya!","The shining one first!"]]);return}
+  const p=pos(k);ACT[k].el.classList.remove("glow");
+  moveActor(a.hopper,p.x,p.y+a.lift,.6,"jump");sfxPop(a.i);
+  countPop(p.x,p.y+a.lift+10,a.i+1);say([NUM[a.i]]);
+  a.i++;
+  if(a.i>=a.stones.length){a.pill.classList.add("done");
+    setTimeout(()=>{moveActor(a.hopper,a.end[0],a.end[1],.8,"jump");sparkle(a.end[0],a.end[1]+6,8)},750);
+    setTimeout(complete,1600);}
+  else glowNext();
+}
+function manyTap(){
+  const a=S.act,o=ACT[a.k];a.i++;
+  pulse(o.el,"nope");sfxPop(a.i);const p=pos(a.k);sparkle(p.x,p.y+p.s*.5,4);countPop(p.x,p.y+p.s+2,a.i);
+  say([NUM[a.i-1]]);
+  if(a.i>=a.n){
+    o.el.classList.remove("glow");
+    setTimeout(()=>{
+      const nd=Object.assign({},o.data,a.end);o.data=nd;o.el.innerHTML=actorHTML(nd);styleActor(o.el,nd);place(o.el,nd);
+      sparkle(p.x,p.y+4,12);sfxWin();
+      (a.after||[]).forEach(m=>setTimeout(()=>{moveActor(m[0],m[1],m[2],1.2);const q=ACT[m[0]];if(q){q.data.anim=m[3];styleActor(q.el,q.data)}},500));
+      setTimeout(complete,1200);
+    },300);
+  }
+}
+function shuffle(x){for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
+function showChoice(){
+  const a=S.act;
+  const box=document.createElement("div");box.className="choice";
+  const q=S.lang==="en"?a.q[1]:a.q[0];
+  box.innerHTML=`<div class="q">❓ ${NM(q)}${S.lang==="both"?"<small>"+NM(a.q[1])+"</small>":""}</div><div class="opts"></div><div class="why"></div>`;
+  $("scene").appendChild(box);
+  a.order=shuffle(a.opts.slice());drawOpts();
+}
+function drawOpts(){
+  const a=S.act,box=$("scene").querySelector(".choice .opts");if(!box)return;
+  box.innerHTML="";
+  a.order.forEach(op=>{
+    const b=document.createElement("button");b.className="opt"+(op._bad?" wrong":"");
+    const main=S.lang==="en"?op.t[1]:op.t[0];
+    b.innerHTML=`<span class="e">${op.e}</span><b>${NM(main)}</b>${S.lang==="both"?"<span>"+NM(op.t[1])+"</span>":""}`;
+    b.onclick=e=>{e.stopPropagation();pick(op,b)};
+    box.appendChild(b);
+  });
+}
+function pick(op,b){
+  const a=S.act;if(a.done)return;
+  if(op.ok){
+    b.classList.add("right");sparkle(50,30,10);
+    setTimeout(()=>{const c=$("scene").querySelector(".choice");if(c)c.remove()},900);
+    complete();return;
+  }
+  a.wrongs++;op._bad=1;sfxWrong();
+  const why=$("scene").querySelector(".choice .why");
+  if(why)why.textContent=NM(S.lang==="en"?op.why[1]:op.why[0])+(S.lang==="both"?" · "+NM(op.why[1]):"");
+  pulse(b,"wrong");
+  say([op.why]);
+  setTimeout(()=>{shuffle(a.order);drawOpts()},450);   /* reshuffle after every tap so position never helps */
+}
+function complete(){
+  const a=S.act;if(!a||a.done)return;
+  a.done=true;S.done[S.at]=1;S.wrongs+=a.wrongs;
+  if(a.pill){a.pill.classList.add("done");a.pill.innerHTML="✅ "+NM(S.lang==="en"?"Well done!":"Berhasil!")+(S.lang==="both"?"<small>Well done!</small>":"")}
+  sfxWin();
+  try{if(window.SUPER&&SUPER.score){const r=SUPER.score.award("dongeng",{level:S.story.level+1,wrongs:Math.min(2,a.wrongs)});
+    if(SUPER.bar&&SUPER.bar.fly)SUPER.bar.fly(r.xp,r.streak)}}catch(e){}
+  updateNext();
+  say([PRAISE[Math.floor(Math.random()*PRAISE.length)]]);
+}
+
+/* ---------- ending ---------- */
+function finish(){
+  const st=S.story,stars=S.wrongs===0?3:S.wrongs<=2?2:1;
+  const best=LS.get("dongeng.stars",{});best[st.id]=Math.max(best[st.id]||0,stars);LS.set("dongeng.stars",best);
+  const two=(p,cls)=>(S.lang!=="en"?`<p>🇮🇩 ${NM(p[0])}</p>`:"")+(S.lang!=="id"?`<p class="${S.lang==="both"?"en":""}">🇬🇧 ${NM(p[1])}</p>`:"");
+  $("endBox").innerHTML=`<div class="big">${st.cover.join("")}</div>
+   <h2>${S.lang==="en"?"The End!":"Tamat!"} ${S.lang==="both"?"· The End!":""}</h2>
+   <div class="stars">${[0,1,2].map(i=>`<i>${i<stars?"⭐":"☆"}</i>`).join("")}</div>
+   <div class="lesson"><b>💡 Pesan cerita · The lesson</b>${two(st.lesson)}</div>
+   <div class="fact"><b>🔎 Tahukah kamu? · Did you know?</b>${two(st.fact)}</div>
+   <div class="row"><button class="btn" id="again">🔁 Ulangi · Again</button><button class="btn go" id="more">📚 Cerita lain · More stories</button></div>`;
+  $("end").classList.add("on");confetti();sfxWin();
+  $("again").onclick=()=>{$("end").classList.remove("on");openStory(st)};
+  $("more").onclick=()=>{$("end").classList.remove("on");toLibrary()};
+  setTimeout(()=>say([st.lesson,st.fact]),900);
+}
+
+/* ---------- library ---------- */
+function toLibrary(){
+  stopAudio();showToken++;S.story=null;S.act=null;
+  $("lib").classList.remove("off");$("play").classList.remove("on");$("toLib").hidden=true;$("dots").innerHTML="";
+  document.title="Dongeng Hewan";
+  drawShelf();updateNext();
+}
+function drawShelf(){
+  const best=LS.get("dongeng.stars",{});
+  $("shelf").innerHTML="";
+  STORIES.forEach(st=>{
+    const b=document.createElement("button");b.className="book";
+    const n=best[st.id]||0;
+    b.innerHTML=`<div class="art" style="background:linear-gradient(160deg,${st.tone[0]},${st.tone[1]})">${st.cover.map(e=>"<i>"+e+"</i>").join("")}</div>
+     <div class="txt"><h3>${st.title[0]}</h3><div class="en">${st.title[1]}</div>
+     <div class="meta"><span class="lvl">${st.scenes.length} halaman · pages · Level ${st.level}</span><span class="st">${n?"⭐".repeat(n)+"☆".repeat(3-n):"🆕"}</span></div></div>`;
+    b.onclick=()=>{unlockAudio();openStory(st)};
+    $("shelf").appendChild(b);
+  });
+}
+$("toLib").onclick=toLibrary;
+
+/* ---------- toolbar ---------- */
+function paintLang(){$("lang").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.l===S.lang))}
+$("lang").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  S.lang=b.dataset.l;LS.set("dongeng.lang",S.lang);paintLang();
+  if(S.story){
+    renderLines();
+    const a=S.act;
+    if(a&&!a.done){
+      if(a.type==="choice"){const c=$("scene").querySelector(".choice");if(c)c.remove();showChoice()}
+      else if(a.pill){const cnt=a.pill.querySelector(".cnt");const old=a.pill;a.pill=pill(a.p,cnt?` <b class="cnt">${cnt.textContent}</b>`:"");old.remove()}
+    }
+    say([scene().t],{mark:true});
+  }
+});
+$("sound").onclick=()=>{S.sound=!S.sound;$("sound").textContent=S.sound?"🔊":"🔇";$("sound").setAttribute("aria-pressed",String(S.sound));if(!S.sound)stopAudio()};
+function barKeys(open){
+  if(!S.story)return[];
+  return[{icon:"🔈",label:"Lagi · Again",fn:()=>say([scene().t],{mark:true})},
+         {icon:"➡️",label:"Lanjut · Next",hot:!!open,fn:next}];
+}
+document.addEventListener("keydown",e=>{if(!S.story)return;if(e.key==="ArrowRight")next();if(e.key==="ArrowLeft")prev()});
+
+if(window.SUPER&&SUPER.mountBack)SUPER.mountBack("Dongeng Hewan");
+if(window.SUPER&&SUPER.bar)SUPER.bar.mount([]);
+paintLang();drawShelf();
+</script>
+</body>
+</html>
