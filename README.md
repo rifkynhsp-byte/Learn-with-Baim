@@ -21,7 +21,7 @@ the names are changeable in Settings.
 | `membaca.html` | Reading Bahasa Indonesia by syllable | 634 words, 6 levels |
 | `english.html` | English words, listening, conversation, reasoning | 583 items, 6 levels |
 | `ensiklopedia.html` | Animals, Latin names, science, ethics, stories, Indonesia | 2,066 items, 10 levels |
-| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 4 stories, 31 scenes |
+| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 96 scenes |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
 | `menulis.html` | Handwriting and drawing with the Apple Pencil | 219 items, 16 levels |
 | `koleksi.html` | The zoo, the pets, and the parent view | 50 animals, 4 pets |
@@ -100,7 +100,8 @@ with a comprehension question and a question about the lesson.
 ## Dongeng Hewan — interactive animal stories
 
 Picture-book stories set in Indonesia. Every page is an illustrated scene: a
-layered background (forest, river, meadow, beach or a prehistoric volcano),
+layered background (forest, river, meadow, beach, rice field, coral reef or a
+prehistoric volcano, by day, at dusk or at night, sometimes in the rain),
 animals that walk, hop and swim between pages, and something to do.
 
 | Story | Level | Setting |
@@ -109,13 +110,26 @@ animals that walk, hop and swim between pages, and something to do.
 | **Ruru Mencari Ibu** / Ruru Looks for Mama (a Bawean deer) | 1 | Bawean Island, East Java |
 | **Dido si Dinosaurus Kecil** / Dido the Little Dinosaur | 2 | Long, long ago |
 | **Koko si Komodo Baik Hati** / Koko the Kind Komodo | 2 | Komodo Island |
+| **Oki si Orangutan Menanam Pohon** / Oki the Orangutan Plants Trees | 1 | Kalimantan forest |
+| **Tukik Pulang ke Laut** / The Baby Turtles Go to the Sea | 1 | Sukamade beach, East Java |
+| **Harimau dan Tikus** / The Tiger and the Mouse | 1 | Sumatra forest |
+| **Semut dan Belalang** / The Ant and the Grasshopper | 1 | Rice fields |
+| **Kiki si Ikan Badut di Raja Ampat** / Kiki the Clownfish of Raja Ampat | 1 | Raja Ampat, Papua |
+| **Kancil dan Siput** / The Mouse-deer and the Snails | 2 | A meadow race |
+| **Kura-kura dan Monyet** / The Turtle and the Monkey | 2 | River and meadow |
+| **Badak Bima dan Burung Jalak** / Bima the Rhino and the Starling | 2 | Ujung Kulon, Banten |
+| **Rexi si T-Rex Kecil** / Rexi the Little T-Rex | 2 | Long, long ago |
+| **Dido dan Gunung Api** / Dido and the Volcano | 3 | Long, long ago |
 
 - **Three language modes**: 🇮🇩 only, 🇬🇧 only, or both. In "both" every line is
   shown and read in Indonesian first, then English. Tap a line to hear it again.
 - **Things to do on the page**: tap to count mangoes, butterflies, leaves and
   shells; hop Kancil across the crocodiles in order; tap an egg until it hatches;
-  free a cockatoo from a thorny bush; answer questions about feelings, choices
-  and what happened in the story.
+  free a cockatoo from a thorny bush; plant seeds that grow into a forest; hatch
+  baby turtles and clear plastic off their beach; shoo away crabs; chew a tiger
+  free from a net; share six bananas fairly between two friends; clean rubbish
+  out of a coral reef; count the dinosaur herd after crossing a river. Then
+  answer questions about feelings, choices and what happened in the story.
 - Tap any animal to hear its name. Tap the sky or the ground for sparkles.
 - Next unlocks once the page's activity is done. Wrong answers explain why,
   and the choices reshuffle after every tap.
