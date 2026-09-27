@@ -3,8 +3,9 @@
 A learning app for one five year old, built by his parents.
 
 Baim is preparing for primary school in Indonesia after starting out in
-Australia. This app covers reading, English, science, counting and handwriting
-in one place, using the Cambridge, Australian NSW and Indonesian Kurikulum
+Australia. This app covers reading, English, science, counting and handwriting,
+a whole-body runner that teaches nature, and Islamic studies (shalat, doa,
+Juz 30 and the 25 prophets) in one place, using the Cambridge, Australian NSW and Indonesian Kurikulum
 Merdeka stages as its yardstick. It is free for any family to copy and use, and
 the names are changeable in Settings.
 
@@ -26,12 +27,61 @@ the names are changeable in Settings.
 | `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 10-step program, daily cycle, 9 levels, 10 patterns, 7 games, 12 exercises |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
 | `menulis.html` | Handwriting and drawing with the Apple Pencil | 246 items, 18 levels |
+| `runner/` | Lari Sambil Belajar: a camera runner played with the whole body, teaching the water cycle, butterflies, sea life, wildlife and the food chain | 5 adventures, 30 steps |
+| `islami/` | Rumah Islami: shalat step by step, everyday duas, Juz 30, the 25 prophets | 92 prayer steps, 20 duas, 37 surahs, 25 stories |
 | `koleksi.html` | The zoo, the pets, and the parent view | 50 animals, 4 pets |
 
 Roughly **3,500 distinct learning items**, plus a counting engine that generates
 new questions forever. At 40 answers a day that is many months of material.
 
 ---
+
+## One app
+
+The home page groups everything under four headings: **Belajar** (the
+learning games), **Bergerak** (the runner), **Rumah Islami** (shalat, doa,
+Juz 30, the prophets, and the Islamic home page) and **Koleksi**. All of it
+shares one set of names, one XP total, one streak, one pet and one zoo, so a
+surah memorised or a water cycle run counts toward the same animals as a word
+read. The Koleksi parent view shows XP from the runner and from the Islamic
+pages alongside the rest.
+
+From inside Rumah Islami, the 🏡 key on the bottom strip and the button on its
+home page lead back here.
+
+## Lari Sambil Belajar — the runner that teaches
+
+`runner/` is the Sensory Runner: an endless runner steered by the child's own
+body through the camera (jump, squat, step sideways, stretch up, make body
+letters, hold yoga poses), built for occupational therapy goals. It also
+teaches: choose an adventure and every movement acts out an idea.
+
+| Adventure | Steps, and the movement for each |
+|---|---|
+| 💧 Siklus Air / Water cycle | sea (jump), evaporation (stretch up), condensation (make an O), wind (step aside), rain (squat), flowing back (step aside) |
+| 🦋 Siklus Kupu-kupu / Butterfly | egg (squat small), caterpillar (step aside), chrysalis (O), butterfly (T, wings out) |
+| 🐠 Kehidupan Laut / Sea life | crab (sideways), dolphin (leap), sea turtle (swim low), starfish (X), jellyfish (float up), pufferfish (O), octopus (zoom aside) |
+| 🐯 Satwa Liar / Wildlife | kangaroo (hop), Sumatran tiger (crouch), Javan hawk-eagle (T), giraffe (stretch up), orangutan (Y), Sumatran elephant (step aside), Komodo (creep low) |
+| 🌾 Rantai Makanan / Food chain | rice, grasshopper, frog, snake, eagle, decomposers |
+
+Each step arrives on the track in order, is spoken and shown, and once done
+its fact is read out. After one full loop the questions start: *"After
+evaporation, what comes next?"*, *"Who walks sideways?"*, answered by stepping
+into the lane with the right sign. Indonesian, English or both. Three hearts
+per run so nobody is sent back to the menu mid-cycle. Every lesson learned and
+question answered earns XP here like any other game.
+
+It needs a camera (iPad or laptop), or can be played with the keyboard. See
+`runner/README.md` for the movements, the tuning and the tests
+(`cd runner && npm test`).
+
+## Rumah Islami — Islamic studies
+
+`islami/` is the Islamic companion: prayer in 92 steps with posture, Arabic,
+meaning and audio for all five prayers; 20 everyday duas with recited audio;
+all 37 surahs of Juz 30; the stories of the 25 prophets with their lessons;
+and a recitation checker for parents. See `islami/README.md` for the sources,
+licences and how the audio was made.
 
 ## Membaca — reading Bahasa Indonesia
 
@@ -364,14 +414,18 @@ Voices. Meanings always appear on screen either way.
 ## Publishing
 
 Upload every file in this folder to a GitHub repository, then
-**Settings, Pages, main / root**. Keep the `audio/` folder alongside.
+**Settings, Pages, main / root**. Keep the `audio/`, `runner/` and `islami/`
+folders alongside. Pages serves over HTTPS, which the runner's camera needs.
 
 Works offline once loaded, apart from the web font. Best on an iPad held in
 landscape.
 
 ## Editing the content
 
-Each game is a single HTML file with its data at the top of the script. Search
+Each game is a single HTML file with its data at the top of the script.
+`common.js` is copied into every page (so each one also works on its own); after
+changing it, run `python3 tools/inline-common.py` (and
+`python3 tools/inline-common.py islami` for Rumah Islami's own copy). Search
 for `const WORDS`, `const QUIZ` or `const LEVELS` and add rows in the same shape.
 New Indonesian words fall back to the device voice, since their audio clips do
 not exist yet.

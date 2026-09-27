@@ -41,6 +41,8 @@ body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);min-height:100d
 .card .en{font-size:12.5px;color:rgba(255,251,242,.65);margin-bottom:6px}
 .card .nt{font-size:12.5px;color:rgba(255,251,242,.8);line-height:1.45}
 .card .bar{position:absolute;left:0;top:0;bottom:0;width:6px}
+.grp{grid-column:1/-1;font-family:'Fredoka',sans-serif;font-size:20px;color:var(--sand);margin:10px 2px -2px}
+.grp small{font-family:'Nunito',sans-serif;font-size:12.5px;color:rgba(255,251,242,.6);font-weight:600;margin-left:6px}
 .progstrip{background:rgba(4,34,46,.45);border:1px solid rgba(247,233,204,.2);border-radius:16px;
  padding:11px 14px;margin-bottom:10px}
 .progstrip .g{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--amber)}
@@ -86,7 +88,8 @@ input[type=text]:focus{outline:2px solid var(--kelp);outline-offset:1px}
   <div class="photo"><img src="family.jpg" alt="Our family" id="heroPhoto"></div>
   <div class="hi">
    <h1 id="title">Rumah Belajar <span id="childName">Baim</span></h1>
-   <p id="blurb">Reading, English, the animal encyclopedia, counting and writing.
+   <p id="blurb">Reading, English, the animal encyclopedia, counting and writing,
+      a whole-body runner that teaches nature, and shalat, doa, Juz 30 and the prophets.
       Built around the Cambridge, Australian and Indonesian curriculums.</p>
    <div class="who" id="who"></div>
    <div id="prog" class="progstrip"></div>
@@ -176,8 +179,30 @@ input[type=text]:focus{outline:2px solid var(--kelp);outline-offset:1px}
       note: "Food webs, adding and taking away", tone: "#5A3E8A" },
     { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
       note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "runner", file: "runner/index.html", icon: "\uD83C\uDFC3", en: "Move & Learn Runner", idn: "Lari Sambil Belajar",
+      note: "Run with your whole body: the water cycle, butterflies, sea life, wildlife and the food chain",
+      tone: "#B5541C", group: "move" },
+    { id: "shalat", file: "islami/shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
+      note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C", group: "islami" },
+    { id: "doa", file: "islami/doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
+      note: "20 duas for waking, eating and travelling", tone: "#0C556C", group: "islami" },
+    { id: "juz30", file: "islami/juz30.html", icon: "\uD83D\uDCD6", en: "Memorising Juz 30", idn: "Hafalan Juz 30",
+      note: "37 surahs, listen and follow along", tone: "#7A4A22", group: "islami" },
+    { id: "nabi", file: "islami/nabi.html", icon: "\u2B50", en: "Stories of 25 prophets", idn: "Kisah 25 Nabi",
+      note: "Who they were and what they teach us", tone: "#5A3E8A", group: "islami" },
+    { id: "islami", file: "islami/index.html", icon: "\uD83D\uDD4C", en: "Islamic Home", idn: "Rumah Islami",
+      note: "All of the above in one place, with progress and the recitation checker", tone: "#2F6B3F", group: "islami" },
     { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
-      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C" }
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C", group: "zoo" }
+  ];
+
+  /* The hub groups the cards under these headings, in this order. Games with
+     no group are the core learning games. */
+  var GROUPS = [
+    { id: "learn",  en: "Learn",           idn: "Belajar" },
+    { id: "move",   en: "Move and learn",  idn: "Bergerak" },
+    { id: "islami", en: "Islamic studies", idn: "Rumah Islami" },
+    { id: "zoo",    en: "Zoo and progress", idn: "Koleksi" }
   ];
 
   var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
@@ -220,6 +245,7 @@ input[type=text]:focus{outline:2px solid var(--kelp);outline-offset:1px}
     P: P,
     shorten: shorten,
     GAMES: GAMES,
+    GROUPS: GROUPS,
     CREDITS: CREDITS,
     CURRICULUM: CURRICULUM,
     mountBack: mountBack
@@ -592,7 +618,6 @@ input[type=text]:focus{outline:2px solid var(--kelp);outline-offset:1px}
            unlockedZoo: unlockedZoo, petStage: petStage,
            reset: function () { pset({}); } };
 })(window);
-
 </script>
 <script>
 const $=id=>document.getElementById(id);
@@ -609,7 +634,12 @@ function paint(){
    "</b> for beloved <b>"+n.child+"</b> and <b>"+n.sib+"</b>. "+
    "Free to copy and share for any family who needs it.";
  const g=$("grid");g.innerHTML="";
- SUPER.GAMES.forEach(gm=>{
+ (SUPER.GROUPS||[{id:"learn"}]).forEach(grp=>{
+ const games=SUPER.GAMES.filter(gm=>(gm.group||"learn")===grp.id);
+ if(!games.length)return;
+ if(grp.en){const h=document.createElement("h2");h.className="grp";
+  h.innerHTML=grp.idn+' <small>'+grp.en+'</small>';g.appendChild(h);}
+ games.forEach(gm=>{
   const a=document.createElement("a");
   a.className="card";a.href=gm.file;
   a.innerHTML='<span class="bar" style="background:'+gm.tone+'"></span>'+
@@ -618,6 +648,7 @@ function paint(){
    '<div class="nt">'+SUPER.P(gm.note)+'</div>';
   a.addEventListener("click",()=>{try{localStorage.setItem("super.last",gm.file)}catch(e){}});
   g.appendChild(a);
+ });
  });
  const st=SUPER.xp.stats();
  const lo=st.grade.xp,hi=st.next?st.next.xp:st.grade.xp+1;

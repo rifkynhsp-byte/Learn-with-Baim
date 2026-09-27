@@ -1,0 +1,21 @@
+name: runner tests
+
+on:
+  push:
+    branches: ['**']
+    paths: ['runner/**', '.github/workflows/runner-tests.yml']
+  pull_request:
+    paths: ['runner/**', '.github/workflows/runner-tests.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: runner
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test

@@ -1,0 +1,295 @@
+# Sensory Runner
+
+A motion-tracked endless runner — Subway Surfers style — that a child plays with
+their whole body instead of a controller. It runs entirely in the browser on an
+iPad, laptop or Smart TV, needs no install and no special hardware beyond a
+webcam, and after the first load it works offline.
+
+Every movement the game asks for is an occupational-therapy movement:
+
+| In the game | The child does | What it targets |
+| --- | --- | --- |
+| 🐊 🐢 🐸 on the ground | **Jumps** with both feet | Vestibular input, lower-body heavy work |
+| 🦇 🐝 🦅 flying at head height | **Squats** low and holds | Core stability, sustained leg strength (STNR) |
+| 🐯 🐘 🦏 filling a lane | **Steps sideways** into the open lane | Weight shift, bilateral coordination, crossing the midline (ATNR) |
+| ⭐ hanging high | **Stretches both arms overhead** | Upper-body extension, midline awareness |
+| **Letter wall** | **Makes the letter with their body** to fit through the hole | Motor planning, bilateral coordination, body awareness — and the letter itself |
+| Yoga gate | **Holds Cow, Cat or Cobra** | Reflex integration: quadruped work (STNR), spinal extension |
+| Rest screen | Follows the breathing circle | Coming back down after exertion |
+
+A child who cannot yet jump with both feet can drive the same mechanic by
+**marching** — lifting one knee high counts as a jump.
+
+## Learning adventures
+
+The runner also teaches. Pick an adventure on the menu and every movement
+acts out an idea, so the child is not only jumping and ducking but walking
+through the water cycle, or moving like a crab, a dolphin and a starfish.
+
+| Adventure | What it teaches | Steps |
+| --- | --- | --- |
+| 💧 **Siklus Air** / The Water Cycle | sea, evaporation, condensation, wind, rain, flowing back | 6, a cycle |
+| 🦋 **Siklus Kupu-kupu** / Butterfly | egg, caterpillar, chrysalis, butterfly | 4, a cycle |
+| 🐠 **Kehidupan Laut** / Sea Life | crab, dolphin, sea turtle, starfish, jellyfish, pufferfish, octopus | 7 animals |
+| 🐯 **Satwa Liar** / Wildlife | kangaroo, Sumatran tiger, Javan hawk-eagle, giraffe, orangutan, Sumatran elephant, Komodo | 7 animals |
+| 🌾 **Rantai Makanan** / Food Chain | rice, grasshopper, frog, snake, eagle, decomposers | 6, a cycle |
+
+Every step is paired with the movement that acts it out:
+
+| Step | The child | Why that movement |
+| --- | --- | --- |
+| ☀️ Evaporation | stretches both arms up | the water rises as vapour |
+| ☁️ Condensation | makes an **O** | the vapour gathers into a cloud |
+| 🌬️ Wind | steps sideways | the wind pushes the cloud along |
+| 🌧️ Rain | squats | the rain falls down |
+| 🦀 Crab | steps sideways | crabs walk sideways |
+| 🐬 Dolphin | jumps | dolphins leap out to breathe |
+| ⭐ Starfish | makes an **X** | five points: two arms, two legs, a head |
+| 🦅 Eagle | makes a **T** | wings spread wide |
+| 🦧 Orangutan | makes a **Y** | arms up, swinging through the trees |
+| 🦒 Giraffe | stretches up | the tallest animal |
+
+How a run goes:
+
+1. **One step at a time, in order.** A lesson stop comes down the track about
+   every 55 metres: the stage's picture on the obstacles, a card in the corner
+   ("Langkah 2/6: Penguapan"), and the instruction spoken out loud. Do the
+   movement and the fact is shown and read: *"The sun warms the water. It turns
+   into vapour and rises into the sky."*
+2. **The cycle closes.** After the last step it goes back to the first, and the
+   strip in the corner shows it with a ↺. The ethic follows: save water, never
+   throw plastic in the sea, never buy wild animals.
+3. **Then questions.** From the second time round, every stop starts with a
+   question on three signs, one per lane: *"After evaporation, what comes
+   next?"* or *"Who walks sideways?"* The child answers by stepping into the
+   lane with the right picture. The wrong lane is never punished: it says the
+   right answer, shows it, and the stop that follows acts it out.
+4. **A missed stretch or letter comes round again**, rather than being skipped,
+   so the cycle is always learned in order.
+5. **Three hearts.** In an adventure a crash costs a heart instead of the whole
+   run, so a child does not get sent back to the menu halfway up to the clouds.
+
+Everything is in **Bahasa Indonesia, English, or both** (the Language picker).
+In "both" each line is said in Indonesian first, then English. The device's
+own Indonesian voice is used when there is one, found under any of the codes
+devices report it as (`id-ID`, `in-ID`, `id`, `ind`).
+
+The free run is unchanged, and is still on the menu as *Lari bebas*.
+
+To add an adventure, copy one in `js/lessons.js`. Each step needs a picture,
+a name, a movement, what to do, a fact, and (for animals) a question, all in
+both languages. The tests check that nothing is missing, that each question
+has exactly one right answer, and that a cycle never asks for the same
+movement twice in a row.
+
+### Letter walls
+
+A wall comes down the track with a letter-shaped hole in it, and the only way
+through is to make that letter with your body. The first one arrives inside the
+first hundred metres and another every hundred or so after that, which is what
+keeps the run demanding something of the whole body rather than just the legs.
+
+| Letter | The shape |
+| --- | --- |
+| **T** | Arms straight out to the sides |
+| **Y** | Arms up high in a V |
+| **O** | Hands together above the head |
+| **X** | Arms up wide *and* feet wide |
+| **A** | Feet wide, arms down and angled out |
+| **L** | One arm straight out, the other down |
+
+A wall is never fatal. Missing the shape costs the streak and the bonus and the
+run carries on — being sent back to the menu over a letter you could not make
+in time is how a child decides the game is against them. The shape only has to
+be held *somewhere* during the approach, not at the exact moment of impact, and
+a Y counts for an X and vice versa.
+
+### Streaks
+
+Clearing things without a mistake builds a streak, and every fifth one raises
+the fruit multiplier, up to ×5. A crash or a missed wall resets it. The best
+streak of the session is on the report at the end.
+
+### Zones
+
+The run passes through five places — City, Jungle, Desert, Snow, Space — each
+with its own sky, skyline, road colour and roadside scenery, changing about
+every two minutes at Medium. A background that never changes stops being
+noticed, and noticing is half of what this is training.
+
+## Playing it
+
+1. Open the site on a device with a camera.
+2. Choose a speed, then tap **Start with camera** and allow camera access.
+3. The **practice room** opens. It waits until the whole child is in frame,
+   takes a three-second standing calibration, then asks for one movement at a
+   time — jump, duck, step right, step left, stretch, letter T, letter Y, Cow,
+   Cobra — speaking each instruction out loud and ticking it off when it sees
+   it.
+4. When the checklist is done, a countdown starts the run.
+
+No drill can trap the child: each one times out after 18 seconds, says something
+encouraging, and moves on. The whole practice room can be skipped with a button,
+or turned off in the menu.
+
+**Play with keyboard instead** skips the camera entirely: arrow keys or WASD to
+move and duck, space to jump, shift to stretch, Enter to pass a yoga gate.
+Useful for showing a child what the game wants before they try it with their
+body, and for testing.
+
+Nothing is recorded and nothing is uploaded. The camera frames are read into
+the tracker and discarded; the only thing that ever leaves the device is the
+one-off download of the tracking model.
+
+### Speed
+
+Three settings in the menu, remembered between sessions:
+
+| Setting | Pace | Time between obstacles |
+| --- | --- | --- |
+| **Slow** | half of Medium | roughly 2× longer |
+| **Medium** | the default | the baseline |
+| **Fast** | double Medium | roughly half |
+
+Start on Slow. Medium is already brisk for a five-year-old who is learning what
+the movements do.
+
+### On a television
+
+Smart TV browsers generally cannot run the tracker. Run the game on an iPad or
+laptop and mirror the screen to the TV over AirPlay or Chromecast — the tracking
+and physics still run locally, so the mirroring lag affects only what is
+displayed, not the timing of the game. A 5 GHz Wi-Fi network keeps that lag
+small.
+
+## Statistics
+
+Every run counts jumps, squats, side steps, stretches, poses and fruit, and the
+**Progress** screen totals them for today and for all time, with a list of
+recent sessions. Everything is stored on the device only, and can be cleared
+from that screen.
+
+The calorie figure is an **estimate**. It uses the standard MET equation —
+`kcal/min = MET × 3.5 × kg ÷ 200` — with the MET value inferred from how often
+the child actually moved rather than from how long the game was open, so a
+child standing in front of the camera is credited with close to nothing. The
+default profile is a 5-year-old weighing 18 kg; change `CHILD` at the top of
+`js/stats.js` for a different child. MET values for children are themselves
+approximations and young children move less economically than the adults these
+equations were built from, so the number is useful for comparing one session
+with another, not as a measurement.
+
+## Deploying it
+
+The site is static files with no build step.
+
+* **GitHub Pages**: enable Pages with *GitHub Actions* as the source. Pushing to
+  `main` runs `.github/workflows/pages.yml`, which publishes the repository as
+  is. Pages serves over HTTPS, which browsers require before they will hand out
+  camera access.
+* **Locally**: `npm run serve` and open <http://localhost:8080>. `localhost` is
+  treated as a secure origin, so the camera works there too. Opening
+  `index.html` as a `file://` URL will not work.
+
+Installing it to the home screen (Safari: Share → Add to Home Screen) gives a
+fullscreen, chrome-free session, which is one less thing for a distractible
+child to tap out of.
+
+## How it works
+
+```
+js/pose.js      camera + MediaPipe landmarks -> jump, duck, lane, stretch
+js/shapes.js    held body shapes -> Cow, Cat, Cobra and the letters T Y O X L A
+js/tutorial.js  the practice room: framing, calibration, one drill at a time
+js/lessons.js   the learning adventures: steps, movements, facts, questions
+js/game.js      three-lane runner, pseudo-3D projection on a 2D canvas
+js/coach.js     spoken instructions and praise, via the browser's own voice
+js/stats.js     session counts, the exercise estimate, on-device history
+js/audio.js     sound effects synthesised at runtime, no audio files
+js/app.js       screen flow, keyboard fallback, wake lock, service worker
+sw.js           offline cache for the app shell, the tracker and the model
+```
+
+**Tracking.** MediaPipe's `pose_landmarker_lite` model runs on-device through
+WebAssembly, in `VIDEO` mode so it keeps temporal state between frames and
+stays steady during fast movement. It is loaded from a CDN on first run and
+then cached by the service worker.
+
+**Gestures.** The three-second calibration records where the child's hips,
+shoulders and knees sit while standing, and how long their torso is. Every
+threshold afterwards is expressed in torso lengths, so the same numbers work for
+a child standing one metre from a laptop or three metres from a TV, and for a
+different child entirely. Squats and lanes use hysteresis so a wobble cannot
+make them flicker. The image is mirrored once, in `_measure`, so a step to the
+child's right moves the runner right on screen.
+
+A **jump** can be earned three ways, because a small child's hop off carpet
+barely moves their hips: enough height, enough upward speed, or one knee lifted
+high enough that marching on the spot counts.
+
+**Floor poses** are judged from the tilt of the torso and where the hips sit
+relative to the lowest thing in frame. Cat and Cow are told apart at the head,
+which the model tracks far more reliably than the curve of a small child's
+spine, and a neutral table top is accepted for either — getting onto hands and
+knees is most of the work.
+
+**Cobra** asks only that the child is down on the floor, not on all fours, with
+some lift through the chest. The strict version — hips pinned, legs flat, chest
+well up — turned out to be more than a five-year-old will hold, so a loose J
+shape counts.
+
+**Body letters** are judged facing the camera, from where each wrist sits
+relative to the shoulders (above or below, near the body or far out) and how far
+apart the feet are, all in shoulder widths. The checks run from the most
+constrained shape down, because the letters overlap: an O is a Y with the hands
+brought together, and an X is a Y with the feet apart.
+
+**Timing tolerance.** A crash is never instant. Jumping up to 0.75 s before an
+obstacle still counts, and so does jumping up to 0.3 s after contact, because
+the crash is deferred for that long before it becomes final. The same applies to
+squats. The point is that the child moved.
+
+**Difficulty.** Speed is capped, gaps between obstacles never fall below roughly
+a second at top speed, the jump arc is floaty, and the first stretch of every
+run is a warm-up with one movement at a time and no lane changes.
+
+**Screen sleep.** No one touches the screen during a run, so tablets dim and
+kill the tracking loop. The app holds a `screen` wake lock for the session and
+re-acquires it when the tab becomes visible again.
+
+## Tuning it
+
+Three places hold every number worth adjusting:
+
+* `TUNING` in `js/pose.js` — how big a movement has to be before it counts.
+  These are set low on purpose: a missed jump is far worse than an extra one,
+  because the child tried and the game ignored them. Raise `jumpRise` only if
+  small bounces trigger jumps by accident.
+* `TOLERANCE` and the constants at the top of `js/game.js` — timing forgiveness,
+  speed presets, jump arc, obstacle sizes, and the spawn mix in `_spawn`.
+* `CHILD` in `js/stats.js` — age and weight for the exercise estimate.
+* `FIRST_LESSON`, `LESSON_EVERY` and `HEARTS` at the top of `js/game.js` — how
+  often the lesson stops come and how many bumps an adventure forgives.
+
+After changing any of them, run the tests: they check that the course stays
+beatable, that each obstacle type still forces the movement it is meant to, that
+early and late movements are still forgiven, and that the practice room can
+never dead-end.
+
+```
+npm test
+```
+
+## Inside Rumah Belajar
+
+This runner is also part of [Rumah Belajar](https://github.com/rifkynhsp-byte/Learn-with-Baim),
+in its `runner/` folder. There it loads the family app's `common.js`, and
+every lesson learned and question answered earns the same XP, pet food and
+zoo animals as the other games. On its own, without `common.js`, it plays
+exactly the same and simply does not score.
+
+## Notes
+
+This is a movement game built around one child's occupational-therapy goals. It
+is not a medical device, not a diagnostic tool, and not a substitute for advice
+from a therapist.

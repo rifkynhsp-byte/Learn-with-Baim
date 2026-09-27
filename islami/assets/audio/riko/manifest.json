@@ -1,0 +1,94 @@
+{
+"niat_subuh": {
+"f": "niat_subuh.mp3",
+"d": 15.08
+},
+"niat_dzuhur": {
+"f": "niat_dzuhur.mp3",
+"d": 17.1
+},
+"niat_ashar": {
+"f": "niat_ashar.mp3",
+"d": 16.09
+},
+"niat_maghrib": {
+"f": "niat_maghrib.mp3",
+"d": 18.07
+},
+"niat_isya": {
+"f": "niat_isya.mp3",
+"d": 20.09
+},
+"takbir": {
+"f": "takbir.mp3",
+"d": 3.1
+},
+"iftitah": {
+"f": "iftitah.mp3",
+"d": 63.07
+},
+"fatihah": {
+"f": "fatihah.mp3",
+"d": 69.08
+},
+"ikhlas": {
+"f": "ikhlas.mp3",
+"d": 24.08
+},
+"takbir_ruku": {
+"f": "takbir_ruku.mp3",
+"d": 4.07
+},
+"ruku": {
+"f": "ruku.mp3",
+"d": 22.07
+},
+"itidal": {
+"f": "itidal.mp3",
+"d": 6.08
+},
+"doa_itidal": {
+"f": "doa_itidal.mp3",
+"d": 40.07
+},
+"takbir_sujud": {
+"f": "takbir_sujud.mp3",
+"d": 1.08
+},
+"sujud": {
+"f": "sujud.mp3",
+"d": 20.09
+},
+"takbir_duduk": {
+"f": "takbir_duduk.mp3",
+"d": 2.09
+},
+"duduk": {
+"f": "duduk.mp3",
+"d": 17.1
+},
+"takbir_sujud2": {
+"f": "takbir_sujud2.mp3",
+"d": 3.1
+},
+"sujud2": {
+"f": "sujud2.mp3",
+"d": 19.08
+},
+"tasyahud_awal": {
+"f": "tasyahud_awal.mp3",
+"d": 59.08
+},
+"tasyahud_akhir": {
+"f": "tasyahud_akhir.mp3",
+"d": 102.1
+},
+"doa_tasyahud": {
+"f": "doa_tasyahud.mp3",
+"d": 29.09
+},
+"salam": {
+"f": "salam.mp3",
+"d": 14.08
+}
+}
