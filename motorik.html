@@ -221,8 +221,30 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
       note: "Food webs, adding and taking away", tone: "#5A3E8A" },
     { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
       note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "runner", file: "runner/index.html", icon: "\uD83C\uDFC3", en: "Move & Learn Runner", idn: "Lari Sambil Belajar",
+      note: "Run with your whole body: the water cycle, butterflies, sea life, wildlife and the food chain",
+      tone: "#B5541C", group: "move" },
+    { id: "shalat", file: "islami/shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
+      note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C", group: "islami" },
+    { id: "doa", file: "islami/doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
+      note: "20 duas for waking, eating and travelling", tone: "#0C556C", group: "islami" },
+    { id: "juz30", file: "islami/juz30.html", icon: "\uD83D\uDCD6", en: "Memorising Juz 30", idn: "Hafalan Juz 30",
+      note: "37 surahs, listen and follow along", tone: "#7A4A22", group: "islami" },
+    { id: "nabi", file: "islami/nabi.html", icon: "\u2B50", en: "Stories of 25 prophets", idn: "Kisah 25 Nabi",
+      note: "Who they were and what they teach us", tone: "#5A3E8A", group: "islami" },
+    { id: "islami", file: "islami/index.html", icon: "\uD83D\uDD4C", en: "Islamic Home", idn: "Rumah Islami",
+      note: "All of the above in one place, with progress and the recitation checker", tone: "#2F6B3F", group: "islami" },
     { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
-      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C" }
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C", group: "zoo" }
+  ];
+
+  /* The hub groups the cards under these headings, in this order. Games with
+     no group are the core learning games. */
+  var GROUPS = [
+    { id: "learn",  en: "Learn",           idn: "Belajar" },
+    { id: "move",   en: "Move and learn",  idn: "Bergerak" },
+    { id: "islami", en: "Islamic studies", idn: "Rumah Islami" },
+    { id: "zoo",    en: "Zoo and progress", idn: "Koleksi" }
   ];
 
   var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
@@ -265,6 +287,7 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
     P: P,
     shorten: shorten,
     GAMES: GAMES,
+    GROUPS: GROUPS,
     CREDITS: CREDITS,
     CURRICULUM: CURRICULUM,
     mountBack: mountBack
@@ -637,7 +660,6 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
            unlockedZoo: unlockedZoo, petStage: petStage,
            reset: function () { pset({}); } };
 })(window);
-
 </script>
 <div class="app">
  <div class="topbar">
