@@ -21,9 +21,11 @@ the names are changeable in Settings.
 | `membaca.html` | Reading Bahasa Indonesia by syllable | 634 words, 6 levels |
 | `english.html` | English words, listening, conversation, reasoning | 583 items, 6 levels |
 | `ensiklopedia.html` | Animals, Latin names, science, ethics, stories, Indonesia | 2,066 items, 10 levels |
-| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 96 scenes |
+| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 135 pages |
+| `dongeng.html?set=siklus` | Siklus Alam: nature cycles and environmental science | 11 adventures, 85 pages |
+| `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 8 levels, 10 patterns, 6 games, 12 exercises |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
-| `menulis.html` | Handwriting and drawing with the Apple Pencil | 219 items, 16 levels |
+| `menulis.html` | Handwriting and drawing with the Apple Pencil | 246 items, 18 levels |
 | `koleksi.html` | The zoo, the pets, and the parent view | 50 animals, 4 pets |
 
 Roughly **3,500 distinct learning items**, plus a counting engine that generates
@@ -136,7 +138,75 @@ animals that walk, hop and swim between pages, and something to do.
 - Every story ends with its lesson, a true fact about the animal, and up to
   three stars, kept on the story shelf.
 
+Every story is 9 to 12 pages long, with an activity on most pages.
+
 To add a story, copy one entry in `const STORIES` and change the scenes.
+
+## Siklus Alam — nature cycles and environmental science
+
+A second shelf in the same page (the tab at the top, or `dongeng.html?set=siklus`),
+made for a child who loves nature documentaries. Eleven adventures:
+
+| Adventure | Level |
+|---|---|
+| **Perjalanan Tirta** / The water cycle: evaporation, condensation, rain, rivers, saving water | 1 |
+| **Karbo** / The carbon cycle: photosynthesis, breathing, decomposers, fossil fuels, planting trees | 2 |
+| **Misteri Gas Metana** / Methane: cows, flooded rice fields, landfill, compost | 3 |
+| **Siapa Makan Siapa?** / Food chains, herbivores and carnivores, predator balance, extinction | 2 |
+| **Pekerja Kecil** / Bacteria and decomposers, tempeh and yoghurt, handwashing | 2 |
+| **Teman Hidup** / Symbiosis: mutualism, commensalism, parasitism | 2 |
+| **Bumi Kepanasan** / Climate change, melting ice, sea-level rise, mangroves | 3 |
+| **Dari Mana Energi Kita?** / Energy: food, coal, wind, solar, geothermal, saving power | 2 |
+| **Menyelam ke Laut Dalam** / Ocean zones, glowing animals, whale sharks, coral bleaching | 2 |
+| **Ekspedisi Satwa Liar** / Indonesian wildlife and the Wallace Line, the wildlife trade | 3 |
+| **Siklus Hidup** / Life cycles of butterflies and frogs | 1 |
+
+Four science activities on top of the story ones:
+
+- **Cycle loop**: tap round a cycle diagram in order; a traveller follows the
+  arrows and then keeps going round for ever.
+- **Slider**: change the world and watch it respond. Plant trees and the smog
+  clears, add greenhouse gas and the thermometer climbs, melt the ice and the
+  polar bear's floe shrinks, raise the sea and the houses flood, add owls and
+  the rats and rice rebalance, switch to wind and solar, dive into the dark.
+- **Match**: pair symbiotic partners, parents and babies, animals and islands.
+- **Sort**: good or bad for the river, compost or recycling, herbivore or
+  carnivore, renewable or not, west or east of the Wallace Line.
+
+Every adventure ends with something the child can do for the Earth.
+
+## Motorik & Sensori — motor and sensory
+
+Built from Baim's occupational therapy worksheets (weeks 1 and 2), as a
+support to therapy, not a replacement for it.
+
+**Pra-menulis (pre-writing)**, drawn with finger or Apple Pencil:
+
+| Level | Tingkat | What he does |
+|---|---|---|
+| Tebalkan garis 1 and 2 | 1 | Trace dotted zigzags, waves, boxes, arches, straight lines, S shapes, spirals and loops, dot to dot |
+| Salin garis | 1 | Copy a pattern from the example lane into the empty lane |
+| Cermin | 1 | Finish the other half of a shape across the mirror line on a grid |
+| Salin bentuk | 2 | Copy a coloured picture (circle and triangle, button, party hat, window, house) into an empty box |
+| Huruf besar, huruf kecil, angka | 2 | A–Z, a–z and 0–10 with numbered strokes and arrows, which must be written in order |
+
+Each is scored like Menulis: how much of the line he covered and how much ink
+stayed on it.
+
+**Tempel stiker**: drag stickers onto circles along an outline (jar, rocket,
+star, heart, fish, apple, house, butterfly, turtle, car), for the pincer grip.
+
+**Permainan sensori**: follow the butterfly (eye tracking), balloon breathing
+(calming), stack the cups (the 5 plastic cups), copy the rhythm (listening and
+memory), spot the difference (visual discrimination), and cross the middle
+(both sides of the body).
+
+**Gerak tubuh**: the gross motor exercises from the parent guides, week 1 and
+week 2 (yoga poses, gym ball with stickers, crawling while pushing a ball,
+stacking cups lying down, Superman pose, crawling for stickers), plus six
+extras. Each has steps, the equipment, why it helps, a timer or rep counter,
+and a seven-day log for parents.
+
 
 ## Berhitung — counting through food webs
 
@@ -159,11 +229,12 @@ grass is gone, how many rabbits stay?"
 Ruled lines like a handwriting book, a dashed model letter, and real pressure
 sensitivity from the Apple Pencil.
 
-Sixteen levels, grouped by the hand movement they share rather than
+Eighteen levels, grouped by the hand movement they share rather than
 alphabetically: strokes and shapes, round letters (c o a d g q), tall letters,
 the rest, capitals, numbers, **drawing emoji**, suku kata, Indonesian words,
 English words, longer words, family names, Indonesian sentences, English
-sentences, numbers as words, and more drawing.
+sentences, numbers as words, more drawing, pre-writing patterns like the
+therapy worksheets, and double shapes.
 
 - **Each letter is measured separately.** Writing "sap" does not complete
   "sapi"; all four letters must be traced.

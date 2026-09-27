@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Motorik</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--sand:#F7E9CC;--bone:#FFFBF2;--amber:#FFB247;--coral:#FF6B5B;--kelp:#5FE0A4;--ink:#2D2410;
+ --sky1:#5B3E8E;--sky2:#35245E;--sky3:#1B1236;--glow:#C9A8FF;
+ --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overscroll-behavior:none}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;flex-direction:column;
+ min-height:100dvh;user-select:none;-webkit-user-select:none;touch-action:manipulation;overflow:hidden;
+ background:radial-gradient(130% 80% at 50% -14%,var(--glow) 0%,transparent 56%),
+ linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 46%,var(--sky3) 100%);background-attachment:fixed}
+button{font-family:inherit}
+small{display:block}
+.btn small{font-size:.78em;opacity:.85}
+.app{flex:1;display:flex;flex-direction:column;max-width:1400px;width:100%;margin:0 auto;padding:8px 14px;min-height:0;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;color:var(--sand);margin-right:auto}
+.brand span{color:var(--amber)}
+.seg{display:flex;gap:3px;background:rgba(10,6,26,.5);padding:4px;border-radius:999px;border:1px solid rgba(247,233,204,.16)}
+.seg button{font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px;color:rgba(255,251,242,.6);background:none;border:0;padding:6px 11px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--amber);color:#40230A}
+.icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:18px;flex:none;
+ background:rgba(247,233,204,.1);border:1px solid rgba(247,233,204,.2);color:var(--bone);cursor:pointer}
+.view{flex:1;min-height:0;display:none;flex-direction:column}
+.view.on{display:flex}
+.scroll{overflow-y:auto;padding:8px 2px 24px}
+h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 2px;color:var(--sand)}
+.sub{margin:0 0 14px;color:rgba(255,251,242,.75);font-size:14.5px;line-height:1.5}
+.sections{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.sec{position:relative;border:0;text-align:left;cursor:pointer;border-radius:24px;overflow:hidden;color:var(--bone);padding:0;
+ background:#140C28;box-shadow:0 14px 30px rgba(0,0,0,.35);transition:transform .2s;display:flex;flex-direction:column}
+.sec:hover{transform:translateY(-4px)}
+.sec .art{height:120px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--emoji);font-size:50px}
+.sec .art i{font-style:normal;animation:bob 2.4s ease-in-out infinite}.sec .art i:nth-child(2){animation-delay:.5s}
+.sec .txt{flex:1;padding:12px 16px 16px;background:rgba(0,0,0,.35)}
+.sec h3{font-family:'Fredoka',sans-serif;margin:0;font-size:21px}
+.sec .en{font-size:13px;color:rgba(255,251,242,.7)}
+.sec .nt{font-size:13px;margin-top:6px;line-height:1.45;color:rgba(255,251,242,.85)}
+.note{background:rgba(255,178,71,.14);border:1px solid rgba(255,178,71,.4);border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.55;margin:14px 0 0}
+.grp{font-family:'Fredoka',sans-serif;font-size:18px;color:var(--amber);margin:16px 0 8px}
+.acts{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.act{border:0;cursor:pointer;border-radius:18px;padding:12px 14px;background:rgba(247,233,204,.1);border:1px solid rgba(247,233,204,.2);
+ color:var(--bone);text-align:left;display:flex;gap:12px;align-items:center}
+.act:hover{background:rgba(247,233,204,.18)}
+.act .e{font-family:var(--emoji);font-size:34px;flex:none;width:46px;text-align:center}
+.act b{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;display:block}
+.act small{display:block;color:rgba(255,251,242,.7);font-size:12.5px;line-height:1.35}
+.act .st{margin-left:auto;font-size:13px;white-space:nowrap}
+.back{align-self:flex-start;margin:6px 0}
+.btn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;border-radius:999px;padding:10px 18px;cursor:pointer;
+ background:rgba(247,233,204,.13);color:var(--bone);border:1px solid rgba(247,233,204,.24)}
+.btn.go{background:var(--amber);color:#40230A;border-color:var(--amber)}
+.btn.small{padding:7px 13px;font-size:13.5px}
+
+/* ---------- drawing board ---------- */
+.playhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0}
+.playhead .ttl{font-family:'Fredoka',sans-serif;font-size:18px;margin-right:auto}
+.playhead .ttl small{display:block;font-family:'Nunito',sans-serif;font-size:12.5px;color:rgba(255,251,242,.7)}
+.board{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;background:#FFFDF6;box-shadow:0 16px 36px rgba(0,0,0,.4);touch-action:none}
+.board canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;max-width:92%;text-align:center;
+ background:rgba(45,36,16,.86);color:#FFF6DF;border-radius:999px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:15px;pointer-events:none}
+.hint small{display:block;font-family:'Nunito',sans-serif;font-size:12px;opacity:.8}
+.meter{height:8px;border-radius:99px;background:rgba(10,6,26,.5);overflow:hidden;margin:6px 0 2px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--kelp),var(--amber));transition:width .3s}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pen{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.35);cursor:pointer}
+.pen.on{border-color:#fff;box-shadow:0 0 0 3px var(--amber)}
+.done{position:absolute;inset:0;z-index:5;display:none;place-items:center;background:rgba(20,12,40,.55)}
+.done.on{display:grid}
+.done .box{background:var(--bone);color:var(--ink);border-radius:26px;padding:20px 26px;text-align:center;animation:popin .45s cubic-bezier(.2,1.6,.4,1);min-width:260px}
+.done .stars{font-size:38px;letter-spacing:4px}
+.done h2{font-family:'Fredoka',sans-serif;margin:4px 0}
+.done p{margin:2px 0 12px;font-weight:800;color:#6A5A3A}
+
+/* ---------- stickers ---------- */
+.tray{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px 0}
+.stk{font-family:var(--emoji);font-size:34px;width:54px;height:54px;border-radius:14px;border:0;cursor:grab;
+ background:rgba(247,233,204,.14);display:grid;place-items:center;touch-action:none}
+.stk.on{background:var(--amber)}
+.float{position:fixed;z-index:50;font-family:var(--emoji);font-size:44px;pointer-events:none;transform:translate(-50%,-50%) scale(1.15)}
+.spot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:3px dashed #C9A66B;background:rgba(255,178,71,.08);
+ display:grid;place-items:center;font-family:var(--emoji);cursor:pointer;z-index:2}
+.spot.fill{border:0;background:none;animation:popin .35s}
+.spot.near{background:rgba(95,224,164,.35);border-color:#2E9C68}
+
+/* ---------- sensory ---------- */
+.stage{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;touch-action:none;
+ background:radial-gradient(circle at 50% 40%,#3B2A6E,#140C28)}
+.big{position:absolute;font-family:var(--emoji);line-height:1;transform:translate(-50%,-50%);pointer-events:none}
+.ring{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:16px}
+.say{font-family:'Fredoka',sans-serif;font-size:clamp(22px,4vw,40px);text-shadow:0 3px 10px rgba(0,0,0,.5)}
+.say small{display:block;font-family:'Nunito',sans-serif;font-size:.5em;opacity:.8}
+.drums{display:grid;grid-template-columns:1fr 1fr;gap:4%;width:min(90%,560px);aspect-ratio:1.4}
+.drum{border:0;border-radius:28px;font-family:var(--emoji);font-size:clamp(40px,8vw,80px);cursor:pointer;opacity:.55;transition:transform .12s,opacity .12s;box-shadow:0 8px 0 rgba(0,0,0,.3)}
+.drum.lit{opacity:1;transform:scale(1.06)}
+.grid9{display:grid;gap:8px;width:min(94%,720px)}
+.grid9 button{border:0;border-radius:14px;background:rgba(255,255,255,.12);font-family:var(--emoji);cursor:pointer;aspect-ratio:1;display:grid;place-items:center}
+.grid9 button.nope{animation:nope .4s;background:rgba(255,107,91,.4)}
+.grid9 button.yes{background:var(--kelp)}
+.cup{position:absolute;width:11%;aspect-ratio:.85;transform:translate(-50%,-50%);cursor:grab;touch-action:none;z-index:3}
+.cup svg{width:100%;height:100%;display:block;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.slot{position:absolute;width:11%;aspect-ratio:.85;transform:translate(-50%,-50%);border:3px dashed rgba(255,255,255,.35);border-radius:10px;z-index:1}
+.slot.ready{border-color:var(--amber);background:rgba(255,178,71,.12)}
+
+/* ---------- gross motor coach ---------- */
+.ex{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}
+@media (max-aspect-ratio:1/1){.ex{grid-template-columns:1fr}}
+.demo{position:relative;border-radius:22px;min-height:260px;background:linear-gradient(180deg,#8FD3FF,#D8F2FF 60%,#9FD48A 60%);overflow:hidden}
+.demo .mat{position:absolute;left:12%;right:12%;bottom:12%;height:9%;border-radius:12px;background:#7B8BE0}
+.demo .kid{position:absolute;left:50%;bottom:20%;font-family:var(--emoji);font-size:clamp(70px,12vw,120px);line-height:1;transform:translateX(-50%)}
+.demo .prop{position:absolute;bottom:20%;font-family:var(--emoji);font-size:clamp(34px,6vw,56px)}
+.card2{background:var(--bone);color:var(--ink);border-radius:22px;padding:16px 18px}
+.card2 h2{font-family:'Fredoka',sans-serif;margin:0 0 2px;font-size:24px}
+.card2 .en{color:#6A5A3A;font-weight:800;margin-bottom:8px}
+.card2 ol{margin:6px 0 10px;padding-left:22px;line-height:1.5;font-weight:700}
+.card2 ol small{display:block;font-weight:600;color:#6A5A3A}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chip{background:#EFE3C8;border-radius:99px;padding:4px 10px;font-size:13px;font-weight:800}
+.why{background:#DDF6E9;border-radius:14px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:8px 0}
+.safe{background:#FFE7DC;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.5}
+.timer{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}
+.timer .num{font-family:'Fredoka',sans-serif;font-size:44px;min-width:90px;text-align:center}
+.log{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.log span{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:800;background:rgba(247,233,204,.12)}
+.log span.y{background:var(--kelp);color:#063A22}
+
+@keyframes bob{50%{transform:translateY(-8%)}}
+@keyframes popin{from{transform:scale(.3);opacity:0}}
+@keyframes nope{20%{transform:translateX(-8%)}40%{transform:translateX(8%)}60%{transform:translateX(-5%)}80%{transform:translateX(5%)}}
+@keyframes crawl{0%,100%{transform:translateX(-80%) rotate(-3deg)}50%{transform:translateX(-20%) rotate(3deg)}}
+@keyframes stretch{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(1.18) translateY(-6%)}}
+@keyframes rock{0%,100%{transform:translateX(-50%) rotate(-8deg)}50%{transform:translateX(-50%) rotate(8deg)}}
+@keyframes jump{0%,100%{transform:translateX(-50%) translateY(0)}45%{transform:translateX(-50%) translateY(-45%)}}
+@keyframes lift{0%,100%{transform:translateX(-50%) rotate(-90deg)}50%{transform:translateX(-50%) rotate(-90deg) translateX(-18%)}}
+@keyframes side{0%,100%{transform:translateX(-120%)}50%{transform:translateX(20%)}}
+@keyframes roll{to{transform:rotate(360deg)}}
+.confetti{position:fixed;top:-20px;z-index:90;pointer-events:none;width:10px;height:14px;border-radius:2px;animation:fall 2.4s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<script>
+/* ============================================================
+   common.js  —  shared by every game in the super app
+   Names, settings, navigation, credits.
+   ============================================================ */
+(function (global) {
+
+  var DEFAULTS = {
+    child: "Baim",        // the learner
+    dad: "Papi Rifky",
+    mum: "Mommy Keke",
+    sib: "Ade Yahya",
+    dadShort: "Papi",
+    mumShort: "Mommy",
+    childShort: "Baim",
+    sibShort: "Ade"
+  };
+
+  function load() {
+    try {
+      var raw = JSON.parse(localStorage.getItem("super.names") || "{}");
+      var out = {};
+      for (var k in DEFAULTS) out[k] = (raw[k] && String(raw[k]).trim()) || DEFAULTS[k];
+      return out;
+    } catch (e) { return Object.assign({}, DEFAULTS); }
+  }
+  function save(n) {
+    try { localStorage.setItem("super.names", JSON.stringify(n)); } catch (e) {}
+    N = load();
+  }
+  var N = load();
+
+  /* Replace the built-in family names anywhere they appear in text or speech.
+     Longest first so "Papi Rifky" wins over "Papi". */
+  var MAP = [
+    ["Papi Rifky", "dad"], ["Mommy Keke", "mum"], ["Ade Yahya", "sib"],
+    ["Rifky", "dadShort"], ["Keke", "mumShort"], ["Yahya", "sibShort"],
+    ["Mommy", "mumShort"], ["Papi", "dadShort"], ["Baim", "child"]
+  ];
+  function P(s) {
+    if (s == null) return s;
+    s = String(s);
+    for (var i = 0; i < MAP.length; i++) {
+      var from = MAP[i][0], to = N[MAP[i][1]];
+      if (to && to !== from) s = s.split(from).join(to);
+    }
+    return s;
+  }
+
+  /* short forms derived from a full name: "Papi Rifky" -> "Papi" */
+  function shorten(full, fallback) {
+    if (!full) return fallback;
+    var bits = String(full).trim().split(/\s+/);
+    return bits[0] || fallback;
+  }
+
+  var GAMES = [
+    { id: "membaca", file: "membaca.html", icon: "\uD83D\uDCD6", en: "Reading", idn: "Membaca",
+      note: "Bahasa Indonesia, metode suku kata", tone: "#0C556C" },
+    { id: "english", file: "english.html", icon: "\uD83D\uDDE3\uFE0F", en: "English", idn: "Bahasa Inggris",
+      note: "Cambridge Starters & Movers", tone: "#2E7A55" },
+    { id: "ensiklopedia", file: "ensiklopedia.html", icon: "\uD83E\uDD81", en: "Encyclopedia", idn: "Ensiklopedia",
+      note: "Animals, Latin names, science, stories", tone: "#7A4A22" },
+    { id: "dongeng", file: "dongeng.html", icon: "\uD83E\uDD95", en: "Animal Stories", idn: "Dongeng Hewan",
+      note: "Interactive tales of Kancil, deer, dinosaurs and Komodo", tone: "#2F6B3F" },
+    { id: "siklus", file: "dongeng.html?set=siklus", icon: "\uD83C\uDF0D", en: "Nature Cycles", idn: "Siklus Alam",
+      note: "Water, carbon, methane, food chains, climate, energy, oceans and wildlife", tone: "#1F5F8A" },
+    { id: "motorik", file: "motorik.html", icon: "\uD83E\uDD38", en: "Motor & Sensory", idn: "Motorik & Sensori",
+      note: "Pre-writing worksheets, sticker patterns, sensory games, body movement", tone: "#6B3E9A" },
+    { id: "berhitung", file: "berhitung.html", icon: "\uD83D\uDD22", en: "Counting", idn: "Berhitung",
+      note: "Food webs, adding and taking away", tone: "#5A3E8A" },
+    { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
+      note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C" }
+  ];
+
+  var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
+                "for beloved Abang Baim and Ade Yahya.";
+
+  var CURRICULUM = [
+    ["Cambridge Pre A1 Starters / A1 Movers", "English vocabulary and listening papers"],
+    ["Cambridge Primary English & Science", "progression of comprehension and enquiry"],
+    ["NSW Early Stage 1 and Stage 1 (Australia)", "phonics, number sense, handwriting"],
+    ["Kurikulum Merdeka PAUD & SD (Indonesia)", "calistung, IPAS, Profil Pelajar Pancasila"],
+    ["Metode Suku Kata & SAS", "Indonesian syllable reading method"]
+  ];
+
+  /* a back button injected into any game page */
+  function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
+    var a = document.createElement("a");
+    a.href = "index.html";
+    a.className = "super-back";
+    a.setAttribute("aria-label", "Back to the menu");
+    a.innerHTML = "\u2190";
+    document.body.appendChild(a);
+    var css = document.createElement("style");
+    css.textContent =
+      ".super-back{position:fixed;left:10px;bottom:10px;z-index:95;width:44px;height:44px;" +
+      "border-radius:50%;display:grid;place-items:center;font-size:22px;text-decoration:none;" +
+      "background:rgba(4,34,46,.72);color:#FFFBF2;border:1px solid rgba(247,233,204,.28);" +
+      "box-shadow:0 6px 18px rgba(2,18,26,.45)}" +
+      ".super-back:hover{background:rgba(4,34,46,.92)}" +
+      "@media (min-aspect-ratio:1/1){.super-back{left:8px;bottom:8px;width:40px;height:40px}}";
+    document.head.appendChild(css);
+    if (title) document.title = P(title);
+  }
+
+  global.SUPER = {
+    names: function () { return N; },
+    defaults: DEFAULTS,
+    save: save,
+    reset: function () { try { localStorage.removeItem("super.names"); } catch (e) {} N = load(); },
+    P: P,
+    shorten: shorten,
+    GAMES: GAMES,
+    CREDITS: CREDITS,
+    CURRICULUM: CURRICULUM,
+    mountBack: mountBack
+  };
+})(window);
+
+/* ============================================================
+   PROGRESS: xp, grade bands, the zoo and the pets
+   ============================================================ */
+(function (global) {
+  var S = global.SUPER;
+
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
+  var GRADES = [
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
+  ];
+
+  /* 50 animals to collect. The cost rises steeply so the rare ones
+     really are rare. Kangaroo and koala are the last two. */
+  var ZOO = [
+    ["ant","\uD83D\uDC1C","Ant","Semut",40],
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
+  ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
+
+  /* pets grow up as the xp goes in */
+  var PETS = [
+    { id: "cat", en: "Cat", idn: "Kucing", stages: [
+      { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
+    { id: "chick", en: "Chicken", idn: "Ayam", stages: [
+      { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
+    { id: "frog", en: "Frog", idn: "Katak", stages: [
+      { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
+    { id: "tree", en: "Tree", idn: "Pohon", stages: [
+      { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
+  ];
+
+  function pget() {
+    try { return JSON.parse(localStorage.getItem("super.progress") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function pset(o) { try { localStorage.setItem("super.progress", JSON.stringify(o)); } catch (e) {} }
+
+  function addXp(game, n) {
+    var p = pget();
+    p.xp = (p.xp || 0) + n;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + n;
+    p.answers = (p.answers || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + n;
+    pset(p);
+    return p.xp;
+  }
+  function gradeFor(xp) {
+    var g = GRADES[0];
+    for (var i = 0; i < GRADES.length; i++) if (xp >= GRADES[i].xp) g = GRADES[i];
+    return g;
+  }
+  function nextGrade(xp) {
+    for (var i = 0; i < GRADES.length; i++) if (xp < GRADES[i].xp) return GRADES[i];
+    return null;
+  }
+  function unlockedZoo(xp) { return ZOO.filter(function (z) { return xp >= z.xp; }); }
+  function petStage(pet, xp) {
+    var s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (xp >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+  function stats() {
+    var p = pget(), xp = p.xp || 0;
+    return { xp: xp, answers: p.answers || 0, games: p.games || {}, days: p.days || {},
+             grade: gradeFor(xp), next: nextGrade(xp),
+             zoo: unlockedZoo(xp).length, zooTotal: ZOO.length };
+  }
+
+
+  /* ============================================================
+     SCORING
+     Research note: streaks help young learners, but rewards that
+     pay for volume alone push guessing. So points are paid for
+     QUALITY: first time right is worth full marks, a second try
+     less than half, and a third barely anything. The streak only
+     counts clean first-time answers, so it cannot be farmed.
+     ============================================================ */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
+
+  function award(game, o) {
+    o = o || {};
+    var level = o.level || 1, wrongs = o.wrongs || 0;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
+    var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
+    var p = pget();
+    var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
+    var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
+    var xp = Math.max(1, Math.round(base * quality * mult));
+    p.streak = streak;
+    p.best = Math.max(p.best || 0, streak);
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
+    p.xp = (p.xp || 0) + xp;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + xp;
+    p.answers = (p.answers || 0) + 1;
+    if (wrongs === 0) p.clean = (p.clean || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + xp;
+    pset(p);
+    return { xp: xp, streak: streak, mult: mult, food: p.food, total: p.xp };
+  }
+  function food() { return pget().food || 0; }
+  function streakNow() { return pget().streak || 0; }
+  function petFed(id) { var p = pget(); return (p.fed || {})[id] || 0; }
+  function feed(id) {
+    var p = pget();
+    if ((p.food || 0) < FOOD_COST) return null;
+    p.food -= FOOD_COST;
+    p.fed = p.fed || {};
+    p.fed[id] = (p.fed[id] || 0) + FOOD_VALUE;
+    pset(p);
+    return { food: p.food, fed: p.fed[id] };
+  }
+  function stageOf(pet) {
+    var f = petFed(pet.id), s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (f >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+
+  /* ============================================================
+     THE STRIP  —  a Touch Bar style row of live, contextual keys
+     ============================================================ */
+  function mountBar(actions) {
+    if (document.getElementById("superbar")) return;
+    var css = document.createElement("style");
+    css.textContent =
+     "#superbar{position:fixed;left:0;right:0;bottom:0;z-index:96;display:flex;align-items:center;gap:6px;" +
+     "padding:6px 10px;background:linear-gradient(180deg,rgba(6,20,28,.86),rgba(3,12,18,.96));" +
+     "border-top:1px solid rgba(247,233,204,.18);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}" +
+     "#superbar::-webkit-scrollbar{display:none}" +
+     "#superbar .k{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:12px;" +
+     "background:rgba(247,233,204,.10);border:1px solid rgba(247,233,204,.18);color:#FFFBF2;cursor:pointer;" +
+     "font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:14px;white-space:nowrap;transition:.15s}" +
+     "#superbar .k:hover{background:rgba(247,233,204,.2)}#superbar .k:active{transform:scale(.95)}" +
+     "#superbar .k.stat{cursor:default;background:rgba(6,20,28,.5)}" +
+     "#superbar .k .em{font-size:17px}" +
+     "#superbar .k.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}" +
+     "#superbar .grow{flex:1 1 auto;min-width:4px}" +
+     "#superbar .gain{position:fixed;pointer-events:none;font-family:Fredoka,sans-serif;font-weight:700;" +
+     "font-size:18px;color:#5FE0A4;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+     "@keyframes floatup{to{transform:translateY(-46px);opacity:0}}" +
+     "body{padding-bottom:56px}.super-back{bottom:60px!important}" +
+     "@media (min-aspect-ratio:1/1){#superbar{padding:4px 8px}#superbar .k{height:36px;font-size:13px;padding:0 11px}" +
+     "body{padding-bottom:48px}.super-back{bottom:52px!important}}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div");
+    bar.id = "superbar";
+    document.body.appendChild(bar);
+    barActions = actions || [];
+    renderBar();
+    return bar;
+  }
+  var barActions = [];
+  function renderBar() {
+    var bar = document.getElementById("superbar"); if (!bar) return;
+    var st = stats(), fd = food(), sk = streakNow();
+    var pet = PETS[0], stage = stageOf(pet);
+    var html = "";
+    barActions.forEach(function (a, i) {
+      html += '<button class="k' + (a.hot ? " hot" : "") + '" data-i="' + i + '">' +
+              '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
+    });
+    html += '<span class="grow"></span>';
+    html += '<a class="k" href="index.html" title="Home"><span class="em">\uD83C\uDFE0</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
+    html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
+            (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
+    html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
+    html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
+            stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
+    bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
+    bar.querySelectorAll("button[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = barActions[Number(b.dataset.i)];
+        if (a && a.fn) a.fn();
+      });
+    });
+  }
+  function flyXp(n, streak) {
+    var bar = document.getElementById("superbar");
+    var g = document.createElement("div");
+    g.className = "gain";
+    g.textContent = "+" + n + (streak >= 3 ? "  \uD83D\uDD25" + streak : "");
+    g.style.right = "18px";
+    g.style.bottom = "60px";
+    g.style.animation = "floatup 1s ease-out forwards";
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 1000);
+    renderBar();
+  }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
+
+  S.score = { award: award, food: food, streak: streakNow, feed: feed,
+              stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
+  S.bar = { mount: mountBar, render: renderBar, fly: flyXp,
+            set: function (a) { barActions = a || []; renderBar(); } };
+
+  S.GRADES = GRADES; S.ZOO = ZOO; S.PETS = PETS;
+  S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
+           unlockedZoo: unlockedZoo, petStage: petStage,
+           reset: function () { pset({}); } };
+})(window);
+
+</script>
+<div class="app">
+ <div class="topbar">
+  <button class="icon" id="home" title="Menu Motorik" hidden>🏠</button>
+  <div class="brand">🤸 Motorik <span>& Sensori</span> · Motor & Sensory</div>
+  <div class="seg" id="lang"><button data-l="id">🇮🇩 ID</button><button data-l="both">🇮🇩+🇬🇧</button><button data-l="en">🇬🇧 EN</button></div>
+  <button class="icon" id="sound" title="Suara / Sound">🔊</button>
+ </div>
+
+ <!-- main menu -->
+ <div class="view on scroll" id="vMenu">
+  <h1>Motorik & Sensori</h1>
+  <p class="sub">Latihan pra-menulis, tempel stiker, permainan sensori, dan gerak tubuh, mengikuti lembar kerja terapi okupasi.<br>
+   Pre-writing, sticker patterns, sensory games and whole-body movement, following the occupational therapy worksheets.</p>
+  <div class="sections" id="sections"></div>
+  <div class="note">👨‍👩‍👦 <b>Untuk orang tua · For parents:</b> Aplikasi ini melengkapi, bukan menggantikan, terapi okupasi. Ikuti arahan terapis Baim, dan selalu dampingi saat latihan gerak tubuh.<br>
+   This app supports Baim's occupational therapy, it doesn't replace it. Follow the therapist's guidance and always supervise the movement exercises.</div>
+ </div>
+
+ <!-- a list of activities in one section -->
+ <div class="view scroll" id="vList"><h1 id="listH"></h1><p class="sub" id="listSub"></p><div id="listBody"></div></div>
+
+ <!-- drawing board: trace, copy, mirror, letters -->
+ <div class="view" id="vDraw">
+  <div class="playhead">
+   <div class="ttl" id="dTitle"></div>
+   <div class="tools">
+    <button class="pen on" data-c="#1F6FEB" style="background:#1F6FEB"></button>
+    <button class="pen" data-c="#E0483B" style="background:#E0483B"></button>
+    <button class="pen" data-c="#159B62" style="background:#159B62"></button>
+    <button class="btn small" id="dSay">🔈</button>
+    <button class="btn small" id="dClear">↺ Hapus · Clear</button>
+    <button class="btn small go" id="dNext">Lanjut · Next ➡️</button>
+   </div>
+  </div>
+  <div class="meter"><i id="dBar"></i></div>
+  <div class="board" id="board">
+   <canvas id="cGuide"></canvas><canvas id="cInk"></canvas>
+   <div class="hint" id="dHint"></div>
+   <div class="done" id="dDone"><div class="box"><div class="stars" id="dStars"></div><h2 id="dMsg"></h2><p id="dPct"></p>
+    <button class="btn go" id="dAgain2" style="color:#40230A">Lanjut · Next ➡️</button></div></div>
+  </div>
+ </div>
+
+ <!-- sticker patterns -->
+ <div class="view" id="vStick">
+  <div class="playhead"><div class="ttl" id="sTitle"></div>
+   <div class="tools"><button class="btn small" id="sClear">↺ Ulang · Restart</button><button class="btn small go" id="sNext">Gambar lain · Next ➡️</button></div></div>
+  <div class="meter"><i id="sBar"></i></div>
+  <div class="board" id="sBoard"><canvas id="cStick"></canvas><div id="spots"></div><div class="hint" id="sHint"></div></div>
+  <div class="tray" id="tray"></div>
+ </div>
+
+ <!-- sensory games -->
+ <div class="view" id="vSense">
+  <div class="playhead"><div class="ttl" id="gTitle"></div><div class="tools" id="gTools"></div></div>
+  <div class="meter"><i id="gBar"></i></div>
+  <div class="stage" id="stage"></div>
+ </div>
+
+ <!-- gross motor coach -->
+ <div class="view scroll" id="vEx"><div id="exBody"></div></div>
+</div>
+
+<script>
+/* ============================================================
+   MOTORIK & SENSORI
+   Built from Baim's occupational therapy worksheets (weeks 1 and 2):
+   sticker patterns, thickening dotted lines, copying lines,
+   finishing a shape across a mirror line, copying shapes, and
+   letters and numbers written in numbered stroke order. Plus
+   sensory games and the whole-body exercises from the parent guide.
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const NM=(window.SUPER&&SUPER.P)||(x=>x);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={lang:LS.get("dongeng.lang","both"),sound:true};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const T=(p)=>NM(S.lang==="en"?p[1]:p[0])+(S.lang==="both"?"<small>"+NM(p[1])+"</small>":"");
+
+/* ---------- voices and sounds ---------- */
+let AC=null,vEN=null,vID=null,sayTok=0;
+function pickVoices(){if(!("speechSynthesis" in window))return;const vs=speechSynthesis.getVoices()||[];
+ vEN=vs.find(v=>/^en[-_]?(GB|US)/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
+ vID=vs.find(v=>/^id[-_]?/i.test(v.lang))||vs.find(v=>/indones/i.test(v.name))||null}
+if("speechSynthesis" in window){pickVoices();speechSynthesis.addEventListener("voiceschanged",pickVoices);setTimeout(pickVoices,800)}
+function speak1(text,lang){text=NM(text);return new Promise(res=>{
+ if(!S.sound||!("speechSynthesis" in window)||!text||(lang==="id"&&!vID)){res();return}
+ try{const u=new SpeechSynthesisUtterance(text);u.lang=lang==="id"?"id-ID":"en-GB";u.voice=lang==="id"?vID:vEN;
+  u.rate=lang==="id"?.9:.85;u.pitch=1.08;let d=false;const f=()=>{if(!d){d=true;res()}};u.onend=f;u.onerror=f;
+  speechSynthesis.speak(u);setTimeout(f,Math.max(1800,text.length*85))}catch(e){res()}})}
+function stopAudio(){sayTok++;try{speechSynthesis.cancel()}catch(e){}}
+async function say(pairs,keep){if(!keep)stopAudio();const tok=sayTok;
+ for(const p of pairs){if(!p)continue;for(const l of (S.lang==="both"?["id","en"]:[S.lang])){if(tok!==sayTok)return;await speak1(l==="id"?p[0]:p[1],l)}}}
+function tone(f,d,type,g){if(!S.sound)return;try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
+ if(AC.state==="suspended")AC.resume();const o=AC.createOscillator(),gn=AC.createGain();o.type=type||"sine";o.frequency.value=f;
+ gn.gain.setValueAtTime(0,AC.currentTime);gn.gain.linearRampToValueAtTime(g||.15,AC.currentTime+.02);
+ gn.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.connect(gn).connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.28,"triangle",.16),i*100));
+const sfxPop=n=>{const f=440+(n||0)*60;tone(f,.12,"sine",.16);setTimeout(()=>tone(f*1.5,.12,"sine",.12),60)};
+const sfxWrong=()=>{tone(200,.2,"sawtooth",.09);setTimeout(()=>tone(150,.24,"sawtooth",.08),100)};
+document.addEventListener("pointerdown",()=>{try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}
+ if("speechSynthesis" in window){try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}},{once:true});
+function confetti(){const c=["#FFB247","#5FE0A4","#FF6B5B","#7FC8FF","#F7E9CC","#C79BFF"];
+ for(let i=0;i<50;i++){const d=document.createElement("div");d.className="confetti";d.style.left=Math.random()*100+"vw";
+  d.style.background=c[i%c.length];d.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
+function award(level,wrongs,partial){
+ try{if(window.SUPER&&SUPER.score){const r=SUPER.score.award("motorik",{level,wrongs:wrongs||0,partial});
+  if(SUPER.bar&&SUPER.bar.fly)SUPER.bar.fly(r.xp,r.streak)}}catch(e){}}
+const BEST=LS.get("motorik.best",{});
+function saveBest(id,stars){BEST[id]=Math.max(BEST[id]||0,stars);LS.set("motorik.best",BEST)}
+const PRAISE=[["Hebat!","Great job!"],["Rapi sekali, Baim!","So neat, Baim!"],["Keren!","Awesome!"],["Pintar!","Clever!"]];
+const NUMW=[["satu","one"],["dua","two"],["tiga","three"],["empat","four"],["lima","five"],["enam","six"],["tujuh","seven"],["delapan","eight"],["sembilan","nine"],["sepuluh","ten"]];
+
+/* ============================================================
+   SHAPES AS SVG PATHS, sampled into points with the browser's own
+   path engine. The board is 1000 x 620 logical units.
+   ============================================================ */
+const LW=1000,LH=620;
+const SAMP=document.createElementNS("http://www.w3.org/2000/svg","path");
+(function(){const s=document.createElementNS("http://www.w3.org/2000/svg","svg");s.setAttribute("width","0");s.setAttribute("height","0");
+ s.style.position="absolute";s.appendChild(SAMP);document.body.appendChild(s)})();
+/* tf = {sx,sy,tx,ty}: logical = source*s + t. A negative sx mirrors. */
+function sample(d,tf,step){
+ tf=tf||{sx:1,sy:1,tx:0,ty:0};SAMP.setAttribute("d",d);
+ const len=SAMP.getTotalLength(),sc=Math.max(Math.abs(tf.sx),Math.abs(tf.sy));
+ const n=Math.max(2,Math.ceil(len*sc/(step||9))),out=[];
+ for(let i=0;i<=n;i++){const p=SAMP.getPointAtLength(len*i/n);out.push([p.x*tf.sx+tf.tx,p.y*tf.sy+tf.ty])}
+ return out;
+}
+/* --- pattern makers, straight into logical units --- */
+const P={
+ zig:(x0,x1,y,h,n)=>{let d=`M${x0} ${y+h/2}`;for(let i=1;i<=n*2;i++)d+=` L${x0+(x1-x0)*i/(n*2)} ${i%2?y-h/2:y+h/2}`;return d},
+ wave:(x0,x1,y,h,n)=>{let d="";for(let i=0;i<=n*24;i++){const t=i/(n*24);d+=(i?" L":"M")+(x0+(x1-x0)*t).toFixed(1)+" "+(y-Math.sin(t*n*2*Math.PI)*h/2).toFixed(1)}return d},
+ square:(x0,x1,y,h,n)=>{const w=(x1-x0)/(n*2);let d=`M${x0} ${y+h/2}`;for(let i=0;i<n;i++){const a=x0+i*2*w;d+=` V${y-h/2} H${a+w} V${y+h/2} H${a+2*w}`}return d},
+ hills:(x0,x1,y,h,n,down)=>{const w=(x1-x0)/n;let d=`M${x0} ${y}`;for(let i=0;i<n;i++)d+=` A${w/2} ${h} 0 0 ${down?0:1} ${x0+(i+1)*w} ${y}`;return d},
+ loops:(x0,x1,y,h,n)=>{let d="";const a=(x1-x0)/(n*2*Math.PI+2.2),b=h/2;for(let i=0;i<=n*40;i++){const t=i/(n*40)*n*2*Math.PI;
+   d+=(i?" L":"M")+(x0+b+a*t-b*Math.sin(t+Math.PI/2)).toFixed(1)+" "+(y+b*Math.cos(t+Math.PI/2)*-1+0).toFixed(1)}return d},
+ spiral:(cx,cy,R,turns)=>{let d="";const N=turns*60;for(let i=0;i<=N;i++){const th=i/60*2*Math.PI,r=R*(1-i/N)+4;
+   d+=(i?" L":"M")+(cx+r*Math.cos(th)).toFixed(1)+" "+(cy+r*Math.sin(th)).toFixed(1)}return d},
+ line:(x0,y0,x1,y1)=>`M${x0} ${y0} L${x1} ${y1}`
+};
+/* dots at the corners, like the worksheet */
+function verts(d){const out=[];d.replace(/[ML]\s*([-\d.]+)\s+([-\d.]+)/g,(m,x,y)=>{out.push([+x,+y])});return out}
+
+/* --- letters and numbers, stroke by stroke, in the order they are taught.
+   Capitals and digits sit in a 100 x 100 box. Small letters: x-height 45,
+   baseline 100, descenders to 140. --- */
+const GLYPH={
+ A:["M50 0 L8 100","M50 0 L92 100","M25 62 L75 62"],
+ B:["M15 0 L15 100","M15 0 L58 0 C88 0 88 48 58 48 L15 48","M15 48 L62 48 C96 48 96 100 62 100 L15 100"],
+ C:["M88 18 C70 -8 12 -2 10 50 C12 102 70 108 88 82"],
+ D:["M15 0 L15 100","M15 0 L45 0 C100 0 100 100 45 100 L15 100"],
+ E:["M15 0 L15 100","M15 0 L85 0","M15 50 L70 50","M15 100 L85 100"],
+ F:["M15 0 L15 100","M15 0 L85 0","M15 50 L70 50"],
+ G:["M88 18 C70 -8 12 -2 10 50 C12 102 80 108 90 70 L90 55 L58 55"],
+ H:["M15 0 L15 100","M85 0 L85 100","M15 50 L85 50"],
+ I:["M50 0 L50 100","M25 0 L75 0","M25 100 L75 100"],
+ J:["M72 0 L72 72 C72 108 18 108 14 78"],
+ K:["M15 0 L15 100","M85 0 L15 58","M38 42 L88 100"],
+ L:["M15 0 L15 100 L85 100"],
+ M:["M10 100 L10 0 L50 70 L90 0 L90 100"],
+ N:["M15 100 L15 0 L85 100 L85 0"],
+ O:["M50 0 C-8 0 -8 100 50 100 C108 100 108 0 50 0"],
+ P:["M15 0 L15 100","M15 0 L58 0 C94 0 94 52 58 52 L15 52"],
+ Q:["M50 0 C-8 0 -8 100 50 100 C108 100 108 0 50 0","M60 70 L92 104"],
+ R:["M15 0 L15 100","M15 0 L58 0 C94 0 94 52 58 52 L15 52","M48 52 L88 100"],
+ S:["M85 15 C70 -6 15 -5 15 25 C15 52 85 45 85 75 C85 106 25 106 12 84"],
+ T:["M10 0 L90 0","M50 0 L50 100"],
+ U:["M15 0 L15 65 C15 110 85 110 85 65 L85 0"],
+ V:["M10 0 L50 100 L90 0"],
+ W:["M5 0 L27 100 L50 30 L73 100 L95 0"],
+ X:["M12 0 L88 100","M88 0 L12 100"],
+ Y:["M10 0 L50 50","M90 0 L50 50 L50 100"],
+ Z:["M12 0 L88 0 L12 100 L88 100"],
+ a:["M80 56 C70 38 20 38 20 72 C20 108 72 108 80 82","M80 45 L80 100"],
+ b:["M18 0 L18 100","M18 74 C18 36 82 36 82 72 C82 108 18 108 18 82"],
+ c:["M80 56 C68 36 18 38 18 72 C18 106 68 108 80 90"],
+ d:["M80 56 C70 38 20 38 20 72 C20 108 72 108 80 82","M80 0 L80 100"],
+ e:["M20 72 L80 72 C80 38 20 36 20 72 C20 108 70 108 80 92"],
+ f:["M75 8 C65 -4 42 -2 42 22 L42 100","M22 48 L68 48"],
+ g:["M80 56 C70 38 20 38 20 70 C20 102 72 102 80 76","M80 45 L80 118 C80 145 28 145 22 125"],
+ h:["M18 0 L18 100","M18 72 C18 36 80 36 80 68 L80 100"],
+ i:["M50 45 L50 100","M50 20 L50 28"],
+ j:["M58 45 L58 120 C58 145 22 142 18 125","M58 20 L58 28"],
+ k:["M20 0 L20 100","M76 45 L20 78","M40 66 L80 100"],
+ l:["M50 0 L50 100"],
+ m:["M12 45 L12 100","M12 72 C12 38 48 38 48 66 L48 100","M48 66 C48 38 88 38 88 66 L88 100"],
+ n:["M18 45 L18 100","M18 72 C18 36 80 36 80 68 L80 100"],
+ o:["M50 45 C8 45 8 100 50 100 C92 100 92 45 50 45"],
+ p:["M18 45 L18 140","M18 74 C18 36 82 36 82 72 C82 108 18 108 18 82"],
+ q:["M80 56 C70 38 20 38 20 72 C20 108 72 108 80 82","M80 45 L80 140"],
+ r:["M22 45 L22 100","M22 72 C24 44 58 38 78 50"],
+ s:["M78 52 C66 38 24 38 24 58 C24 76 76 68 76 86 C76 106 30 106 20 92"],
+ t:["M45 10 L45 90 C45 102 62 104 75 96","M22 45 L70 45"],
+ u:["M18 45 L18 75 C18 108 80 108 80 75","M80 45 L80 100"],
+ v:["M15 45 L50 100 L85 45"],
+ w:["M8 45 L28 100 L50 58 L72 100 L92 45"],
+ x:["M18 45 L82 100","M82 45 L18 100"],
+ y:["M15 45 L50 100","M85 45 L35 140"],
+ z:["M18 45 L82 45 L18 100 L82 100"],
+ 0:["M50 0 C0 0 0 100 50 100 C100 100 100 0 50 0"],
+ 1:["M28 20 L55 0 L55 100"],
+ 2:["M15 25 C18 -6 85 -6 82 28 C80 55 30 70 12 100 L88 100"],
+ 3:["M15 12 C35 -6 85 -2 82 25 C80 45 55 48 45 48 C70 48 88 58 86 76 C84 105 30 108 12 88"],
+ 4:["M60 0 L10 70 L90 70","M65 30 L65 100"],
+ 5:["M25 0 L20 45 C45 30 85 38 85 68 C85 104 30 106 14 86","M25 0 L80 0"],
+ 6:["M78 8 C50 -10 10 20 12 62 C14 104 86 106 86 68 C86 32 22 34 14 62"],
+ 7:["M12 0 L88 0 L40 100"],
+ 8:["M50 48 C15 48 15 0 50 0 C85 0 85 48 50 48 C8 48 8 100 50 100 C92 100 92 48 50 48"],
+ 9:["M84 30 C84 -8 16 -8 16 30 C16 62 84 62 84 30 L84 100"]
+};
+
+/* ============================================================
+   PRE-WRITING LEVELS
+   Each item builds: targets (where the pen must go), models (what is
+   drawn to look at) and extras (grids, lanes, boxes).
+   ============================================================ */
+const COL=["#E0483B","#2BA84A","#1F6FEB","#E7B416","#8A4FD1","#E0489A"];
+function traceRows(rows){return ()=>({kind:"trace",tol:30,targets:rows.map((d,i)=>({d,col:COL[i%COL.length]}))})}
+function copyLane(maker,dots){return ()=>{
+  const top=maker(120),bot=maker(430);
+  return {kind:"copy",tol:40,pass:.7,models:[{d:top}],targets:[{d:bot,col:"#1F6FEB",hide:1}],dots:dots?verts(bot):[verts(bot)[0]],
+   lanes:[[55,185],[365,495]]}}}
+function mirror(half){return ()=>({kind:"mirror",tol:36,pass:.7,box:[240,50,520],models:[{d:half,tf:{sx:5.2,sy:5.2,tx:240,ty:50}}],
+  targets:[{d:half,tf:{sx:-5.2,sy:5.2,tx:240+520,ty:50},col:"#1F6FEB",hide:1}]})}
+function copyShape(parts){return ()=>{
+  const L={sx:3.6,sy:3.6,tx:70,ty:130},R={sx:3.6,sy:3.6,tx:570,ty:130};
+  return {kind:"shape",tol:42,pass:.65,boxes:[[50,110,400,400],[550,110,400,400]],
+   models:parts.map(p=>({d:p.d,tf:L,fill:p.fill})),targets:parts.filter(p=>!p.decor).map(p=>({d:p.d,tf:R,col:"#1F6FEB",hide:1}))}}}
+function glyph(chars,small){return ()=>{
+  const list=[...chars],h=small?140:100,s=small?3.4:4.4,gw=100*s,gap=30,tw=list.length*gw+(list.length-1)*gap;
+  let x=(LW-tw)/2;const y=(LH-h*s)/2+(small?10:0);const targets=[];
+  list.forEach(ch=>{(GLYPH[ch]||[]).forEach(d=>targets.push({d,tf:{sx:s,sy:s,tx:x,ty:y}}));x+=gw+gap});
+  return {kind:"letter",tol:34,pass:.72,ordered:1,targets,ruled:small?{y,s}:null,label:chars}}}
+
+const PW=[
+ {id:"t1",e:"〰️",lv:1,tk:1,t:["Tebalkan garis 1","Trace the lines 1"],n:["Zig-zag, gelombang, kotak, lengkung","Zigzags, waves, boxes, arches"],items:[
+  traceRows([P.zig(80,920,160,110,6),P.wave(80,920,430,120,4)]),
+  traceRows([P.zig(80,920,160,120,3),P.square(80,920,430,110,5)]),
+  traceRows([P.hills(80,920,220,110,4),P.hills(80,920,390,110,4,1)]),
+  traceRows([P.zig(80,920,140,90,8),P.wave(80,920,320,100,6),P.square(80,920,500,80,7)])]},
+ {id:"t2",e:"🌀",lv:2,tk:1,t:["Tebalkan garis 2","Trace the lines 2"],n:["Lurus, lengkung, huruf S, spiral, simpul","Straight lines, curves, S shapes, spirals, loops"],items:[
+  traceRows([P.line(100,130,900,130),P.line(100,310,900,310),P.line(100,490,900,490)]),
+  traceRows(["M140 120 C260 120 260 300 140 300 C20 300 20 480 140 480","M500 120 C620 120 620 300 500 300 C380 300 380 480 500 480","M860 120 C980 120 980 300 860 300 C740 300 740 480 860 480"]),
+  traceRows([P.spiral(280,310,200,3),P.spiral(720,310,200,3)]),
+  traceRows([P.loops(80,920,200,120,5),P.loops(80,920,440,120,5)]),
+  traceRows(["M120 120 L120 500 L420 500","M580 120 L880 120 L880 500 L580 500 Z"]),
+  traceRows(["M150 200 C150 60 400 60 400 200 C400 300 280 300 280 400 L280 470","M600 470 L600 150 C600 60 780 60 780 150 C780 240 600 240 600 240"])]},
+ {id:"t3",e:"✏️",lv:3,tk:1,t:["Salin garis","Copy the lines"],n:["Lihat contoh, lalu gambar di bawahnya","Look at the example, then draw it underneath"],items:[
+  copyLane(y=>P.zig(80,920,y,90,6),1),copyLane(y=>P.wave(80,920,y,100,4)),copyLane(y=>P.square(80,920,y,90,6),1),
+  copyLane(y=>P.hills(80,920,y+40,90,5)),copyLane(y=>P.loops(80,920,y,90,5))]},
+ {id:"t4",e:"🪞",lv:4,tk:1,t:["Cermin","Mirror drawing"],n:["Lengkapi bentuk di sisi lainnya","Finish the shape on the other side of the line"],items:[
+  mirror("M50 10 C10 10 10 90 50 90"),mirror("M50 10 L20 90 L50 90"),mirror("M50 15 L15 15 L15 85 L50 85"),
+  mirror("M50 10 L20 40 L25 90 L50 90"),mirror("M10 40 C10 80 30 88 50 88"),mirror("M50 90 C20 65 5 45 12 28 C20 12 42 14 50 30"),
+  mirror("M50 5 L20 45 L35 45 L15 75 L45 75 L45 95 L50 95"),mirror("M50 10 L10 50 L25 50 L25 90 L50 90")]},
+ {id:"t5",e:"🔷",lv:5,tk:2,t:["Salin bentuk","Copy the shapes"],n:["Gambar lagi bentuk di kotak kosong","Draw the picture again in the empty box"],items:[
+  copyShape([{d:"M50 5 A45 45 0 1 1 49.9 5Z",fill:"#3D7CC9"},{d:"M50 25 L78 70 L22 70Z",fill:"#F5D63D"}]),
+  copyShape([{d:"M10 10 H90 V90 H10Z",fill:"#B69CE0"},{d:"M50 25 A25 25 0 1 1 49.9 25Z",fill:"#3D7CC9"}]),
+  copyShape([{d:"M50 8 L95 92 L5 92Z",fill:"#F5D63D"},{d:"M36 55 H64 V83 H36Z",fill:"#B69CE0"}]),
+  copyShape([{d:"M50 8 A42 42 0 1 1 49.9 8Z",fill:"#2E9A5A"},{d:"M50 22 A28 28 0 1 1 49.9 22Z",fill:"#3DB06E"},
+   {d:"M40 40 A5 5 0 1 1 39.9 40Z M60 40 A5 5 0 1 1 59.9 40Z M40 60 A5 5 0 1 1 39.9 60Z M60 60 A5 5 0 1 1 59.9 60Z",fill:"#0E4A2A",decor:1}]),
+  copyShape([{d:"M50 15 L78 85 L22 85Z",fill:"#9ED3E8"},{d:"M50 3 A7 7 0 1 1 49.9 3Z",fill:"#F08A3C"},{d:"M20 85 L30 95 L40 85 L50 95 L60 85 L70 95 L80 85",fill:"none"}]),
+  copyShape([{d:"M12 12 H88 V88 H12Z",fill:"#9ED3F5"},{d:"M50 12 V88 M12 50 H88",fill:"none"}]),
+  copyShape([{d:"M18 45 H82 V92 H18Z",fill:"#F2D59A"},{d:"M10 45 L50 8 L90 45Z",fill:"#D5553D"}]),
+  copyShape([{d:"M28 45 L50 95 L72 45Z",fill:"#E0A85A"},{d:"M50 10 A22 22 0 1 1 49.9 10Z",fill:"#F59AB8"}])]},
+ {id:"t6",e:"🔠",lv:6,tk:2,t:["Huruf besar A–Z","Capital letters A–Z"],n:["Ikuti nomor urutan garis","Follow the numbered strokes in order"],items:"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(c=>glyph(c))},
+ {id:"t7",e:"🔡",lv:7,tk:2,t:["Huruf kecil a–z","Small letters a–z"],n:["Ikuti nomor urutan garis","Follow the numbered strokes in order"],items:"abcdefghijklmnopqrstuvwxyz".split("").map(c=>glyph(c,1))},
+ {id:"t8",e:"🔢",lv:6,tk:2,t:["Angka 0–10","Numbers 0–10"],n:["Tulis angka sesuai urutan petunjuk","Write each number following the guide"],items:["0","1","2","3","4","5","6","7","8","9","10"].map(c=>glyph(c))}
+];
+
+/* ============================================================
+   THE DRAWING BOARD
+   ============================================================ */
+const D={lv:null,i:0,it:null,ink:[],cur:null,colour:"#1F6FEB",done:false,paid:false};
+const cg=$("cGuide"),ci=$("cInk"),gx=cg.getContext("2d"),ix=ci.getContext("2d");
+let BW=0,BH=0,K=1,OX=0,OY=0,DPR=1;
+function fit(){
+ const r=$("board").getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);
+ BW=r.width;BH=r.height;[cg,ci].forEach(c=>{c.width=BW*DPR;c.height=BH*DPR});
+ K=Math.min(BW/LW,BH/LH);OX=(BW-LW*K)/2;OY=(BH-LH*K)/2;
+ if(D.it){drawGuide();drawInk()}
+}
+window.addEventListener("resize",()=>setTimeout(()=>{fit();fitStick()},120));
+const toL=(x,y)=>[(x-OX)/K,(y-OY)/K];
+function setT(c,tf){tf=tf||{sx:1,sy:1,tx:0,ty:0};c.setTransform(DPR*K*tf.sx,0,0,DPR*K*tf.sy,DPR*(OX+K*tf.tx),DPR*(OY+K*tf.ty));return Math.abs(tf.sx)}
+function openDraw(lv){
+ D.lv=lv;D.order=shuffle(lv.items.map((_,i)=>i));if(lv.id>="t6")D.order=lv.items.map((_,i)=>i);D.i=0;
+ show("vDraw");setTimeout(()=>{fit();loadDraw()},30);
+}
+function loadDraw(){
+ const it=D.lv.items[D.order[D.i%D.order.length]]();
+ it.targets.forEach(t=>{t.pts=sample(t.d,t.tf);t.hit=new Uint8Array(t.pts.length);t.got=0});
+ D.it=it;D.ink=[];D.done=false;D.paid=false;D.active=0;D.inkN=0;D.inkOn=0;
+ $("dDone").classList.remove("on");
+ $("dTitle").innerHTML=T(D.lv.t)+" · "+(D.i%D.order.length+1)+"/"+D.order.length;
+ const H={trace:["Tebalkan garis titik-titik dari titik ke titik!","Go over the dotted lines, dot to dot!"],
+  copy:["Lihat contoh di atas, lalu gambar di bawahnya!","Look at the top, then draw it underneath!"],
+  mirror:["Gambar sisi yang satunya, seperti cermin!","Draw the other half, like a mirror!"],
+  shape:["Salin gambarnya di kotak kosong!","Copy the picture into the empty box!"],
+  letter:[`Tulis “${it.label}” mengikuti nomor 1, 2, 3!`,`Write “${it.label}” following the numbers 1, 2, 3!`]}[it.kind];
+ D.hintP=H;$("dHint").innerHTML=T(H);
+ drawGuide();drawInk();progress();say([H]);
+}
+function strokePath(c,d,tf,px,col,dash){const s=setT(c,tf);c.lineWidth=px/(K*s);c.strokeStyle=col;c.setLineDash(dash?dash.map(v=>v/(K*s)):[]);
+ c.lineCap="round";c.lineJoin="round";c.stroke(new Path2D(d))}
+function dot(c,x,y,r,col,txt){c.setTransform(DPR,0,0,DPR,0,0);const X=OX+K*x,Y=OY+K*y;c.setLineDash([]);
+ c.beginPath();c.arc(X,Y,r,0,7);c.fillStyle=col;c.fill();
+ if(txt){c.fillStyle="#fff";c.font="700 "+(r*1.2)+"px Fredoka, sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(txt,X,Y+1)}}
+function drawGuide(){
+ const it=D.it;gx.setTransform(DPR,0,0,DPR,0,0);gx.clearRect(0,0,BW,BH);
+ setT(gx);gx.setLineDash([]);
+ if(it.lanes)it.lanes.forEach(([a,b])=>{gx.lineWidth=3/K;gx.strokeStyle="#2B2F8F";gx.strokeRect(40,a,920,b-a)});
+ if(it.boxes)it.boxes.forEach(b=>{gx.lineWidth=3/K;gx.strokeStyle="#2D2410";gx.strokeRect(b[0],b[1],b[2],b[3])});
+ if(it.box){const [x,y,w]=it.box;gx.lineWidth=1/K;gx.strokeStyle="#C9C2B2";
+  for(let i=0;i<=10;i++){gx.beginPath();gx.moveTo(x+w*i/10,y);gx.lineTo(x+w*i/10,y+w);gx.moveTo(x,y+w*i/10);gx.lineTo(x+w,y+w*i/10);gx.stroke()}
+  gx.lineWidth=4/K;gx.strokeStyle="#2D2410";gx.strokeRect(x,y,w,w);
+  gx.setLineDash([10/K,8/K]);gx.strokeStyle="#8A8070";gx.lineWidth=3/K;gx.beginPath();gx.moveTo(x+w/2,y-10);gx.lineTo(x+w/2,y+w+10);gx.stroke();gx.setLineDash([])}
+ if(it.ruled){const {y,s}=it.ruled;[[0,"#E3C9A0"],[45,"#E0BE8F"],[100,"#C9A66B"],[140,"#E3C9A0"]].forEach(([v,c])=>{
+  gx.lineWidth=2/K;gx.strokeStyle=c;gx.setLineDash(v===100?[]:[8/K,8/K]);gx.beginPath();gx.moveTo(60,y+v*s);gx.lineTo(940,y+v*s);gx.stroke()});gx.setLineDash([])}
+ (it.models||[]).forEach(m=>{
+  if(m.fill&&m.fill!=="none"){const s=setT(gx,m.tf);gx.fillStyle=m.fill;gx.fill(new Path2D(m.d),"evenodd")}
+  strokePath(gx,m.d,m.tf,it.kind==="mirror"?7:5,it.kind==="mirror"?"#1F4FA8":"#2D2410");
+ });
+ if(it.kind==="letter"){
+  it.targets.forEach(t=>strokePath(gx,t.d,t.tf,40,"#E9DFCB"));
+  it.targets.forEach(t=>strokePath(gx,t.d,t.tf,30,"#FFFDF6"));
+  it.targets.forEach((t,i)=>{
+   const done=t.done,act=i===D.active;
+   strokePath(gx,t.d,t.tf,act?5:3,done?"#2E9C68":act?"#E07A1F":"#B8A88A",done?null:[3,9]);
+   const a=t.pts[0],b=t.pts[Math.min(t.pts.length-1,4)];
+   if(!done){const k=Math.min(t.pts.length-1,Math.floor(t.pts.length*.35)),p=t.pts[k],q=t.pts[Math.min(t.pts.length-1,k+2)];
+    arrow(p,q,act?"#E07A1F":"#B8A88A")}
+   /* two strokes that start at the same place (the top of A) get their numbers side by side */
+   let lx=a[0],ly=a[1];it.targets.slice(0,i).forEach(o=>{if(Math.hypot(o.pts[0][0]-a[0],o.pts[0][1]-a[1])<30){lx+=34}});
+   dot(gx,lx,ly,act?15:12,done?"#2E9C68":act?"#E07A1F":"#8A7A5A",String(i+1));
+  });
+ }else it.targets.forEach(t=>{
+  if(!t.hide)strokePath(gx,t.d,t.tf,4,"#9A8C70",[4,10]);
+  if(!t.hide){const a=t.pts[0],b=t.pts[t.pts.length-1];dot(gx,a[0],a[1],11,t.col);dot(gx,b[0],b[1],11,t.col)}
+ });
+ (it.dots||[]).forEach(p=>dot(gx,p[0],p[1],8,"#1F6FEB"));
+ if(it.kind==="mirror"){const t=it.targets[0].pts[0];dot(gx,t[0],t[1],10,"#1F6FEB")}
+}
+function arrow(p,q,col){const ang=Math.atan2(q[1]-p[1],q[0]-p[0]);gx.setTransform(DPR,0,0,DPR,0,0);
+ const X=OX+K*p[0],Y=OY+K*p[1],r=12;gx.fillStyle=col;gx.beginPath();
+ gx.moveTo(X+Math.cos(ang)*r,Y+Math.sin(ang)*r);gx.lineTo(X+Math.cos(ang+2.5)*r,Y+Math.sin(ang+2.5)*r);gx.lineTo(X+Math.cos(ang-2.5)*r,Y+Math.sin(ang-2.5)*r);gx.fill()}
+function drawInk(){ix.setTransform(DPR,0,0,DPR,0,0);ix.clearRect(0,0,BW,BH);D.ink.forEach(s=>{for(let i=1;i<s.pts.length;i++)seg(s.col,s.pts[i-1],s.pts[i])})}
+function seg(col,a,b){ix.setTransform(DPR,0,0,DPR,0,0);ix.strokeStyle=col;ix.lineCap="round";ix.lineWidth=b[2];ix.beginPath();
+ ix.moveTo(OX+K*a[0],OY+K*a[1]);ix.lineTo(OX+K*b[0],OY+K*b[1]);ix.stroke()}
+/* credit every target sample near the pen; ordered items only credit the active stroke */
+function mark(x,y){
+ const it=D.it,tol=it.tol,t2=tol*tol,far=(tol*1.7)**2;let near=false;
+ it.targets.forEach((t,ti)=>{
+  const credit=!it.ordered||ti===D.active;
+  for(let i=0;i<t.pts.length;i++){const dx=t.pts[i][0]-x,dy=t.pts[i][1]-y,d=dx*dx+dy*dy;
+   if(d<far)near=true;
+   if(credit&&d<t2&&!t.hit[i]){t.hit[i]=1;t.got++}}
+ });
+ D.inkN++;if(near)D.inkOn++;
+}
+function score(t){return t.pts.length?t.got/t.pts.length:1}
+function progress(){
+ const it=D.it,pass=it.pass||.8,sc=it.targets.map(score);
+ const tot=sc.reduce((a,b)=>a+Math.min(1,b/pass),0)/sc.length;
+ $("dBar").style.width=Math.round(tot*100)+"%";
+ if(it.ordered){
+  while(D.active<it.targets.length&&score(it.targets[D.active])>=pass){
+   it.targets[D.active].done=true;D.active++;sfxPop(D.active);
+   if(D.active<it.targets.length)say([NUMW[D.active]],true);
+   drawGuide();
+  }
+ }
+ return sc.every(v=>v>=pass);
+}
+function accuracy(){const it=D.it,sc=it.targets.map(score),cov=sc.reduce((a,b)=>a+Math.min(1,b),0)/sc.length;
+ const prec=D.inkN?D.inkOn/D.inkN:0;return Math.max(0,Math.min(1,cov*.55+prec*.45))}
+ci.addEventListener("pointerdown",e=>{e.preventDefault();try{ci.setPointerCapture(e.pointerId)}catch(r){}
+ if(D.done||!D.it)return;const r=ci.getBoundingClientRect(),[x,y]=toL(e.clientX-r.left,e.clientY-r.top);
+ D.cur={col:D.colour,pts:[[x,y,5+(e.pressure>0?e.pressure:.5)*8]]};D.ink.push(D.cur);mark(x,y)});
+ci.addEventListener("pointermove",e=>{if(!D.cur)return;e.preventDefault();const r=ci.getBoundingClientRect();
+ (e.getCoalescedEvents?e.getCoalescedEvents():[e]).forEach(ev=>{
+  const [x,y]=toL(ev.clientX-r.left,ev.clientY-r.top),last=D.cur.pts[D.cur.pts.length-1];
+  if(Math.hypot(x-last[0],y-last[1])<1.5)return;const p=[x,y,5+(ev.pressure>0?ev.pressure:.5)*8];
+  D.cur.pts.push(p);seg(D.cur.col,last,p);
+  const n=Math.ceil(Math.hypot(x-last[0],y-last[1])/6);for(let i=1;i<=n;i++)mark(last[0]+(x-last[0])*i/n,last[1]+(y-last[1])*i/n);
+ });progress()});
+function endStroke(){if(!D.cur)return;D.cur=null;if(!D.done&&progress())finishDraw()}
+["pointerup","pointercancel","pointerleave"].forEach(ev=>ci.addEventListener(ev,endStroke));
+function finishDraw(){
+ D.done=true;const acc=accuracy(),st=acc>=.9?3:acc>=.72?2:1;
+ $("dStars").textContent="⭐".repeat(st)+"☆".repeat(3-st);
+ const pr=PRAISE[Math.floor(Math.random()*PRAISE.length)];$("dMsg").innerHTML=T(pr);
+ $("dPct").textContent=Math.round(acc*100)+"% "+(S.lang==="en"?"neat":"rapi");
+ $("dDone").classList.add("on");sfxWin();if(st===3)confetti();say([pr]);
+ saveBest(D.lv.id,st);payDraw(acc);
+}
+function payDraw(acc){if(D.paid)return;const it=D.it,sc=it.targets.map(score),cov=sc.reduce((a,b)=>a+Math.min(1,b),0)/sc.length;
+ if(cov<.1)return;D.paid=true;award(D.lv.lv,acc>=.8?0:acc>=.6?1:2,Math.min(1,cov/(it.pass||.8)))}
+function nextDraw(){if(D.it&&!D.done)payDraw(accuracy());D.i++;loadDraw()}
+$("dNext").onclick=nextDraw;$("dAgain2").onclick=nextDraw;
+$("dClear").onclick=()=>{D.it.targets.forEach(t=>{t.hit.fill(0);t.got=0;t.done=false});D.active=0;D.ink=[];D.inkN=D.inkOn=0;D.done=false;
+ $("dDone").classList.remove("on");drawGuide();drawInk();progress()};
+$("dSay").onclick=()=>say([D.hintP]);
+document.querySelectorAll(".pen").forEach(b=>b.onclick=()=>{D.colour=b.dataset.c;document.querySelectorAll(".pen").forEach(x=>x.classList.toggle("on",x===b))});
+
+/* ============================================================
+   STICKER PATTERNS ("Ayo kita tempel sticker di pola ini!")
+   Stickers are dragged (or tapped into place) along the outline.
+   ============================================================ */
+function star5(cx,cy,R,r){let d="";for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;d+=(i?" L":"M")+(cx+rr*Math.cos(a)).toFixed(1)+" "+(cy+rr*Math.sin(a)).toFixed(1)}return d+" Z"}
+const STICK=[
+ {id:"jar",e:"🫙",t:["Toples","Jar"],d:["M330 110 H670 Q700 110 700 140 V175 Q700 195 680 200 Q720 215 720 265 V480 Q720 560 640 560 H360 Q280 560 280 480 V265 Q280 215 320 200 Q300 195 300 175 V140 Q300 110 330 110 Z","M300 200 H700"]},
+ {id:"rocket",e:"🚀",t:["Roket","Rocket"],d:["M500 50 C600 130 620 280 595 420 L405 420 C380 280 400 130 500 50 Z","M410 330 L320 480 L420 450","M590 330 L680 480 L580 450","M540 220 A40 40 0 1 1 460 220 A40 40 0 1 1 540 220","M440 420 L500 540 L560 420"]},
+ {id:"star",e:"⭐",t:["Bintang","Star"],d:[star5(500,320,270,115)]},
+ {id:"heart",e:"❤️",t:["Hati","Heart"],d:["M500 560 C300 420 200 310 240 200 C280 100 440 110 500 220 C560 110 720 100 760 200 C800 310 700 420 500 560 Z"]},
+ {id:"fish",e:"🐟",t:["Ikan","Fish"],d:["M220 310 C310 150 560 150 670 310 C560 470 310 470 220 310 Z","M670 310 L800 200 L775 310 L800 420 Z","M330 280 A18 18 0 1 1 329.9 280"]},
+ {id:"apple",e:"🍎",t:["Apel","Apple"],d:["M500 190 C420 140 270 180 280 330 C290 480 420 580 500 530 C580 580 710 480 720 330 C730 180 580 140 500 190 Z","M500 190 L520 90","M520 130 C560 80 630 90 640 115 C600 150 550 150 520 130 Z"]},
+ {id:"house",e:"🏠",t:["Rumah","House"],d:["M280 300 L500 90 L720 300 V560 H280 Z","M450 560 V440 H550 V560"]},
+ {id:"fly",e:"🦋",t:["Kupu-kupu","Butterfly"],d:["M500 300 C420 120 230 130 250 270 C260 330 380 330 500 300 C380 330 270 390 310 480 C350 560 470 460 500 300 Z","M500 300 C580 120 770 130 750 270 C740 330 620 330 500 300 C620 330 730 390 690 480 C650 560 530 460 500 300 Z"]},
+ {id:"turtle",e:"🐢",t:["Kura-kura","Turtle"],d:["M270 380 C270 200 730 200 730 380 Z","M730 330 C790 300 850 330 840 380 C830 420 770 410 730 380","M330 380 L310 450 M670 380 L690 450"]},
+ {id:"car",e:"🚗",t:["Mobil","Car"],d:["M200 420 V340 L300 330 L380 230 H620 L700 330 L800 340 V420 Z","M340 470 A50 50 0 1 1 339.9 470","M660 470 A50 50 0 1 1 659.9 470"]}
+];
+const STK=["🐶","🐱","🐻","🐼","🐯","🐸","🐰","🦊","🐵","🐷","⭐","🌸","🍓","🚗"];
+const SK={sh:null,spots:[],sel:"🐶",filled:0,idx:0};
+const cs=$("cStick"),sx=cs.getContext("2d");let SW=0,SH=0,SKK=1,SOX=0,SOY=0;
+function fitStick(){if(!SK.sh)return;const r=$("sBoard").getBoundingClientRect(),dp=Math.min(2,window.devicePixelRatio||1);
+ SW=r.width;SH=r.height;cs.width=SW*dp;cs.height=SH*dp;SKK=Math.min(SW/LW,SH/LH);SOX=(SW-LW*SKK)/2;SOY=(SH-LH*SKK)/2;
+ sx.setTransform(dp*SKK,0,0,dp*SKK,dp*SOX,dp*SOY);sx.clearRect(-SOX/SKK,-SOY/SKK,SW/SKK,SH/SKK);
+ SK.sh.d.forEach(d=>{sx.lineWidth=16;sx.lineCap="round";sx.lineJoin="round";sx.strokeStyle="#1B1B1B";sx.stroke(new Path2D(d))});
+ SK.spots.forEach(s=>{s.el.style.left=(SOX+SKK*s.x)+"px";s.el.style.top=(SOY+SKK*s.y)+"px";const sz=Math.max(34,SKK*62);
+  s.el.style.width=s.el.style.height=sz+"px";s.el.style.fontSize=(sz*.78)+"px"})}
+function openStick(i){
+ SK.idx=i;SK.sh=STICK[i];SK.filled=0;show("vStick");
+ $("sTitle").innerHTML=T(["Tempel stiker: ","Sticker pattern: "].map((a,k)=>a+SK.sh.t[k]));
+ $("sHint").innerHTML=T(["Seret stiker ke lingkaran di pola!","Drag a sticker onto each circle on the pattern!"]);
+ const box=$("spots");box.innerHTML="";SK.spots=[];
+ SK.sh.d.forEach(d=>{SAMP.setAttribute("d",d);const L=SAMP.getTotalLength(),n=Math.max(1,Math.round(L/78));
+  const closed=/Z\s*$/.test(d)||L>0&&(()=>{const a=SAMP.getPointAtLength(0),b=SAMP.getPointAtLength(L);return Math.hypot(a.x-b.x,a.y-b.y)<5})();
+  for(let k=0;k<(closed?n:n+1);k++){const p=SAMP.getPointAtLength(L*k/n);
+   if(SK.spots.some(s=>Math.hypot(s.x-p.x,s.y-p.y)<50))continue;
+   const el=document.createElement("div");el.className="spot";box.appendChild(el);
+   const s={x:p.x,y:p.y,el,full:false};el.onclick=()=>placeOn(s,SK.sel);SK.spots.push(s)}});
+ drawTray();setTimeout(fitStick,30);sBar();say([["Ayo tempel stiker di pola "+SK.sh.t[0]+"!","Let's put stickers on the "+SK.sh.t[1].toLowerCase()+" pattern!"]]);
+}
+function sBar(){$("sBar").style.width=Math.round(SK.filled/SK.spots.length*100)+"%"}
+function drawTray(){const t=$("tray");t.innerHTML="";STK.forEach(e=>{const b=document.createElement("button");b.className="stk"+(e===SK.sel?" on":"");b.textContent=e;
+ b.onpointerdown=ev=>startDrag(ev,e,b);t.appendChild(b)})}
+function placeOn(s,e){if(s.full)return false;s.full=true;s.el.classList.add("fill");s.el.textContent=e;SK.filled++;sfxPop(SK.filled%8);sBar();
+ if(SK.filled>=SK.spots.length){sfxWin();confetti();saveBest("stk-"+SK.sh.id,3);award(2,0);
+  say([["Selesai! Polanya penuh stiker!","Done! The pattern is full of stickers!"]])}return true}
+function startDrag(ev,e,btn){ev.preventDefault();SK.sel=e;document.querySelectorAll(".stk").forEach(x=>x.classList.toggle("on",x===btn));
+ const f=document.createElement("div");f.className="float";f.textContent=e;document.body.appendChild(f);
+ const near=(x,y)=>{const r=$("sBoard").getBoundingClientRect();let best=null,bd=1e9;
+  SK.spots.forEach(s=>{if(s.full)return;const d=Math.hypot(r.left+SOX+SKK*s.x-x,r.top+SOY+SKK*s.y-y);if(d<bd){bd=d;best=s}});
+  return bd<Math.max(40,SKK*60)?best:null};
+ let hov=null;
+ const mv=m=>{f.style.left=m.clientX+"px";f.style.top=m.clientY+"px";const n=near(m.clientX,m.clientY);
+  if(hov&&hov!==n)hov.el.classList.remove("near");hov=n;if(n)n.el.classList.add("near")};
+ const up=u=>{window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);f.remove();
+  if(hov){hov.el.classList.remove("near");placeOn(hov,e)}};
+ mv(ev);window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);
+}
+$("sClear").onclick=()=>openStick(SK.idx);$("sNext").onclick=()=>openStick((SK.idx+1)%STICK.length);
+
+/* ============================================================
+   SENSORY GAMES
+   ============================================================ */
+let G={stop:null};
+function openGame(g){if(G.stop)G.stop();G={stop:null};show("vSense");$("gTitle").innerHTML=T(g.t);$("gTools").innerHTML="";$("gBar").style.width="0";
+ $("stage").innerHTML="";$("stage").onpointerdown=$("stage").onpointermove=$("stage").onpointerup=null;setTimeout(()=>g.run(),30)}
+function gTool(label,fn){const b=document.createElement("button");b.className="btn small";b.innerHTML=label;b.onclick=fn;$("gTools").appendChild(b);return b}
+function center(html){const c=document.createElement("div");c.className="center";c.innerHTML=html;$("stage").appendChild(c);return c}
+
+/* 1. follow the butterfly: smooth eye-hand tracking */
+function gFollow(speed){
+ speed=speed||1;const st=$("stage"),r=st.getBoundingClientRect();
+ const bf=document.createElement("div");bf.className="big";bf.textContent="🦋";bf.style.fontSize=Math.max(50,r.height*.13)+"px";st.appendChild(bf);
+ const ring=document.createElement("div");ring.className="ring";ring.style.width=ring.style.height=Math.max(110,r.height*.26)+"px";
+ ring.style.border="4px dashed rgba(255,255,255,.5)";st.appendChild(ring);
+ const msg=center(`<div class="say">${T(["Taruh jarimu di kupu-kupu dan ikuti dia!","Put your finger on the butterfly and follow it!"])}</div>`);msg.style.justifyContent="flex-end";msg.style.pointerEvents="none";
+ let down=null,on=0,tot=0,t0=null,raf,DUR=25000;
+ st.onpointerdown=e=>{down=[e.clientX,e.clientY];if(!t0)t0=performance.now()};st.onpointermove=e=>{if(down)down=[e.clientX,e.clientY]};st.onpointerup=()=>down=null;
+ say([["Taruh jarimu di kupu-kupu dan ikuti dia!","Put your finger on the butterfly and follow it!"]]);
+ const loop=now=>{const R=st.getBoundingClientRect(),t=(t0?now-t0:0)/1000*speed;
+  const x=.5+.36*Math.sin(t*.9)*Math.cos(t*.23),y=.5+.3*Math.sin(t*1.3+1);
+  const X=R.width*x,Y=R.height*y;bf.style.left=ring.style.left=X+"px";bf.style.top=ring.style.top=Y+"px";
+  if(t0){tot++;let ok=false;if(down){ok=Math.hypot(down[0]-R.left-X,down[1]-R.top-Y)<Math.max(60,R.height*.13);if(ok)on++}
+   ring.style.borderColor=ok?"#5FE0A4":"rgba(255,255,255,.5)";$("gBar").style.width=Math.min(100,(now-t0)/DUR*100)+"%";
+   if(now-t0>DUR){const pc=on/Math.max(1,tot);end(pc);return}}
+  raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop);
+ G.stop=()=>cancelAnimationFrame(raf);
+ function end(pc){st.innerHTML="";const s=pc>.75?3:pc>.5?2:1;saveBest("follow",s);award(2,s===3?0:1,Math.max(.2,pc));sfxWin();if(s===3)confetti();
+  center(`<div class="say">${"⭐".repeat(s)}<br>${T(["Kamu mengikuti "+Math.round(pc*100)+"% waktu!","You followed "+Math.round(pc*100)+"% of the time!"])}</div>
+   <button class="btn go" id="again">🔁 ${T(["Lagi","Again"])}</button>`);$("again").onclick=()=>{st.innerHTML="";gFollow(speed)};
+  say([["Hebat! Matamu dan tanganmu bekerja sama.","Great! Your eyes and hands worked together."]])}
+}
+/* 2. balloon breathing: calm down, belly breathing */
+function gBreath(){
+ const st=$("stage");const ball=document.createElement("div");ball.className="big";ball.style.left="50%";ball.style.top="46%";ball.textContent="🎈";
+ ball.style.transition="font-size 4s ease-in-out";st.appendChild(ball);
+ const c=center(`<div class="say" id="bw"></div>`);c.style.justifyContent="flex-end";
+ let n=0,alive=true;const R=st.getBoundingClientRect(),small=R.height*.14,big=R.height*.52;ball.style.fontSize=small+"px";
+ const steps=[[["Tarik napas… 1, 2, 3, 4","Breathe in… 1, 2, 3, 4"],4000,big],[["Tahan…","Hold…"],2000,big],[["Hembuskan pelan-pelan… 1, 2, 3, 4","Breathe out slowly… 1, 2, 3, 4"],4000,small]];
+ const run=async()=>{for(n=0;n<5&&alive;n++){for(const [p,ms,sz] of steps){if(!alive)return;$("bw").innerHTML=T(p);ball.style.fontSize=sz+"px";
+    tone(sz===big?330:262,.4,"sine",.06);say([p]);await new Promise(r=>setTimeout(r,ms))}$("gBar").style.width=(n+1)*20+"%"}
+  if(!alive)return;$("bw").innerHTML=T(["Tenang dan siap belajar! 😊","Calm and ready to learn! 😊"]);saveBest("breath",3);award(1,0);sfxWin()};
+ run();G.stop=()=>{alive=false;stopAudio()};
+}
+/* 3. stack the cups, like the 5 plastic cups in the therapy plan */
+function cupSVG(c){return `<svg viewBox="0 0 85 100"><path d="M6 6 H79 L68 96 H17 Z" fill="${c}"/><path d="M6 6 H79" stroke="#fff" stroke-width="6" opacity=".7"/><path d="M14 22 H71" stroke="#fff" stroke-width="3" opacity=".35"/></svg>`}
+function gCups(rows){
+ rows=rows||[3,2];const st=$("stage"),total=rows.reduce((a,b)=>a+b,0);st.innerHTML="";
+ const W=11,Hh=W/.85*st.clientWidth/st.clientHeight;const slots=[];
+ rows.forEach((n,r)=>{for(let i=0;i<n;i++)slots.push({x:50+(i-(n-1)/2)*W,y:78-r*Hh*.98,row:r,i,full:false})});
+ slots.forEach(s=>{s.el=document.createElement("div");s.el.className="slot";s.el.style.left=s.x+"%";s.el.style.top=s.y+"%";st.appendChild(s.el)});
+ const ok=s=>!s.full&&(s.row===0||slots.filter(b=>b.row===s.row-1&&(b.i===s.i||b.i===s.i+1)).every(b=>b.full));
+ const paint=()=>slots.forEach(s=>s.el.classList.toggle("ready",ok(s)));paint();
+ let placed=0;const cols=["#E0483B","#E0483B","#E0483B","#E0483B","#E0483B","#E0483B","#E0483B","#E0483B","#E0483B","#E0483B"];
+ for(let k=0;k<total;k++){const c=document.createElement("div");c.className="cup";c.innerHTML=cupSVG(cols[k]);
+  c.style.left=(8+k*(84/Math.max(1,total-1)))+"%";c.style.top="93%";c.style.width=W*.8+"%";st.appendChild(c);
+  c.onpointerdown=e=>{if(c.dataset.done)return;e.preventDefault();c.setPointerCapture(e.pointerId);c.style.zIndex=9;
+   const R=st.getBoundingClientRect();
+   c.onpointermove=m=>{c.style.left=((m.clientX-R.left)/R.width*100)+"%";c.style.top=((m.clientY-R.top)/R.height*100)+"%"};
+   c.onpointerup=m=>{c.onpointermove=c.onpointerup=null;const x=(m.clientX-R.left)/R.width*100,y=(m.clientY-R.top)/R.height*100;
+    let best=null,bd=1e9;slots.forEach(s=>{if(!ok(s))return;const d=Math.hypot(s.x-x,(s.y-y)*R.height/R.width);if(d<bd){bd=d;best=s}});
+    if(best&&bd<9){best.full=true;c.dataset.done=1;c.style.left=best.x+"%";c.style.top=best.y+"%";c.style.width=W+"%";c.style.zIndex=4+best.row;
+     placed++;sfxPop(placed);say([NUMW[placed-1]]);$("gBar").style.width=placed/total*100+"%";paint();
+     if(placed===total){sfxWin();confetti();saveBest("cups",3);award(2,0);
+      setTimeout(()=>{center(`<div class="say">${T(["Menaranya jadi!","You built the tower!"])}</div><button class="btn go" id="more">➕ ${T(["Menara lebih tinggi","A taller tower"])}</button>`);
+       const cc=$("stage").lastElementChild;cc.style.justifyContent="flex-start";cc.style.pointerEvents="none";$("more").style.pointerEvents="auto";
+       $("more").onclick=()=>gCups(rows.length>=4?[3,2]:rows.length===2?[3,2,1]:[4,3,2,1])},600)}}
+    else{c.style.top="93%";c.style.zIndex=3;sfxWrong()}}}}
+ say([["Seret gelas dan susun menjadi menara, mulai dari bawah!","Drag the cups and stack a tower, starting at the bottom!"]]);
+}
+/* 4. copy the rhythm: listening, memory and timed tapping */
+function gRhythm(){
+ const st=$("stage");const c=center(`<div class="say" id="rs"></div><div class="drums" id="drums"></div>`);
+ const D4=[["🥁","#E0483B",262],["🔔","#2BA84A",330],["🎹","#1F6FEB",392],["🪘","#E7B416",523]];
+ const btns=D4.map(([e,col,f],i)=>{const b=document.createElement("button");b.className="drum";b.textContent=e;b.style.background=col;$("drums").appendChild(b);return b});
+ let seq=[],pos=0,listening=false,alive=true,round=0;
+ const flash=i=>{btns[i].classList.add("lit");tone(D4[i][2],.35,"triangle",.2);setTimeout(()=>btns[i].classList.remove("lit"),320)};
+ const play=async()=>{if(!alive||!$("rs"))return;listening=false;$("rs").innerHTML=T(["Dengarkan…","Listen…"]);await new Promise(r=>setTimeout(r,700));
+  for(const i of seq){if(!alive)return;flash(i);await new Promise(r=>setTimeout(r,650))}
+  if(!alive||!$("rs"))return;pos=0;listening=true;$("rs").innerHTML=T(["Giliranmu! Ketuk yang sama.","Your turn! Tap the same."])};
+ const nextRound=()=>{round++;seq.push(Math.floor(Math.random()*4));if(seq.length<2)seq.push(Math.floor(Math.random()*4));$("gBar").style.width=Math.min(100,(seq.length-2)/5*100)+"%";play()};
+ btns.forEach((b,i)=>b.onclick=()=>{if(!listening)return;flash(i);
+  if(i!==seq[pos]){listening=false;sfxWrong();$("rs").innerHTML=T(["Hampir! Dengarkan lagi.","Nearly! Listen again."]);setTimeout(play,900);return}
+  pos++;if(pos===seq.length){listening=false;award(2,0);
+   if(seq.length>=7){sfxWin();confetti();saveBest("rhythm",3);$("rs").innerHTML=T(["Luar biasa! Kamu ingat 7 bunyi!","Amazing! You remembered 7 sounds!"]);return}
+   $("rs").innerHTML=T(PRAISE[round%PRAISE.length]);setTimeout(nextRound,900)}});
+ say([["Dengarkan bunyinya, lalu ketuk dengan urutan yang sama.","Listen to the sounds, then tap them in the same order."]]).then(()=>{if(alive)nextRound()});
+ G.stop=()=>{alive=false};
+}
+/* 5. spot the different one: visual discrimination and scanning */
+const ODD=[["🐶","🐱"],["🍎","🍅"],["🐟","🐠"],["🌕","🌝"],["🚗","🚙"],["⭐","🌟"],["🐸","🐢"],["🍊","🍑"],["🐻","🐼"],["🌷","🌹"],["🦋","🐝"],["🍩","🍪"]];
+function gOdd(){
+ const st=$("stage");let round=0,wr=0;const c=center(`<div class="say" id="os"></div><div class="grid9" id="og"></div>`);
+ const go=()=>{if(round>=10){sfxWin();confetti();const s=wr<=1?3:wr<=4?2:1;saveBest("odd",s);$("og").innerHTML="";
+   $("os").innerHTML="⭐".repeat(s)+"<br>"+T(["Matamu tajam sekali!","You have sharp eyes!"]);return}
+  const n=[9,12,16,20,20,25,25,30,30,36][round],cols=Math.ceil(Math.sqrt(n*1.4));const [a,b]=ODD[Math.floor(Math.random()*ODD.length)];
+  const odd=Math.floor(Math.random()*n);$("og").style.gridTemplateColumns=`repeat(${cols},1fr)`;$("og").innerHTML="";
+  const fs=Math.max(22,Math.min(60,st.clientHeight*.6/Math.ceil(n/cols)))+"px";
+  $("os").innerHTML=T(["Cari yang berbeda!","Find the different one!"]);$("gBar").style.width=round*10+"%";
+  for(let i=0;i<n;i++){const bt=document.createElement("button");bt.textContent=i===odd?b:a;bt.style.fontSize=fs;
+   bt.onclick=()=>{if(i===odd){bt.classList.add("yes");sfxPop(round);award(2,0);round++;setTimeout(go,500)}else{wr++;sfxWrong();bt.classList.remove("nope");void bt.offsetWidth;bt.classList.add("nope")}};
+   $("og").appendChild(bt)}};
+ say([["Cari satu gambar yang berbeda!","Find the one picture that is different!"]]);go();
+}
+/* 6. cross the middle: reach across the body, alternating sides */
+function gCross(){
+ const st=$("stage");let n=0,alive=true;const total=16;
+ const c=center(`<div class="say">${T(["Ketuk bintang! Pakai tangan kanan untuk bintang di kiri, tangan kiri untuk bintang di kanan.","Tap the star! Use your right hand for stars on the left, and your left hand for stars on the right."])}</div>`);
+ c.style.justifyContent="flex-start";c.style.pointerEvents="none";
+ const line=document.createElement("div");line.style.cssText="position:absolute;left:50%;top:0;bottom:0;border-left:4px dashed rgba(255,255,255,.3)";st.appendChild(line);
+ const starEl=document.createElement("button");starEl.style.cssText="position:absolute;border:0;background:none;font-family:var(--emoji);cursor:pointer;transform:translate(-50%,-50%);font-size:clamp(50px,9vw,90px)";
+ starEl.textContent="⭐";st.appendChild(starEl);
+ const hand=document.createElement("div");hand.className="big";hand.style.fontSize="clamp(34px,6vw,60px)";st.appendChild(hand);
+ const put=()=>{const left=n%2===0;starEl.style.left=(left?12+Math.random()*22:66+Math.random()*22)+"%";starEl.style.top=(30+Math.random()*55)+"%";
+  hand.textContent=left?"🫲":"🫱";hand.style.left=left?"80%":"20%";hand.style.top="88%"};
+ starEl.onclick=()=>{if(!alive)return;n++;sfxPop(n%8);$("gBar").style.width=n/total*100+"%";
+  if(n>=total){alive=false;starEl.remove();hand.remove();sfxWin();confetti();saveBest("cross",3);award(2,0);
+   center(`<div class="say">${T(["Hebat! Tanganmu menyeberang tengah tubuh.","Great! Your hands crossed the middle of your body."])}</div>`);return}put()};
+ put();say([["Pakai tangan yang jauh untuk mengetuk bintang!","Use the hand on the other side to tap the star!"]]);G.stop=()=>{alive=false};
+}
+const GAMES=[
+ {id:"follow",e:"🦋",t:["Ikuti Kupu-kupu","Follow the Butterfly"],n:["Pelacakan mata dan tangan","Eye tracking and hand control"],run:()=>{gTool("🐢 "+(S.lang==="en"?"Slow":"Pelan"),()=>{$("stage").innerHTML="";G.stop&&G.stop();gFollow(.6)});gTool("🐇 "+(S.lang==="en"?"Fast":"Cepat"),()=>{$("stage").innerHTML="";G.stop&&G.stop();gFollow(1.4)});gFollow(1)}},
+ {id:"breath",e:"🎈",t:["Balon Napas","Balloon Breathing"],n:["Menenangkan tubuh sebelum belajar","Calming the body before learning"],run:gBreath},
+ {id:"cups",e:"🥤",t:["Susun Gelas","Stack the Cups"],n:["Menyusun menara, seperti 5 gelas plastik","Build a tower, like the 5 plastic cups"],run:()=>gCups([3,2])},
+ {id:"rhythm",e:"🥁",t:["Tiru Irama","Copy the Rhythm"],n:["Mendengar, mengingat, dan mengetuk","Listening, remembering and tapping"],run:gRhythm},
+ {id:"odd",e:"🔍",t:["Cari yang Beda","Spot the Difference"],n:["Melatih mata membedakan gambar","Training the eyes to tell pictures apart"],run:gOdd},
+ {id:"cross",e:"⭐",t:["Seberangi Tengah","Cross the Middle"],n:["Kedua sisi tubuh bekerja sama","Both sides of the body working together"],run:gCross}
+];
+
+/* ============================================================
+   WHOLE-BODY MOVEMENT (Motorik Kasar), from the parent guides.
+   Each has steps, a timer or rep counter, and a daily log.
+   ============================================================ */
+const EX=[
+ {id:"yoga",wk:1,e:"🧘",anim:"stretch",prop:"🟪",t:["Pose yoga di karpet","Yoga poses on the mat"],gear:[["Karpet yoga","Yoga mat"]],sec:60,
+  steps:[[["Pose kucing: merangkak, lengkungkan punggung ke atas seperti kucing marah.","Cat pose: on hands and knees, round your back up like an angry cat."]],
+   [["Pose sapi: turunkan perut, angkat kepala, lihat ke atas.","Cow pose: drop your tummy, lift your head and look up."]],
+   [["Pose kobra: tengkurap, dorong dada ke atas dengan tangan. Tahan 5 hitungan.","Cobra pose: lie on your tummy, push your chest up with your hands. Hold for 5."]]],
+  why:["Melatih kekuatan bahu, punggung, dan perut, yang dibutuhkan untuk duduk tegak saat menulis.","Builds shoulder, back and tummy strength, which he needs to sit up tall when writing."]},
+ {id:"ball",wk:1,e:"🏐",anim:"rock",prop:"🔵",t:["Duduk di gymball sambil tempel stiker","Sit on the gym ball and stick stickers"],gear:[["Gymball","Gym ball"],["Stiker","Stickers"]],reps:10,
+  steps:[[["Duduk di gymball, kaki menapak lantai.","Sit on the gym ball with both feet flat on the floor."]],
+   [["Orang tua memegang pinggang anak, bola bergoyang pelan.","A parent holds his hips while the ball rocks gently."]],
+   [["Ambil stiker dari satu sisi, tempel ke kertas di sisi lainnya.","Pick a sticker from one side and stick it onto paper on the other side."]]],
+  why:["Melatih keseimbangan dan otot inti, sambil jari melatih gerakan menjimpit.","Trains balance and core muscles, while the fingers practise the pincer grip."]},
+ {id:"push",wk:1,e:"🐻",anim:"crawl",prop:"⚽",t:["Merangkak mendorong bola","Crawl and push the ball"],gear:[["Bola ringan","Light ball"]],reps:5,
+  steps:[[["Posisi merangkak di lantai.","Get down on hands and knees."]],[["Dorong bola ringan dengan kepala atau tangan sampai ke garis finis.","Push a light ball with your head or hands all the way to the finish line."]],
+   [["Balik lagi ke awal. Ulangi 5 kali.","Come back to the start. Do it 5 times."]]],
+  why:["Merangkak menguatkan bahu dan tangan, serta melatih kedua sisi tubuh bekerja sama.","Crawling strengthens shoulders and hands, and gets both sides of the body working together."]},
+ {id:"cups",wk:1,e:"🥤",anim:"lift",prop:"🥤",t:["Berbaring dan susun 5 gelas","Lie down and stack 5 cups"],gear:[["5 gelas plastik","5 plastic cups"]],reps:3,
+  steps:[[["Berbaring telentang, angkat kedua kaki ke atas.","Lie on your back and lift both legs up."]],[["Ambil gelas satu per satu dan susun menjadi menara di samping.","Pick up the cups one at a time and stack a tower beside you."]],
+   [["Robohkan pelan-pelan, lalu susun lagi.","Knock it down gently, then build it again."]]],
+  why:["Melatih otot perut dan koordinasi mata dengan tangan.","Works the tummy muscles and eye-hand coordination."]},
+ {id:"superman",wk:2,e:"🦸",anim:"stretch",prop:"🟦",t:["Pose Superman","Superman pose"],gear:[["Matras yoga","Yoga mat"]],sec:30,
+  steps:[[["Tengkurap di matras.","Lie on your tummy on the mat."]],[["Angkat tangan dan kaki bersamaan, seperti terbang.","Lift your arms and legs at the same time, like flying."]],
+   [["Tahan 5 hitungan, lalu istirahat. Ulangi.","Hold for 5, then rest. Do it again."]]],
+  why:["Menguatkan punggung supaya tubuh tidak mudah lelah saat duduk.","Strengthens the back so he doesn't tire when sitting."]},
+ {id:"bear",wk:2,e:"🐾",anim:"crawl",prop:"⭐",t:["Merangkak ambil stiker","Crawl to fetch stickers"],gear:[["Stiker","Stickers"]],reps:8,
+  steps:[[["Letakkan stiker di ujung ruangan.","Put stickers at the far end of the room."]],[["Merangkak ke sana, ambil satu stiker.","Crawl over and pick up one sticker."]],
+   [["Merangkak kembali dan tempel di papan. Ulangi sampai habis.","Crawl back and stick it on the board. Repeat until they're all done."]]],
+  why:["Menggabungkan kekuatan tubuh dengan gerakan jari yang halus.","Combines whole-body strength with small finger movements."]},
+ {id:"frog",wk:0,e:"🐸",anim:"jump",prop:"🌿",t:["Lompat katak","Frog jumps"],gear:[],reps:10,
+  steps:[[["Jongkok seperti katak, tangan di lantai.","Squat down like a frog, hands on the floor."]],[["Lompat ke depan sejauh mungkin!","Jump forward as far as you can!"]],[["Mendarat dengan dua kaki. Ulangi 10 kali.","Land on both feet. Do it 10 times."]]],
+  why:["Melatih kekuatan kaki dan keseimbangan.","Builds leg strength and balance."]},
+ {id:"crab",wk:0,e:"🦀",anim:"side",prop:"🟫",t:["Jalan kepiting","Crab walk"],gear:[],sec:30,
+  steps:[[["Duduk, tangan di belakang, angkat pinggul.","Sit down, hands behind you, lift your hips."]],[["Jalan ke samping seperti kepiting.","Walk sideways like a crab."]]],
+  why:["Menguatkan bahu, lengan, dan perut.","Strengthens shoulders, arms and tummy."]},
+ {id:"flamingo",wk:0,e:"🦩",anim:"rock",prop:"🌊",t:["Berdiri satu kaki","Stand on one leg"],gear:[],sec:20,
+  steps:[[["Berdiri tegak, angkat satu kaki seperti flamingo.","Stand tall and lift one leg like a flamingo."]],[["Tahan selama mungkin, lalu ganti kaki.","Hold as long as you can, then swap legs."]]],
+  why:["Melatih keseimbangan dan konsentrasi.","Trains balance and focus."]},
+ {id:"catch",wk:0,e:"🤾",anim:"jump",prop:"⚽",t:["Lempar tangkap bola","Throw and catch"],gear:[["Bola ringan","Light ball"]],reps:10,
+  steps:[[["Berdiri berhadapan, jarak 2 langkah.","Stand facing each other, two steps apart."]],[["Lempar bola pelan, tangkap dengan dua tangan.","Throw the ball gently and catch with both hands."]],[["Kalau sudah bisa, mundur satu langkah.","When it's easy, take one step back."]]],
+  why:["Melatih koordinasi mata dan tangan serta waktu reaksi.","Trains eye-hand coordination and reaction time."]},
+ {id:"dough",wk:0,e:"🫓",anim:"stretch",prop:"🟠",t:["Remas lilin mainan","Squeeze the playdough"],gear:[["Lilin mainan / playdough","Playdough"]],reps:10,
+  steps:[[["Remas lilin dengan satu tangan, lalu tangan lainnya.","Squeeze the playdough with one hand, then the other."]],[["Gulung jadi ular panjang dan bola-bola kecil.","Roll it into long snakes and little balls."]],[["Cubit bola kecil dengan ibu jari dan telunjuk.","Pinch the little balls between thumb and first finger."]]],
+  why:["Menguatkan otot tangan kecil yang dipakai untuk memegang pensil.","Strengthens the small hand muscles used to hold a pencil."]},
+ {id:"pegs",wk:0,e:"🧷",anim:"rock",prop:"👕",t:["Jepit jemuran","Clothes pegs"],gear:[["Jepitan jemuran","Clothes pegs"],["Kardus","A cardboard box"]],reps:10,
+  steps:[[["Buka jepitan dengan ibu jari dan telunjuk.","Open a peg with your thumb and first finger."]],[["Jepitkan di pinggir kardus. Pasang 10 jepitan.","Clip it onto the edge of the box. Put on 10 pegs."]],[["Lepas lagi satu per satu.","Take them off again one by one."]]],
+  why:["Melatih kekuatan jepitan jari untuk menulis.","Builds finger pinch strength for writing."]}
+];
+const LOG=LS.get("motorik.log",{});
+function today(){return new Date().toISOString().slice(0,10)}
+function openEx(ex){
+ show("vEx");let reps=0,timer=null,left=ex.sec||0;
+ const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return d.toISOString().slice(0,10)});
+ $("exBody").innerHTML=`<button class="btn back" id="exBack">← ${T(["Semua gerakan","All exercises"])}</button>
+ <div class="ex">
+  <div class="demo"><div class="mat"></div><div class="prop" style="left:18%">${ex.prop}</div>
+   <div class="kid" style="animation:${ex.anim} 2.2s ease-in-out infinite">${ex.e}</div></div>
+  <div class="card2"><h2>${NM(ex.t[0])}</h2><div class="en">${NM(ex.t[1])}</div>
+   <div class="chips">${ex.gear.map(g=>`<span class="chip">🧰 ${g[0]} · ${g[1]}</span>`).join("")}
+    <span class="chip">${ex.sec?"⏱️ "+ex.sec+" "+(S.lang==="en"?"seconds":"detik"):"🔁 "+ex.reps+"×"}</span></div>
+   <ol>${ex.steps.map(s=>`<li>${NM(s[0][0])}<small>${NM(s[0][1])}</small></li>`).join("")}</ol>
+   <div class="timer">${ex.sec?`<button class="btn go" id="exGo">▶ ${T(["Mulai","Start"])}</button><div class="num" id="exNum">${ex.sec}</div>`:
+     `<button class="btn go" id="exRep" style="font-size:22px">+1</button><div class="num" id="exNum">0 / ${ex.reps}</div>`}
+    <button class="btn" id="exRead">🔈 ${T(["Bacakan","Read aloud"])}</button></div>
+   <div class="why">💡 ${NM(ex.why[0])}<br><i>${NM(ex.why[1])}</i></div>
+   <div class="safe">⚠️ ${T(["Selalu didampingi orang dewasa. Berhenti kalau anak lelah atau kesakitan.","Always supervised by a grown-up. Stop if he is tired or anything hurts."])}</div>
+   <button class="btn go" id="exDone" style="margin-top:10px">✅ ${T(["Selesai hari ini","Done for today"])}</button>
+   <div style="margin-top:10px;font-weight:800">${T(["7 hari terakhir","The last 7 days"])}</div>
+   <div class="log">${days.map(d=>`<span class="${(LOG[d]||[]).includes(ex.id)?"y":""}">${d.slice(8)}</span>`).join("")}</div>
+  </div></div>`;
+ $("exBack").onclick=()=>{clearInterval(timer);openList("gerak")};
+ $("exRead").onclick=()=>say([ex.t].concat(ex.steps.map(s=>s[0])));
+ if(ex.sec)$("exGo").onclick=()=>{clearInterval(timer);left=ex.sec;$("exNum").textContent=left;say([["Mulai!","Go!"]]);
+  timer=setInterval(()=>{left--;$("exNum").textContent=left;if(left<=5&&left>0){tone(660,.1);}
+   if(left<=0){clearInterval(timer);sfxWin();say([["Selesai! Hebat!","Finished! Well done!"]])}},1000)};
+ else $("exRep").onclick=()=>{reps++;$("exNum").textContent=reps+" / "+ex.reps;sfxPop(reps%8);say([NUMW[Math.min(9,reps-1)]]);if(reps===ex.reps){sfxWin();confetti()}};
+ $("exDone").onclick=()=>{const d=today();LOG[d]=LOG[d]||[];if(!LOG[d].includes(ex.id)){LOG[d].push(ex.id);LS.set("motorik.log",LOG);award(3,0)}
+  confetti();sfxWin();openEx(ex)};
+}
+
+/* ============================================================
+   MENUS
+   ============================================================ */
+const SECTIONS=[
+ {id:"tulis",art:["✏️","〰️"],tone:["#8A3552","#4A1A2C"],t:["Pra-Menulis","Pre-writing"],n:["Tebalkan garis, salin, cermin, bentuk, huruf dan angka","Tracing, copying, mirror drawing, shapes, letters and numbers"]},
+ {id:"stiker",art:["🌟","🫙"],tone:["#C2803A","#6B3A0E"],t:["Tempel Stiker","Sticker Patterns"],n:["Seret stiker ke pola, melatih jari menjimpit","Drag stickers onto a pattern, practising the pincer grip"]},
+ {id:"sensori",art:["🦋","🥁"],tone:["#2E7A8A","#123F4A"],t:["Permainan Sensori","Sensory Games"],n:["Mata, telinga, napas, dan kedua sisi tubuh","Eyes, ears, breathing and both sides of the body"]},
+ {id:"gerak",art:["🤸","🧘"],tone:["#2E7A55","#123F28"],t:["Gerak Tubuh","Body Movement"],n:["Latihan motorik kasar dari panduan orang tua","Gross motor exercises from the parent guide"]}
+];
+function show(id){["vMenu","vList","vDraw","vStick","vSense","vEx"].forEach(v=>$(v).classList.toggle("on",v===id));$("home").hidden=id==="vMenu";
+ if(id!=="vSense"&&G.stop){G.stop();G.stop=null}stopAudio()}
+function starsOf(id){const n=BEST[id]||0;return n?"⭐".repeat(n):""}
+function drawMenu(){const box=$("sections");box.innerHTML="";SECTIONS.forEach(s=>{const b=document.createElement("button");b.className="sec";
+ b.innerHTML=`<div class="art" style="background:linear-gradient(160deg,${s.tone[0]},${s.tone[1]})">${s.art.map(e=>"<i>"+e+"</i>").join("")}</div>
+  <div class="txt"><h3>${s.t[0]}</h3><div class="en">${s.t[1]}</div><div class="nt">${T(s.n)}</div></div>`;
+ b.onclick=()=>openList(s.id);box.appendChild(b)})}
+function actBtn(e,t,n,st,fn){const b=document.createElement("button");b.className="act";
+ b.innerHTML=`<span class="e">${e}</span><span><b>${NM(S.lang==="en"?t[1]:t[0])}</b><small>${NM(S.lang==="both"?t[1]+" · ":"")}${NM(S.lang==="en"?n[1]:n[0])}</small></span><span class="st">${st||""}</span>`;
+ b.onclick=fn;return b}
+function grp(p){const h=document.createElement("div");h.className="grp";h.innerHTML=T(p);return h}
+function openList(id){
+ const s=SECTIONS.find(x=>x.id===id);show("vList");$("listH").textContent=s.t[0]+" · "+s.t[1];$("listSub").innerHTML=T(s.n);
+ const body=$("listBody");body.innerHTML="";const grid=()=>{const g=document.createElement("div");g.className="acts";body.appendChild(g);return g};
+ if(id==="tulis")[1,2].forEach(tk=>{body.appendChild(grp(["Tingkat "+tk,"Level "+tk]));const g=grid();
+  PW.filter(l=>l.tk===tk).forEach(l=>g.appendChild(actBtn(l.e,l.t,l.n,starsOf(l.id)+" "+l.items.length+"×",()=>openDraw(l))))});
+ if(id==="stiker"){const g=grid();STICK.forEach((sh,i)=>g.appendChild(actBtn(sh.e,sh.t,["Tempel stiker di pola","Stick stickers on the pattern"],starsOf("stk-"+sh.id),()=>openStick(i))))}
+ if(id==="sensori"){const g=grid();GAMES.forEach(gm=>g.appendChild(actBtn(gm.e,gm.t,gm.n,starsOf(gm.id),()=>openGame(gm))))}
+ if(id==="gerak"){
+  [[1,["Minggu 1 (panduan terapis)","Week 1 (therapist's plan)"]],[2,["Minggu 2 (panduan terapis)","Week 2 (therapist's plan)"]],[0,["Latihan tambahan","Extra exercises"]]].forEach(([wk,h])=>{
+   body.appendChild(grp(h));const g=grid();
+   EX.filter(x=>x.wk===wk).forEach(ex=>g.appendChild(actBtn(ex.e,ex.t,ex.why,(LOG[today()]||[]).includes(ex.id)?"✅":"",()=>openEx(ex))))})}
+}
+$("home").onclick=()=>{show("vMenu");drawMenu()};
+function paintLang(){$("lang").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.l===S.lang))}
+$("lang").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.lang=b.dataset.l;LS.set("dongeng.lang",S.lang);paintLang();drawMenu();
+ if($("vList").classList.contains("on"))openList(SECTIONS.find(s=>$("listH").textContent.startsWith(s.t[0])).id);
+ if($("vDraw").classList.contains("on")&&D.hintP)$("dHint").innerHTML=T(D.hintP)});
+$("sound").onclick=()=>{S.sound=!S.sound;$("sound").textContent=S.sound?"🔊":"🔇";if(!S.sound)stopAudio()};
+
+if(window.SUPER&&SUPER.mountBack)SUPER.mountBack("Motorik");
+if(window.SUPER&&SUPER.bar)SUPER.bar.mount([]);
+paintLang();drawMenu();
+const q=new URLSearchParams(location.search).get("go");if(q&&SECTIONS.some(s=>s.id===q))openList(q);
+</script>
+</body>
+</html>
