@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Kisah 25 Nabi</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--sand:#F3EAD4;--bone:#FFFDF7;--gold:#E2B455;--kelp:#6FD9A2;
+ --sky1:#5A3E8A;--sky2:#33245C;--sky3:#191233;--glow:#B39BE8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overscroll-behavior:none}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;flex-direction:column;
+ min-height:100dvh;user-select:none;touch-action:manipulation;overflow:hidden;
+ background:radial-gradient(130% 80% at 50% -14%,var(--glow) 0%,transparent 56%),
+ linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 46%,var(--sky3) 100%);background-attachment:fixed}
+.app{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;max-width:1400px;width:100%;
+ margin:0 auto;padding:8px 16px 10px;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;color:var(--sand);margin-right:auto}
+.brand span{color:var(--gold)}
+.icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:17px;
+ background:rgba(243,234,212,.1);border:1px solid rgba(243,234,212,.2);color:var(--bone);cursor:pointer}
+.progress{margin:8px 0 2px;height:7px;border-radius:99px;background:rgba(0,0,0,.3);overflow:hidden}
+.progress i{display:block;height:100%;width:0;border-radius:99px;
+ background:linear-gradient(90deg,var(--kelp),var(--gold));transition:width .4s}
+
+.stage{flex:1;display:grid;grid-template-columns:1fr;gap:12px;min-height:0;padding:8px 0;overflow:hidden}
+@media (min-aspect-ratio:1/1){ .stage{grid-template-columns:minmax(0,30%) minmax(0,70%);gap:20px} }
+.listWrap{min-height:0;overflow-y:auto;scrollbar-width:thin}
+.list{display:flex;flex-direction:column;gap:6px}
+.li{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:14px;cursor:pointer;
+ background:rgba(0,0,0,.26);border:1px solid rgba(243,234,212,.14);transition:.15s;text-align:left}
+.li:hover{background:rgba(0,0,0,.4)}
+.li.on{background:var(--gold);color:#3A2705;border-color:var(--gold)}
+.li .n{font-family:'Fredoka',sans-serif;font-weight:600;font-size:13px;opacity:.75;min-width:24px}
+.li .t{font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px;line-height:1.25}
+.li .s{font-size:11px;opacity:.7}
+.li .done{margin-left:auto;font-size:13px}
+
+.readWrap{min-height:0;overflow-y:auto;padding-right:2px}
+.card{border-radius:24px;padding:16px 18px;background:linear-gradient(165deg,#FFFDF7,#F1E6CC);
+ color:#2A2008;border:4px solid rgba(255,255,255,.7);box-shadow:0 18px 42px rgba(0,0,0,.4)}
+.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.head h2{font-family:'Fredoka',sans-serif;margin:0;font-size:clamp(18px,3.4vw,25px);color:#1E4D36}
+.head .sub{font-size:12.5px;color:#8A7238}
+.ar{font-family:'Amiri',serif;font-size:clamp(24px,4.6vw,38px);line-height:2;direction:rtl;
+ text-align:right;color:#1E4D36;margin:10px 0}
+.tl{font-size:clamp(12.5px,2.2vw,15px);font-style:italic;color:#7A6430;margin-bottom:6px}
+.mean{font-size:clamp(13.5px,2.4vw,16px);line-height:1.55;color:#2A2008}
+.mean .en{display:block;margin-top:4px;color:#6A5A2E;font-size:.93em}
+.ayah{border-top:1px solid rgba(138,114,56,.22);padding-top:10px;margin-top:10px}
+.ayah:first-of-type{border-top:0}
+.lbl{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:#8A7238;margin-bottom:5px;font-weight:800}
+.ayah .no{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+ background:#1E6E4C;color:#fff;font-size:11px;font-weight:800;margin-left:6px;vertical-align:middle}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-top:8px}
+.big{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;border-radius:999px;padding:11px 20px;
+ cursor:pointer;background:rgba(243,234,212,.13);color:var(--bone);border:1px solid rgba(243,234,212,.24)}
+.big.go{background:var(--gold);color:#3A2705;border-color:var(--gold)}
+body.hasbar .controls{display:none}
+.note{font-size:12px;color:rgba(255,253,247,.6);text-align:center;padding-top:6px;line-height:1.5}
+.warn{background:rgba(226,180,85,.16);border:1px solid rgba(226,180,85,.4);border-radius:12px;
+ padding:9px 12px;font-size:12.5px;line-height:1.5;margin-top:8px;color:#F3EAD4}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <div class="brand">Kisah <span>25 Nabi</span></div>
+  <button class="icon" id="lang" title="Bahasa">ID</button>
+  <button class="icon" id="sound" aria-pressed="true">🔊</button>
+ </div>
+ <div class="progress"><i id="bar"></i></div>
+ <main class="stage">
+  <div class="listWrap"><div class="list" id="list"></div></div>
+  <div class="readWrap">
+   <div class="card" id="card"></div>
+   <div class="controls">
+    <button class="big" id="prev">‹</button>
+    <button class="big" id="play">▶ Dengar</button>
+    <button class="big go" id="next">›</button>
+   </div>
+   <div class="note" id="note"></div>
+  </div>
+ </main>
+</div>
+<script>
+/* ============================================================
+   common.js  —  shared by every game in the super app
+   Names, settings, navigation, credits.
+   ============================================================ */
+(function (global) {
+
+  var DEFAULTS = {
+    child: "Baim",        // the learner
+    dad: "Papi Rifky",
+    mum: "Mommy Keke",
+    sib: "Ade Yahya",
+    dadShort: "Papi",
+    mumShort: "Mommy",
+    childShort: "Baim",
+    sibShort: "Ade"
+  };
+
+  function load() {
+    try {
+      var raw = JSON.parse(localStorage.getItem("super.names") || "{}");
+      var out = {};
+      for (var k in DEFAULTS) out[k] = (raw[k] && String(raw[k]).trim()) || DEFAULTS[k];
+      return out;
+    } catch (e) { return Object.assign({}, DEFAULTS); }
+  }
+  function save(n) {
+    try { localStorage.setItem("super.names", JSON.stringify(n)); } catch (e) {}
+    N = load();
+  }
+  var N = load();
+
+  /* Replace the built-in family names anywhere they appear in text or speech.
+     Longest first so "Papi Rifky" wins over "Papi". */
+  var MAP = [
+    ["Papi Rifky", "dad"], ["Mommy Keke", "mum"], ["Ade Yahya", "sib"],
+    ["Rifky", "dadShort"], ["Keke", "mumShort"], ["Yahya", "sibShort"],
+    ["Mommy", "mumShort"], ["Papi", "dadShort"], ["Baim", "child"]
+  ];
+  function P(s) {
+    if (s == null) return s;
+    s = String(s);
+    for (var i = 0; i < MAP.length; i++) {
+      var from = MAP[i][0], to = N[MAP[i][1]];
+      if (to && to !== from) s = s.split(from).join(to);
+    }
+    return s;
+  }
+
+  /* short forms derived from a full name: "Papi Rifky" -> "Papi" */
+  function shorten(full, fallback) {
+    if (!full) return fallback;
+    var bits = String(full).trim().split(/\s+/);
+    return bits[0] || fallback;
+  }
+
+  var GAMES = [
+    { id: "shalat", file: "shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
+      note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C" },
+    { id: "doa", file: "doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
+      note: "20 duas for waking, eating and travelling", tone: "#0C556C" },
+    { id: "juz30", file: "juz30.html", icon: "\uD83D\uDCD6", en: "Memorising Juz 30", idn: "Hafalan Juz 30",
+      note: "37 surahs, listen and follow along", tone: "#7A4A22" },
+    { id: "nabi", file: "nabi.html", icon: "\u2B50", en: "Stories of 25 prophets", idn: "Kisah 25 Nabi",
+      note: "Who they were and what they teach us", tone: "#5A3E8A" },
+    { id: "koleksi", file: "koleksi.html", icon: "\uD83C\uDFC5", en: "Progress", idn: "Pencapaian",
+      note: "What has been learned, and how often", tone: "#8A3552" },
+    { id: "periksa", file: "periksa.html", icon: "\uD83C\uDF9A\uFE0F", en: "Check the recitations", idn: "Periksa Rekaman",
+      note: "Listen and correct any wrong file, for parents", tone: "#7A4A22" }
+  ];
+
+  var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
+                "for beloved Abang Baim and Ade Yahya.";
+
+  var CURRICULUM = [
+    ["Arabic and Indonesian translation", "Kemenag rendering via the MIT licensed rioastamal/quran-json"],
+    ["English translation and transliteration", "risan/quran-json, CC BY-SA 4.0"],
+    ["Prayer steps, audio and postures", "learnsalah/learnsalah, MIT licence"],
+    ["Dua audio", "Islami-fork/koleksi-doa-dzikir-audio, MIT licence"],
+    ["Prophet illustrations", "Islami-fork/Kisah-25-Nabi (no licence stated, ask the author)"],
+    ["Juz 30 recitation for children", "Murottal Anak Juz 30, Metode Ummi, archive.org"]
+  ];
+
+  /* a back button injected into any game page */
+  function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
+    var a = document.createElement("a");
+    a.href = "index.html";
+    a.className = "super-back";
+    a.setAttribute("aria-label", "Back to the menu");
+    a.innerHTML = "\u2190";
+    document.body.appendChild(a);
+    var css = document.createElement("style");
+    css.textContent =
+      ".super-back{position:fixed;left:10px;bottom:10px;z-index:95;width:44px;height:44px;" +
+      "border-radius:50%;display:grid;place-items:center;font-size:22px;text-decoration:none;" +
+      "background:rgba(4,34,46,.72);color:#FFFBF2;border:1px solid rgba(247,233,204,.28);" +
+      "box-shadow:0 6px 18px rgba(2,18,26,.45)}" +
+      ".super-back:hover{background:rgba(4,34,46,.92)}" +
+      "@media (min-aspect-ratio:1/1){.super-back{left:8px;bottom:8px;width:40px;height:40px}}";
+    document.head.appendChild(css);
+    if (title) document.title = P(title);
+  }
+
+  global.SUPER = {
+    names: function () { return N; },
+    defaults: DEFAULTS,
+    save: save,
+    reset: function () { try { localStorage.removeItem("super.names"); } catch (e) {} N = load(); },
+    P: P,
+    shorten: shorten,
+    GAMES: GAMES,
+    CREDITS: CREDITS,
+    CURRICULUM: CURRICULUM,
+    mountBack: mountBack
+  };
+})(window);
+
+/* ============================================================
+   PROGRESS: xp, grade bands, the zoo and the pets
+   ============================================================ */
+(function (global) {
+  var S = global.SUPER;
+
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
+  var GRADES = [
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
+  ];
+
+  /* 50 animals to collect. The cost rises steeply so the rare ones
+     really are rare. Kangaroo and koala are the last two. */
+  var ZOO = [
+    ["ant","\uD83D\uDC1C","Ant","Semut",40],
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
+  ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
+
+  /* pets grow up as the xp goes in */
+  var PETS = [
+    { id: "cat", en: "Cat", idn: "Kucing", stages: [
+      { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
+    { id: "chick", en: "Chicken", idn: "Ayam", stages: [
+      { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
+    { id: "frog", en: "Frog", idn: "Katak", stages: [
+      { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
+    { id: "tree", en: "Tree", idn: "Pohon", stages: [
+      { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
+  ];
+
+  function pget() {
+    try { return JSON.parse(localStorage.getItem("super.progress") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function pset(o) { try { localStorage.setItem("super.progress", JSON.stringify(o)); } catch (e) {} }
+
+  function addXp(game, n) {
+    var p = pget();
+    p.xp = (p.xp || 0) + n;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + n;
+    p.answers = (p.answers || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + n;
+    pset(p);
+    return p.xp;
+  }
+  function gradeFor(xp) {
+    var g = GRADES[0];
+    for (var i = 0; i < GRADES.length; i++) if (xp >= GRADES[i].xp) g = GRADES[i];
+    return g;
+  }
+  function nextGrade(xp) {
+    for (var i = 0; i < GRADES.length; i++) if (xp < GRADES[i].xp) return GRADES[i];
+    return null;
+  }
+  function unlockedZoo(xp) { return ZOO.filter(function (z) { return xp >= z.xp; }); }
+  function petStage(pet, xp) {
+    var s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (xp >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+  function stats() {
+    var p = pget(), xp = p.xp || 0;
+    return { xp: xp, answers: p.answers || 0, games: p.games || {}, days: p.days || {},
+             grade: gradeFor(xp), next: nextGrade(xp),
+             zoo: unlockedZoo(xp).length, zooTotal: ZOO.length };
+  }
+
+
+  /* ============================================================
+     SCORING
+     Research note: streaks help young learners, but rewards that
+     pay for volume alone push guessing. So points are paid for
+     QUALITY: first time right is worth full marks, a second try
+     less than half, and a third barely anything. The streak only
+     counts clean first-time answers, so it cannot be farmed.
+     ============================================================ */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
+
+  function award(game, o) {
+    o = o || {};
+    var level = o.level || 1, wrongs = o.wrongs || 0;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
+    var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
+    var p = pget();
+    var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
+    var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
+    var xp = Math.max(1, Math.round(base * quality * mult));
+    p.streak = streak;
+    p.best = Math.max(p.best || 0, streak);
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
+    p.xp = (p.xp || 0) + xp;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + xp;
+    p.answers = (p.answers || 0) + 1;
+    if (wrongs === 0) p.clean = (p.clean || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + xp;
+    pset(p);
+    return { xp: xp, streak: streak, mult: mult, food: p.food, total: p.xp };
+  }
+  function food() { return pget().food || 0; }
+  function streakNow() { return pget().streak || 0; }
+  function petFed(id) { var p = pget(); return (p.fed || {})[id] || 0; }
+  function feed(id) {
+    var p = pget();
+    if ((p.food || 0) < FOOD_COST) return null;
+    p.food -= FOOD_COST;
+    p.fed = p.fed || {};
+    p.fed[id] = (p.fed[id] || 0) + FOOD_VALUE;
+    pset(p);
+    return { food: p.food, fed: p.fed[id] };
+  }
+  function stageOf(pet) {
+    var f = petFed(pet.id), s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (f >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+
+  /* ============================================================
+     THE STRIP  —  a Touch Bar style row of live, contextual keys
+     ============================================================ */
+  function mountBar(actions) {
+    try { noteVisit((location.pathname.split("/").pop() || "index.html")); } catch (e) {}
+    if (document.getElementById("superbar")) return;
+    var css = document.createElement("style");
+    css.textContent =
+     "#superbar{position:fixed;left:0;right:0;bottom:0;z-index:96;display:flex;align-items:center;gap:6px;" +
+     "padding:6px 10px;background:linear-gradient(180deg,rgba(6,20,28,.86),rgba(3,12,18,.96));" +
+     "border-top:1px solid rgba(247,233,204,.18);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}" +
+     "#superbar::-webkit-scrollbar{display:none}" +
+     "#superbar .k{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:12px;" +
+     "background:rgba(247,233,204,.10);border:1px solid rgba(247,233,204,.18);color:#FFFBF2;cursor:pointer;" +
+     "font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:14px;white-space:nowrap;transition:.15s}" +
+     "#superbar .k:hover{background:rgba(247,233,204,.2)}#superbar .k:active{transform:scale(.95)}" +
+     "#superbar .k.stat{cursor:default;background:rgba(6,20,28,.5)}" +
+     "#superbar .k .em{font-size:17px}" +
+     "#superbar .k.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}" +
+     "#superbar .grow{flex:1 1 auto;min-width:4px}" +
+     "#superbar .gain{position:fixed;pointer-events:none;font-family:Fredoka,sans-serif;font-weight:700;" +
+     "font-size:18px;color:#5FE0A4;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+     "@keyframes floatup{to{transform:translateY(-46px);opacity:0}}" +
+     "body{padding-bottom:56px}.super-back{bottom:60px!important}" +
+     "@media (min-aspect-ratio:1/1){#superbar{padding:4px 8px}#superbar .k{height:36px;font-size:13px;padding:0 11px}" +
+     "body{padding-bottom:48px}.super-back{bottom:52px!important}}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div");
+    bar.id = "superbar";
+    document.body.appendChild(bar);
+    barActions = actions || [];
+    renderBar();
+    return bar;
+  }
+  var barActions = [];
+  function renderBar() {
+    var bar = document.getElementById("superbar"); if (!bar) return;
+    var st = stats(), fd = food(), sk = streakNow();
+    var pet = PETS[0], stage = stageOf(pet);
+    var html = "";
+    barActions.forEach(function (a, i) {
+      html += '<button class="k' + (a.hot ? " hot" : "") + '" data-i="' + i + '">' +
+              '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
+    });
+    html += '<span class="grow"></span>';
+    html += '<a class="k" href="../index.html" title="Rumah Belajar"><span class="em">\uD83C\uDFE1</span></a>';
+    html += '<a class="k" href="index.html" title="Rumah Islami"><span class="em">\uD83D\uDD4C</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
+    html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
+            (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
+    html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
+    html += '<a class="k" href="../koleksi.html" title="Zoo, pets and progress"><span class="em">' +
+            stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
+    bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
+    bar.querySelectorAll("button[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = barActions[Number(b.dataset.i)];
+        if (a && a.fn) a.fn();
+      });
+    });
+  }
+  function flyXp(n, streak) {
+    var bar = document.getElementById("superbar");
+    var g = document.createElement("div");
+    g.className = "gain";
+    g.textContent = "+" + n + (streak >= 3 ? "  \uD83D\uDD25" + streak : "");
+    g.style.right = "18px";
+    g.style.bottom = "60px";
+    g.style.animation = "floatup 1s ease-out forwards";
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 1000);
+    renderBar();
+  }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Suara</h3><div id="sxVoice" class="luv" style="text-align:left"></div>' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    var vb = document.getElementById("sxVoice");
+    if (vb) {
+      pickTalk();
+      var v = S.say.voices();
+      if (v.id) {
+        vb.innerHTML = "Suara Indonesia siap: <b>" + v.id.name + "</b> (" + v.id.lang + ").";
+      } else {
+        vb.innerHTML = "<b>Belum ada suara Indonesia di perangkat ini.</b><br>" +
+          "Teks Indonesia akan dibacakan suara Inggris dengan ejaan yang disesuaikan, " +
+          "jadi bunyinya mendekati tapi tidak sempurna.<br><br>" +
+          "iPad: Settings, Accessibility, Spoken Content, Voices, tambahkan Bahasa Indonesia.<br>" +
+          "Android: Settings, Sistem, Bahasa, Text-to-speech, unduh Bahasa Indonesia.<br><br>" +
+          "<span style='opacity:.75;font-size:12px'>Suara yang terdeteksi: " +
+          (v.all && v.all.length ? v.all.slice(0, 8).map(function (x) {
+            return x.name + " (" + x.lang + ")"; }).join(", ") : "belum dimuat") + "</span>";
+      }
+    }
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
+
+
+  /* ============================================================
+     VISITS
+     Two different questions, two different answers:
+
+     1. "How much has my child used this?"  -> kept on the device.
+        Private, works offline, never leaves the iPad.
+     2. "How many people opened my site?"   -> needs a server.
+        Set COUNTER_URL below and it lights up. Left blank it stays
+        quiet and nothing is ever sent anywhere.
+     ============================================================ */
+  var COUNTER_URL = "";   /* e.g. "https://your-worker.workers.dev/hit" */
+
+  function vget() {
+    try { return JSON.parse(localStorage.getItem("super.visits") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function vset(o) { try { localStorage.setItem("super.visits", JSON.stringify(o)); } catch (e) {} }
+
+  function noteVisit(page) {
+    var v = vget(), now = Date.now();
+    var today = new Date().toISOString().slice(0, 10);
+    var who = S.names().child || "child";
+    if (!v.first) { v.first = today; v.player = who; }
+    /* a new session is any gap of more than 30 minutes */
+    if (!v.last || now - v.last > 30 * 60 * 1000) v.sessions = (v.sessions || 0) + 1;
+    v.last = now;
+    v.dayList = v.dayList || [];
+    if (v.dayList.indexOf(today) < 0) v.dayList.push(today);
+    v.opens = v.opens || {};
+    if (page) v.opens[page] = (v.opens[page] || 0) + 1;
+    /* names that have used this copy, so a shared iPad shows more than one player */
+    v.players = v.players || [];
+    if (v.players.indexOf(who) < 0) v.players.push(who);
+    vset(v);
+    return v;
+  }
+  function visitStats() {
+    var v = vget();
+    var days = (v.dayList || []).length;
+    var streak = 0;
+    if (days) {
+      var d = new Date(), i = 0;
+      for (;;) {
+        var key = new Date(d.getTime() - i * 86400000).toISOString().slice(0, 10);
+        if ((v.dayList || []).indexOf(key) >= 0) { streak++; i++; }
+        else if (i === 0) { i++; }          /* today may not have happened yet */
+        else break;
+        if (i > 400) break;
+      }
+    }
+    return { sessions: v.sessions || 0, days: days, streak: streak,
+             first: v.first || null, opens: v.opens || {},
+             players: v.players || [] };
+  }
+  /* optional global count. Fails quietly, never blocks the page. */
+  function globalCount(cb) {
+    if (!COUNTER_URL) { cb(null); return; }
+    var once = "super.counted." + new Date().toISOString().slice(0, 10);
+    var already = false;
+    try { already = !!sessionStorage.getItem(once); } catch (e) {}
+    var url = COUNTER_URL + (already ? (COUNTER_URL.indexOf("?") < 0 ? "?peek=1" : "&peek=1") : "");
+    try {
+      fetch(url, { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          try { sessionStorage.setItem(once, "1"); } catch (e) {}
+          cb(j && (j.count != null ? j.count : (j.value != null ? j.value : null)));
+        })
+        .catch(function () { cb(null); });
+    } catch (e) { cb(null); }
+  }
+
+  S.visits = { note: noteVisit, stats: visitStats, global: globalCount,
+               url: function (u) { COUNTER_URL = u || ""; },
+               reset: function () { vset({}); } };
+
+
+  /* ============================================================
+     RECITATION FIXES
+     If a file in the archive turns out to hold a different surah
+     than its name claims, the parent can remap it here without
+     touching any code. Saved on the device.
+     ============================================================ */
+  function fixGet(){ try{ return JSON.parse(localStorage.getItem("juz.fix")||"{}"); }catch(e){ return {}; } }
+  function fixSet(o){ try{ localStorage.setItem("juz.fix", JSON.stringify(o)); }catch(e){} }
+  function fixFor(n, fallback){ var f=fixGet(); return f[String(n)] || fallback; }
+  function fixPut(n, file){ var f=fixGet(); if(file) f[String(n)]=file; else delete f[String(n)]; fixSet(f); }
+  S.juzfix = { get: fixGet, set: fixSet, for: fixFor, put: fixPut,
+               clear: function(){ fixSet({}); } };
+
+  /* ============================================================
+     SAY IT OUT LOUD
+     He cannot read yet, so every screen announces itself: which
+     dua, which prophet, which prayer and which step.
+     ============================================================ */
+  var vID = null, vEN = null, voiceList = [];
+
+  /* Indonesian voices do not all report the same locale code. Android and
+     anything built on old Java report "in-ID", because "in" was the original
+     ISO code for Indonesian. Chrome reports "id-ID", some report bare "id".
+     Matching only /^id[-_]/ missed them, the voice fell back to English, and
+     Indonesian text came out with an English accent. */
+  function isIndonesian(v){
+    var lang = String(v.lang || "").toLowerCase().replace("_", "-");
+    var name = String(v.name || "").toLowerCase();
+    if (lang === "id" || lang === "in") return true;
+    if (lang.indexOf("id-") === 0 || lang.indexOf("in-") === 0) return true;
+    if (lang.indexOf("ind") === 0) return true;
+    return /indonesia|bahasa|damayanti|andika|gadis|reza/.test(name);
+  }
+  function isEnglish(v){
+    var lang = String(v.lang || "").toLowerCase();
+    return lang.indexOf("en") === 0;
+  }
+  function pickTalk(){
+    if(!("speechSynthesis" in window)) return;
+    voiceList = speechSynthesis.getVoices() || [];
+    vID = voiceList.filter(isIndonesian)[0] || null;
+    vEN = voiceList.filter(isEnglish)[0] || null;
+  }
+  if("speechSynthesis" in window){
+    pickTalk();
+    speechSynthesis.addEventListener("voiceschanged", pickTalk);
+    setTimeout(pickTalk, 500); setTimeout(pickTalk, 1500); setTimeout(pickTalk, 3000);
+  }
+
+  /* If there really is no Indonesian voice on the device, an English voice
+     reading Indonesian sounds wrong and teaches nothing. Respell it so the
+     English voice at least lands near the right sounds. Indonesian spelling is
+     regular, so this is a small, honest mapping. */
+  function respell(text){
+    var V = { a:"ah", e:"eh", i:"ee", o:"oh", u:"oo" };
+    return String(text).split(/(\s+)/).map(function(w){
+      if(!/[a-zA-Z]/.test(w)) return w;
+      var upper = /^[A-Z]/.test(w);
+      var t = w.toLowerCase();
+      /* consonants first, then every vowel in ONE pass so the letters we
+         insert are never re-processed */
+      t = t.replace(/sy/g, "sh").replace(/c/g, "ch");
+      t = t.replace(/[aeiou]/g, function(m){ return V[m]; });
+      return upper ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+    }).join("");
+  }
+  function haveIndonesian(){ return !!vID; }
+
+  var lastSaid = "", lastAt = 0, spokeCount = 0, lastError = null, fallbackCount = 0;
+  function voicesReady(){
+    /* Android reports an empty list until the engine wakes up. Deciding too
+       early meant falling back to English on the very first tap. */
+    return new Promise(function(res){
+      pickTalk();
+      if(voiceList.length) return res();
+      var tries = 0;
+      var iv = setInterval(function(){
+        pickTalk(); tries++;
+        if(voiceList.length || tries > 12){ clearInterval(iv); res(); }
+      }, 120);
+    });
+  }
+  function announce(text, opts){
+    opts = opts || {};
+    if(!text) return Promise.resolve();
+    return voicesReady().then(function(){ return speakNow(text, opts); });
+  }
+  function speakNow(text, opts){
+    var now = Date.now();
+    if(text === lastSaid && now - lastAt < 1500) return Promise.resolve();
+    lastSaid = text; lastAt = now;
+    return new Promise(function(res){
+      if(!("speechSynthesis" in window)){ res(); return; }
+      try{
+        speechSynthesis.cancel();
+        var en = opts.lang === "en";
+        var body = S.P(text);
+        var usedFallback = false;
+        if(!en && !vID){
+          /* No Indonesian voice on this device. Keep the Indonesian words,
+             respelled so an English voice lands near the right sounds.
+             Never swap in an English translation: the language being taught
+             must not change just because a voice is missing. */
+          body = respell(body);
+          en = true;
+          usedFallback = true;
+        }
+        var u = new SpeechSynthesisUtterance(body);
+        u.lang = en ? "en-GB" : "id-ID";
+        u.voice = en ? vEN : vID;
+        u.rate = opts.rate || 0.86;
+        u.pitch = 1.05;
+        u.volume = 1;
+        u.onend = res; u.onerror = res;
+        speechSynthesis.speak(u);
+        spokeCount++;
+        if(usedFallback) fallbackCount++;
+        setTimeout(res, Math.max(2500, String(body).length * 95));
+      }catch(e){
+        /* this used to fail silently, which is how a scope bug hid for a
+           whole round. Say so out loud in the console. */
+        lastError = String(e && e.message || e);
+        if (window.console && console.warn) console.warn("SUPER.say failed:", lastError);
+        res();
+      }
+    });
+  }
+
+  S.say = { it: announce, stop: function(){ try{ speechSynthesis.cancel(); }catch(e){} },
+            voices: function(){ return { id: vID, en: vEN, all: voiceList }; },
+            haveIndonesian: haveIndonesian, respell: respell,
+            count: function(){ return spokeCount; }, error: function(){ return lastError; },
+            usedFallback: function(){ return fallbackCount > 0; },
+            isIndonesian: isIndonesian, refresh: pickTalk };
+
+  S.score = { award: award, food: food, streak: streakNow, feed: feed,
+              stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
+  S.bar = { mount: mountBar, render: renderBar, fly: flyXp,
+            set: function (a) { barActions = a || []; renderBar(); } };
+
+  S.GRADES = GRADES; S.ZOO = ZOO; S.PETS = PETS;
+  S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
+           unlockedZoo: unlockedZoo, petStage: petStage,
+           reset: function () { pset({}); } };
+})(window);
+</script>
+<script>
+const NABI=[{"n":1,"slug":"adam","name":"Adam","ar":"آدَم","id":"Manusia pertama yang Allah ciptakan. Ia belajar nama segala sesuatu, pernah berbuat salah, lalu bertobat dengan tulus.","en":"The first human. He learned the names of all things, made a mistake, and turned back to Allah with a sincere heart.","lesson_id":"Setiap orang bisa salah. Yang penting berani mengakui dan memperbaiki.","lesson_en":"Everyone makes mistakes. What matters is owning them.","img":"adam.jpg","story":["Allah berkata kepada para malaikat bahwa Dia akan menciptakan manusia untuk menjadi khalifah di bumi. Para malaikat bertanya heran, dan Allah menjawab bahwa Dia mengetahui apa yang mereka tidak ketahui.","Allah menciptakan Adam dari tanah yang diambil dari berbagai penjuru bumi. Itulah sebabnya manusia punya warna kulit yang berbeda-beda. Lalu Allah meniupkan ruh, dan Adam pun hidup.","Allah mengajarkan Adam nama segala sesuatu. Ketika para malaikat tidak bisa menyebutkannya, Adam bisa. Allah lalu menyuruh para malaikat sujud hormat kepada Adam. Semua sujud, kecuali Iblis yang sombong karena merasa dirinya dari api lebih baik daripada tanah.","Adam tinggal di surga bersama Hawa. Mereka boleh menikmati apa saja, kecuali satu pohon. Iblis membisikkan tipu daya, dan akhirnya mereka memakan buah pohon itu.","Adam dan Hawa langsung menyesal. Mereka tidak menyalahkan siapa pun. Mereka berdoa memohon ampun, dan Allah menerima tobat mereka.","Mereka turun ke bumi dan harus bekerja keras mencari makan. Adam mengajarkan anak-anaknya beribadah dan berbuat baik. Ia hidup sangat lama dan menjadi bapak seluruh manusia."],"story_en":["Allah told the angels He would create a human to care for the earth. The angels wondered why, and Allah said He knows what they do not know.","Allah made Adam from soil gathered from many parts of the earth. That is why people have many different skin colours. Then Allah breathed the spirit into him and Adam came alive.","Allah taught Adam the names of everything. The angels could not name them, but Adam could. Allah told the angels to bow in respect to Adam. All of them did, except Iblis, who was proud and said fire is better than clay.","Adam lived in paradise with Hawa. They could enjoy anything except one tree. Iblis whispered tricks to them, and in the end they ate from that tree.","Adam and Hawa were sorry at once. They blamed nobody. They prayed for forgiveness, and Allah accepted their repentance.","They came down to earth and had to work hard for food. Adam taught his children to worship Allah and to do good. He lived a very long life and became the father of all people."],"name_id":"Adam"},{"n":2,"slug":"idris","name":"Idris","ar":"إِدْرِيس","id":"Nabi yang rajin menulis dan menuntut ilmu. Ia diangkat Allah ke tempat yang tinggi.","en":"A prophet who loved writing and learning. Allah raised him to a high place.","lesson_id":"Ilmu mengangkat derajat seseorang.","lesson_en":"Knowledge lifts a person up.","img":"idris.jpg","story":["Nabi Idris hidup tidak lama setelah zaman Nabi Adam. Namanya berarti orang yang banyak belajar.","Ia dikenal sebagai orang pertama yang menulis dengan pena, dan orang pertama yang menjahit pakaian. Sebelumnya orang hanya memakai kulit binatang.","Idris juga mempelajari bintang dan hitungan, lalu mengajarkannya kepada orang lain agar mereka bisa menentukan waktu dan arah.","Setiap hari ia beribadah dan bekerja. Ia tidak pernah membiarkan waktunya berlalu tanpa manfaat.","Ia mengajak kaumnya menyembah Allah dan meninggalkan perbuatan buruk. Sebagian mendengarkan, sebagian menolak dan tetap berbuat zalim.","Idris terkenal sangat sabar. Ia mengajar dengan lembut dan tidak pernah membalas ejekan dengan ejekan.","Karena ketaatan dan kesabarannya, Allah mengangkatnya ke tempat yang tinggi dan mulia."],"story_en":["Prophet Idris lived not long after Adam. His name means the one who studies a great deal.","He is known as the first person to write with a pen, and the first to sew clothes. Before that people only wore animal skins.","Idris also studied the stars and numbers, then taught them so people could tell time and find their direction.","Every day he worshipped and worked. He never let his time pass without use.","He called his people to worship Allah and leave bad deeds. Some listened, some refused and kept doing wrong.","Idris was famous for patience. He taught gently and never answered mockery with mockery.","Because of his obedience and patience, Allah raised him to a high and honoured place."],"name_id":"Idris"},{"n":3,"slug":"nuh","name":"Nuh","ar":"نُوح","id":"Selama ratusan tahun ia mengajak kaumnya, lalu membangun bahtera besar atas perintah Allah.","en":"For hundreds of years he called his people, then built a great ark as Allah commanded.","lesson_id":"Sabar dan tekun walau hanya sedikit yang mendengar.","lesson_en":"Be patient and steady even when few listen.","img":"nuh.jpg","story":["Nabi Nuh diutus kepada kaum yang menyembah patung. Ia mengajak mereka menyembah Allah dengan lembut, siang dan malam.","Ia berdakwah selama ratusan tahun. Namun hanya sedikit orang yang percaya. Yang lain menertawakan dan mengejeknya.","Allah menyuruh Nuh membuat kapal besar di tanah yang jauh dari laut. Orang-orang semakin menertawakannya, tetapi Nuh terus bekerja.","Ketika kapal selesai, Nuh membawa keluarganya yang beriman dan sepasang dari setiap jenis hewan. Lalu hujan turun sangat deras dan air memenuhi bumi.","Anak Nuh menolak naik dan memilih naik ke gunung. Ia tenggelam bersama mereka yang ingkar. Nuh sangat sedih, tetapi ia menerima keputusan Allah.","Setelah air surut, kapal berlabuh dan kehidupan dimulai lagi. Nuh bersyukur dan meneruskan mengajarkan kebaikan."],"story_en":["Prophet Nuh was sent to people who worshipped statues. He called them gently to worship Allah, day and night.","He preached for hundreds of years. Only a few believed. The rest laughed at him and mocked him.","Allah told Nuh to build a huge ship on land far from the sea. People laughed even more, but Nuh kept working.","When the ship was ready, Nuh brought his believing family and a pair of every kind of animal. Then heavy rain fell and water covered the earth.","Nuh's son refused to come aboard and climbed a mountain instead. He drowned with those who denied. Nuh was very sad, but he accepted Allah's decision.","When the water went down, the ship landed and life began again. Nuh gave thanks and carried on teaching goodness."],"name_id":"Nuh"},{"n":4,"slug":"hud","name":"Hud","ar":"هُود","id":"Diutus kepada kaum 'Ad yang kuat dan sombong, mengajak mereka kembali kepada Allah.","en":"Sent to the powerful people of 'Ad, calling them back to Allah.","lesson_id":"Kekuatan tanpa kerendahan hati akan runtuh.","lesson_en":"Strength without humility does not last.","img":"hud.jpg","story":["Nabi Hud diutus kepada kaum 'Ad, bangsa yang sangat kuat dan tinggi badannya. Mereka membangun gedung-gedung megah dan merasa tidak ada yang bisa mengalahkan mereka.","Kaum 'Ad menyembah berhala dan berlaku sombong kepada orang lemah. Hud mengajak mereka kembali kepada Allah dan bersikap adil.","Mereka menolak dan berkata, 'Siapa yang lebih kuat daripada kami?' Mereka bahkan menantang Hud untuk mendatangkan hukuman.","Datanglah kemarau panjang. Ketika awan besar muncul, mereka mengira itu hujan. Ternyata itu angin kencang yang bertiup delapan hari.","Hud dan orang-orang beriman selamat. Kaum 'Ad yang sombong binasa. Kekuatan mereka tidak menolong sedikit pun."],"story_en":["Prophet Hud was sent to the people of 'Ad, who were very strong and tall. They built grand buildings and thought nobody could defeat them.","The people of 'Ad worshipped idols and were arrogant to the weak. Hud called them back to Allah and to fairness.","They refused and said, 'Who is stronger than us?' They even dared Hud to bring the punishment.","A long drought came. When a great cloud appeared they thought it was rain. It was a fierce wind that blew for eight days.","Hud and the believers were saved. The proud people of 'Ad were destroyed. Their strength did not help them at all."],"name_id":"Hud"},{"n":5,"slug":"saleh","name":"Saleh","ar":"صَالِح","id":"Allah memberi kaum Tsamud mukjizat seekor unta betina sebagai ujian.","en":"Allah gave the people of Thamud a she-camel as a sign and a test.","lesson_id":"Amanah harus dijaga, bukan dilanggar.","lesson_en":"A trust is to be kept, not broken.","img":"saleh.jpg","story":["Nabi Saleh diutus kepada kaum Tsamud yang memahat rumah di gunung batu. Mereka pandai, tetapi menyembah berhala.","Kaum itu meminta bukti. Mereka menantang Saleh mengeluarkan seekor unta betina dari batu besar. Dengan izin Allah, unta itu keluar.","Saleh berpesan, 'Biarkan unta ini makan dan minum. Jangan ganggu, dan bergiliranlah memakai air sumur.' Untuk sementara mereka menurut.","Namun beberapa orang jahat merasa terganggu. Mereka bersepakat membunuh unta itu, lalu menantang Saleh mendatangkan azab.","Tiga hari kemudian datang suara guntur yang dahsyat. Kaum Tsamud binasa. Saleh dan orang beriman diselamatkan Allah.","Kisah ini mengajarkan bahwa amanah harus dijaga, sekecil apa pun bentuknya."],"story_en":["Prophet Saleh was sent to the people of Thamud, who carved houses into stone mountains. They were clever, but they worshipped idols.","They asked for proof. They challenged Saleh to bring a she-camel out of a great rock. By Allah's permission, the camel came out.","Saleh said, 'Let this camel eat and drink. Do not harm her, and take turns at the well.' For a while they obeyed.","But some wicked men were annoyed. They agreed to kill the camel, then dared Saleh to bring the punishment.","Three days later a terrible blast came. Thamud was destroyed. Saleh and the believers were saved by Allah.","This story teaches that a trust must be kept, however small it seems."],"name_id":"Saleh"},{"n":6,"slug":"ibrahim","name":"Ibrahim","ar":"إِبْرَاهِيم","id":"Sejak kecil ia mencari Tuhan yang sebenarnya, lalu membangun Ka'bah bersama putranya Ismail.","en":"From childhood he searched for the true Lord, then built the Kaaba with his son Ismail.","lesson_id":"Berani berpikir dan berani benar.","lesson_en":"Think for yourself, and stand by the truth.","img":"ibrahim.jpg","story":["Sejak kecil Nabi Ibrahim heran melihat orang menyembah patung buatan tangan sendiri. Ia mencari siapa Tuhan yang sebenarnya.","Ia melihat bintang, bulan, lalu matahari. Semuanya terbenam. Ibrahim berkata bahwa ia tidak menyukai yang terbenam, dan hatinya yakin bahwa Tuhan adalah Pencipta langit dan bumi.","Suatu hari, ketika orang-orang pergi berpesta, Ibrahim menghancurkan patung-patung kecuali yang paling besar. Ketika ditanya, ia menyuruh mereka bertanya kepada patung besar itu. Mereka terdiam, sadar bahwa patung tidak bisa bicara.","Raja Namrud marah dan menghukum Ibrahim dengan api besar. Allah memerintahkan api menjadi dingin dan menyelamatkan Ibrahim.","Ibrahim lalu berhijrah. Bersama istrinya Hajar dan bayinya Ismail, ia meninggalkan mereka di lembah tandus atas perintah Allah. Di sanalah kemudian memancar air zamzam.","Bertahun-tahun kemudian Ibrahim dan Ismail membangun Ka'bah bersama-sama, sambil berdoa agar Allah menerima amal mereka."],"story_en":["Even as a child, Prophet Ibrahim wondered why people worshipped statues they had made themselves. He searched for the real Lord.","He looked at a star, then the moon, then the sun. All of them set. Ibrahim said he did not love things that disappear, and his heart was sure the Lord is the Maker of the heavens and the earth.","One day, while everyone was at a festival, Ibrahim broke the idols except the biggest one. When they asked him, he told them to ask the big idol. They went quiet, realising a statue cannot speak.","King Nimrod was angry and threw Ibrahim into a great fire. Allah commanded the fire to be cool, and Ibrahim was safe.","Ibrahim then travelled. With his wife Hajar and baby Ismail, he left them in a dry valley as Allah commanded. There the water of Zamzam began to flow.","Years later Ibrahim and Ismail built the Kaaba together, praying that Allah would accept their work."],"name_id":"Ibrahim"},{"n":7,"slug":"luth","name":"Luth","ar":"لُوط","id":"Keponakan Nabi Ibrahim yang mengajak kaumnya meninggalkan perbuatan buruk.","en":"Prophet Ibrahim's nephew, who called his people away from wrongdoing.","lesson_id":"Berani berkata benar walau sendirian.","lesson_en":"Speak the truth even when alone.","img":"luth.jpg","story":["Nabi Luth adalah keponakan Nabi Ibrahim. Ia diutus kepada penduduk sebuah negeri yang melakukan perbuatan sangat buruk dan suka mengganggu tamu.","Luth mengingatkan mereka dengan sabar bertahun-tahun. Ia mengajak mereka hidup bersih dan menghormati orang lain.","Mereka menolak dan malah mengancam mengusir Luth dari negeri itu.","Malaikat datang menyamar sebagai tamu. Mereka memberi tahu Luth agar pergi bersama keluarganya pada malam hari dan tidak menoleh ke belakang.","Negeri itu kemudian dihancurkan. Luth dan pengikutnya yang beriman selamat karena taat pada peringatan."],"story_en":["Prophet Luth was Ibrahim's nephew. He was sent to a town whose people did very bad things and troubled visitors.","Luth warned them patiently for years. He called them to live cleanly and to respect others.","They refused and even threatened to drive Luth out of the town.","Angels came disguised as guests. They told Luth to leave with his family at night and not to look back.","The town was then destroyed. Luth and the believers were safe because they obeyed the warning."],"name_id":"Lut"},{"n":8,"slug":"ismail","name":"Ismail","ar":"إِسْمَاعِيل","id":"Putra Nabi Ibrahim yang sabar dan taat, membantu ayahnya membangun Ka'bah.","en":"Ibrahim's patient and obedient son, who helped his father build the Kaaba.","lesson_id":"Taat kepada Allah dan berbakti kepada orang tua.","lesson_en":"Obey Allah and honour your parents.","img":"ismail.jpg","story":["Nabi Ismail adalah putra Nabi Ibrahim dan Hajar. Sejak bayi ia ditinggalkan di lembah Makkah yang tandus atas perintah Allah.","Ibunya, Hajar, berlari-lari antara bukit Safa dan Marwah mencari air. Lalu memancarlah air zamzam di dekat kaki bayi Ismail. Sampai hari ini air itu masih ada.","Ketika Ismail tumbuh besar, Ibrahim bermimpi diperintahkan menyembelih putranya. Ibrahim menceritakannya, dan Ismail menjawab dengan tenang agar ayahnya melaksanakan perintah Allah.","Keduanya bersiap dengan hati pasrah. Allah lalu menggantinya dengan seekor domba besar. Ujian itu adalah ujian ketaatan, bukan tentang darah.","Ismail kemudian membantu ayahnya membangun Ka'bah. Ia dikenal sebagai anak yang sabar dan menepati janji."],"story_en":["Prophet Ismail was the son of Ibrahim and Hajar. As a baby he was left in the dry valley of Makkah as Allah commanded.","His mother Hajar ran between the hills of Safa and Marwah looking for water. Then the water of Zamzam sprang up near baby Ismail's feet. That water is still there today.","When Ismail grew up, Ibrahim dreamed he was told to sacrifice his son. Ibrahim told him, and Ismail calmly answered that his father should do what Allah commanded.","Both of them got ready with willing hearts. Allah then replaced him with a great ram. The test was about obedience, not about blood.","Ismail later helped his father build the Kaaba. He is known as a patient son who kept his promises."],"name_id":"Ismail"},{"n":9,"slug":"ishaq","name":"Ishaq","ar":"إِسْحَاق","id":"Putra Nabi Ibrahim yang lahir ketika ayah dan ibunya sudah sangat tua.","en":"Ibrahim's son, born when his parents were very old.","lesson_id":"Allah menepati janji-Nya, walau lama menunggu.","lesson_en":"Allah keeps His promise, however long the wait.","img":"ishaq.jpg","story":["Nabi Ibrahim dan istrinya Sarah sudah sangat tua dan lama sekali tidak memiliki anak. Mereka tidak pernah berhenti berdoa.","Suatu hari datang tamu-tamu asing ke rumah mereka. Ibrahim menyuguhkan daging panggang, tetapi para tamu tidak menyentuhnya.","Ternyata mereka adalah malaikat. Mereka membawa kabar gembira bahwa Sarah akan melahirkan seorang putra bernama Ishaq.","Sarah tertawa heran dan berkata, 'Bagaimana aku akan melahirkan, sedangkan aku sudah tua dan suamiku pun sudah tua?' Malaikat menjawab bahwa itu mudah bagi Allah.","Ishaq pun lahir. Kelahirannya menjadi bukti bahwa janji Allah pasti terjadi, walaupun manusia merasa mustahil.","Ishaq tumbuh menjadi orang yang lembut, jujur, dan sabar. Ia meneruskan ajaran ayahnya kepada penduduk negerinya.","Dari keturunan Ishaq kelak lahir banyak nabi, termasuk Nabi Yaqub, Nabi Yusuf, Nabi Musa, dan Nabi Isa."],"story_en":["Prophet Ibrahim and his wife Sarah were very old and had long been without a child. They never stopped praying.","One day strange guests came to their home. Ibrahim served roasted meat, but the guests did not touch it.","They were angels. They brought good news that Sarah would have a son named Ishaq.","Sarah laughed in surprise and said, 'How can I have a child when I am old and my husband is old?' The angels answered that it is easy for Allah.","Ishaq was born. His birth showed that Allah's promise always comes true, even when people think it impossible.","Ishaq grew into a gentle, honest and patient man. He carried his father's teaching to the people of his land.","From Ishaq's family came many prophets, including Yaqub, Yusuf, Musa and Isa."],"name_id":"Ishak"},{"n":10,"slug":"yaqub","name":"Yaqub","ar":"يَعْقُوب","id":"Ayah dari dua belas putra, termasuk Nabi Yusuf. Ia sangat sabar menghadapi ujian.","en":"Father of twelve sons, including Yusuf. He bore his trials with great patience.","lesson_id":"Sabar yang indah tanpa mengeluh.","lesson_en":"Beautiful patience, without complaint.","img":"yaqub.jpg","story":["Nabi Yaqub adalah putra Nabi Ishaq. Ia juga dikenal dengan nama Israil. Ia memiliki dua belas putra.","Yaqub mendidik anak-anaknya dengan lembut dan mengajarkan mereka menyembah Allah yang satu.","Ketika Yusuf hilang dan saudara-saudaranya berbohong bahwa ia dimakan serigala, hati Yaqub sangat hancur. Namun ia berkata bahwa ia akan bersabar dengan sabar yang indah.","Bertahun-tahun ia menangis sampai matanya kabur, tetapi ia tidak pernah berputus asa dari rahmat Allah.","Akhirnya Yusuf ditemukan sebagai pembesar Mesir. Yaqub kembali bisa melihat dan seluruh keluarga berkumpul dengan bahagia."],"story_en":["Prophet Yaqub was the son of Ishaq. He is also called Israil. He had twelve sons.","Yaqub raised his children gently and taught them to worship the one God.","When Yusuf went missing and his brothers lied that a wolf had eaten him, Yaqub's heart broke. Still he said he would be patient with a beautiful patience.","For years he wept until his sight grew dim, but he never lost hope in Allah's mercy.","In the end Yusuf was found as a minister of Egypt. Yaqub could see again and the whole family was joyfully reunited."],"name_id":"Yakub"},{"n":11,"slug":"yusuf","name":"Yusuf","ar":"يُوسُف","id":"Dibuang saudaranya ke dalam sumur, dipenjara, lalu menjadi bendahara Mesir dan memaafkan mereka.","en":"Thrown into a well by his brothers, imprisoned, then made treasurer of Egypt, and he forgave them.","lesson_id":"Memaafkan lebih kuat daripada membalas.","lesson_en":"Forgiving is stronger than revenge.","img":"yusuf.jpg","story":["Ketika kecil, Nabi Yusuf bermimpi melihat sebelas bintang, matahari, dan bulan bersujud kepadanya. Ayahnya menyuruhnya merahasiakan mimpi itu.","Saudara-saudaranya iri karena ayah mereka sangat menyayangi Yusuf. Mereka membuangnya ke dalam sumur, lalu berbohong kepada ayah mereka.","Yusuf ditemukan pedagang dan dijual di Mesir. Ia bekerja di rumah seorang pembesar dan tumbuh menjadi pemuda yang jujur dan tampan.","Ia difitnah dan dipenjara walaupun tidak bersalah. Di penjara ia tetap berbuat baik dan menafsirkan mimpi teman-temannya.","Raja Mesir bermimpi tentang tujuh sapi gemuk dan tujuh sapi kurus. Yusuf menjelaskan bahwa akan datang tujuh tahun subur lalu tujuh tahun paceklik, dan menyarankan menyimpan makanan.","Yusuf diangkat menjadi bendahara Mesir. Ketika saudara-saudaranya datang meminta makanan, ia mengenali mereka. Setelah menguji mereka, ia berkata bahwa hari itu tidak ada cercaan, dan ia memaafkan semuanya.","Seluruh keluarga pindah ke Mesir dan mimpi masa kecilnya menjadi kenyataan."],"story_en":["As a boy, Prophet Yusuf dreamed of eleven stars, the sun and the moon bowing to him. His father told him to keep the dream secret.","His brothers were jealous because their father loved Yusuf dearly. They threw him into a well and then lied to their father.","Traders found Yusuf and sold him in Egypt. He worked in a nobleman's house and grew into an honest, handsome young man.","He was falsely accused and put in prison though he was innocent. In prison he still did good and explained his friends' dreams.","The king of Egypt dreamed of seven fat cows and seven thin ones. Yusuf explained that seven good years would come, then seven hungry years, and advised storing food.","Yusuf was made treasurer of Egypt. When his brothers came asking for food, he knew them. After testing them he said there was no blame that day, and he forgave them all.","The whole family moved to Egypt and his childhood dream came true."],"name_id":"Yusuf"},{"n":12,"slug":"ayyub","name":"Ayyub","ar":"أَيُّوب","id":"Diuji dengan sakit dan kehilangan bertahun-tahun, namun tidak pernah berhenti bersyukur.","en":"Tested with illness and loss for years, yet he never stopped being grateful.","lesson_id":"Sabar dalam sakit dan tetap bersyukur.","lesson_en":"Patience in hardship, gratitude throughout.","img":"ayyub.jpg","story":["Nabi Ayyub adalah orang yang kaya, sehat, dan memiliki keluarga besar. Ia terkenal murah hati dan suka menolong.","Allah mengujinya. Hartanya habis, anak-anaknya meninggal, dan tubuhnya sakit bertahun-tahun.","Banyak orang menjauh darinya. Hanya istrinya yang setia merawat. Meski begitu, Ayyub tidak pernah mengeluh kepada Allah.","Ia terus berzikir dan bersyukur. Akhirnya ia berdoa dengan lembut, 'Ya Tuhanku, aku telah ditimpa penyakit, dan Engkau Maha Penyayang.'","Allah menyembuhkannya dan mengembalikan keluarganya serta rezekinya. Ayyub menjadi contoh kesabaran sampai hari ini."],"story_en":["Prophet Ayyub was wealthy, healthy and had a large family. He was known for generosity and helping others.","Allah tested him. His wealth was gone, his children died, and his body was ill for many years.","Many people kept away from him. Only his wife stayed to care for him. Even so, Ayyub never complained to Allah.","He kept remembering Allah and giving thanks. At last he prayed gently, 'My Lord, illness has touched me, and You are the Most Merciful.'","Allah healed him and returned his family and his provision. Ayyub is an example of patience to this day."],"name_id":"Ayub"},{"n":13,"slug":"syuaib","name":"Syuaib","ar":"شُعَيْب","id":"Mengajarkan kaum Madyan berdagang dengan jujur dan takaran yang benar.","en":"He taught the people of Madyan to trade honestly with fair measures.","lesson_id":"Jujur dalam berdagang dan menimbang.","lesson_en":"Be honest in business and in measure.","img":"syuaib.jpg","story":["Nabi Syuaib diutus kepada penduduk Madyan. Mereka pandai berdagang, tetapi suka mengurangi timbangan dan menipu pembeli.","Syuaib mengajak mereka menyembah Allah dan berlaku jujur. Ia berkata, 'Sempurnakanlah takaran dan timbangan, jangan merugikan orang lain.'","Sebagian menolak dan mengejeknya. Mereka berkata bahwa cara berdagang adalah urusan mereka sendiri.","Syuaib tetap sabar dan berkata bahwa ia hanya ingin memperbaiki keadaan sebisanya.","Akhirnya azab datang kepada mereka yang ingkar, sedangkan Syuaib dan orang beriman diselamatkan.","Nabi Syuaib juga dikenal sebagai mertua Nabi Musa."],"story_en":["Prophet Syuaib was sent to the people of Madyan. They were good at trade, but they cheated with weights and measures.","Syuaib called them to worship Allah and to be honest. He said, 'Give full measure and weight, and do not shortchange people.'","Some refused and mocked him. They said how they traded was their own business.","Syuaib stayed patient and said he only wanted to put things right as best he could.","In the end punishment came to those who denied, while Syuaib and the believers were saved.","Prophet Syuaib is also known as the father-in-law of Prophet Musa."],"name_id":"Syuaib"},{"n":14,"slug":"musa","name":"Musa","ar":"مُوسَىٰ","id":"Dibesarkan di istana Firaun, lalu diutus membebaskan Bani Israil. Tongkatnya membelah laut.","en":"Raised in Pharaoh's palace, then sent to free the Children of Israel. His staff parted the sea.","lesson_id":"Berani menghadapi kezaliman dengan pertolongan Allah.","lesson_en":"Face injustice bravely, with Allah's help.","img":"musa.jpg","story":["Ketika Musa lahir, Firaun sedang memerintahkan agar bayi laki-laki Bani Israil dibunuh. Ibunya menghanyutkannya di sungai Nil dalam sebuah peti.","Peti itu ditemukan keluarga Firaun. Istri Firaun, Asiyah, menyayanginya. Dengan cara Allah, Musa akhirnya disusui oleh ibunya sendiri.","Musa tumbuh di istana. Setelah dewasa ia tidak sengaja menyebabkan kematian seseorang saat membela orang lemah, lalu pergi ke Madyan.","Di Madyan ia menolong dua perempuan mengambil air, lalu menikah dan bekerja menggembala selama beberapa tahun.","Dalam perjalanan pulang, ia melihat api di bukit Tursina. Di sana Allah berbicara kepadanya dan mengangkatnya menjadi nabi, dengan mukjizat tongkat dan tangan yang bercahaya.","Musa dan Harun menghadap Firaun. Firaun menolak dan mengumpulkan para penyihir. Ketika tongkat Musa menelan sihir mereka, para penyihir justru beriman.","Allah menyuruh Musa membawa Bani Israil pergi malam hari. Ketika terdesak di tepi laut, Musa memukulkan tongkatnya dan laut terbelah. Mereka selamat, sedangkan Firaun tenggelam.","Musa menerima kitab Taurat dan terus membimbing kaumnya dengan sabar."],"story_en":["When Musa was born, Pharaoh had ordered baby boys of the Children of Israel to be killed. His mother placed him in a basket on the river Nile.","Pharaoh's family found the basket. Pharaoh's wife Asiyah loved him. By Allah's arrangement, Musa was nursed by his own mother.","Musa grew up in the palace. As a man he accidentally caused a death while defending someone weak, and he left for Madyan.","In Madyan he helped two women draw water, then married and worked as a shepherd for some years.","On the journey home he saw a fire on Mount Tur. There Allah spoke to him and made him a prophet, with the miracles of the staff and the shining hand.","Musa and Harun went to Pharaoh. Pharaoh refused and gathered magicians. When Musa's staff swallowed their magic, the magicians themselves believed.","Allah told Musa to lead the Children of Israel away by night. Trapped at the sea, Musa struck it with his staff and the sea parted. They were saved, and Pharaoh drowned.","Musa received the Torah and kept guiding his people patiently."],"name_id":"Musa"},{"n":15,"slug":"harun","name":"Harun","ar":"هَارُون","id":"Kakak Nabi Musa yang fasih berbicara dan setia mendampinginya.","en":"Musa's elder brother, eloquent in speech and a loyal companion.","lesson_id":"Saudara yang baik saling menguatkan.","lesson_en":"Good siblings strengthen each other.","img":"harun.jpg","story":["Nabi Harun adalah kakak Nabi Musa. Ia pandai berbicara dan lembut hatinya.","Ketika Musa diangkat menjadi nabi, ia berdoa agar Harun menjadi pendampingnya. Allah mengabulkan doa itu.","Harun ikut menghadap Firaun dan membantu menyampaikan pesan Allah dengan kata-kata yang jelas.","Ketika Musa pergi ke gunung selama empat puluh malam, sebagian kaumnya membuat patung anak sapi dari emas. Harun sudah melarang, tetapi mereka tidak mendengar.","Musa marah ketika kembali, namun Harun menjelaskan bahwa ia tidak ingin membuat kaumnya terpecah. Keduanya kembali bersatu membimbing umat."],"story_en":["Prophet Harun was the elder brother of Musa. He spoke well and had a gentle heart.","When Musa was made a prophet, he prayed that Harun would be his helper. Allah granted that prayer.","Harun went with him to Pharaoh and helped deliver Allah's message in clear words.","When Musa went to the mountain for forty nights, some of the people made a golden calf. Harun had forbidden it, but they would not listen.","Musa was angry when he returned, but Harun explained he did not want the people to split apart. The two were united again in guiding their people."],"name_id":"Harun"},{"n":16,"slug":"dzulkifli","name":"Dzulkifli","ar":"ذُو الْكِفْل","id":"Nabi yang menepati janjinya untuk sabar, adil, dan tidak marah.","en":"A prophet who kept his promise to be patient, just, and slow to anger.","lesson_id":"Menepati janji itu berat tapi mulia.","lesson_en":"Keeping a promise is hard and noble.","img":"dzulkifli.jpg","story":["Nabi Dzulkifli dikenal karena satu janji besar. Seorang nabi tua mencari penggantinya dan bertanya siapa yang sanggup berpuasa di siang hari, beribadah di malam hari, dan tidak marah ketika menghakimi.","Semua orang diam. Hanya seorang pemuda yang berdiri dan berkata bahwa ia sanggup. Sejak itu ia dipanggil Dzulkifli, yang berarti orang yang menanggung janji.","Ia menepati janjinya setiap hari. Ia mengadili dengan adil, tidak pernah membentak, dan tetap tenang walau lelah.","Suatu ketika ia diganggu berkali-kali saat hendak beristirahat. Ia tetap tidak marah dan tetap melayani orang yang datang.","Allah memujinya sebagai orang yang sabar dan termasuk orang-orang yang saleh."],"story_en":["Prophet Dzulkifli is known for one great promise. An old prophet was looking for a successor and asked who could fast by day, worship by night, and never grow angry when judging.","Everyone was silent. Only one young man stood up and said he could. From then on he was called Dzulkifli, the one who carries a promise.","He kept his promise every day. He judged fairly, never shouted, and stayed calm even when tired.","Once he was disturbed again and again just as he wanted to rest. Still he did not get angry and served whoever came.","Allah praised him as patient and among the righteous."],"name_id":"Zulkifli"},{"n":17,"slug":"dawud","name":"Dawud","ar":"دَاوُۥد","id":"Diberi suara merdu, kitab Zabur, dan kemampuan melunakkan besi.","en":"Given a beautiful voice, the Zabur, and the ability to soften iron.","lesson_id":"Bekerja dengan tangan sendiri itu mulia.","lesson_en":"Working with your own hands is honourable.","img":"dawud.jpg","story":["Nabi Dawud awalnya seorang pemuda biasa dalam pasukan Talut. Ketika berhadapan dengan raksasa Jalut, ia maju dengan ketapel dan keberaniannya.","Dengan izin Allah, batu kecil dari ketapelnya mengalahkan Jalut. Sejak itu namanya dikenal seluruh negeri.","Dawud kemudian menjadi raja sekaligus nabi. Allah memberinya kitab Zabur dan suara yang sangat merdu. Ketika ia bertasbih, gunung dan burung ikut bertasbih bersamanya.","Allah juga melunakkan besi di tangannya, sehingga ia bisa membuat baju besi. Meski seorang raja, ia makan dari hasil kerjanya sendiri.","Dawud terkenal adil dalam memutuskan perkara dan selalu kembali kepada Allah."],"story_en":["Prophet Dawud began as an ordinary young man in Talut's army. Facing the giant Jalut, he stepped forward with a sling and courage.","By Allah's permission, a small stone from his sling defeated Jalut. From then his name was known across the land.","Dawud later became both king and prophet. Allah gave him the Zabur and a beautiful voice. When he praised Allah, the mountains and birds praised along with him.","Allah also softened iron in his hands so he could make armour. Though a king, he ate from his own work.","Dawud was famous for judging fairly and always turning back to Allah."],"name_id":"Daud"},{"n":18,"slug":"sulaiman","name":"Sulaiman","ar":"سُلَيْمَان","id":"Raja yang memahami bahasa binatang dan memimpin dengan adil.","en":"A king who understood the speech of animals and ruled with justice.","lesson_id":"Kekuasaan dipakai untuk berbuat adil.","lesson_en":"Power is for doing justice.","img":"sulaiman.jpg","story":["Nabi Sulaiman adalah putra Nabi Dawud. Sejak muda ia sudah pandai memutuskan perkara dengan bijaksana.","Ia berdoa memohon kerajaan yang tidak diberikan kepada siapa pun sesudahnya. Allah mengabulkannya. Angin tunduk kepadanya, dan ia memahami bahasa binatang.","Suatu hari pasukannya melewati lembah semut. Seekor semut menyuruh kawanannya masuk sarang. Sulaiman mendengarnya dan tersenyum, lalu bersyukur kepada Allah.","Burung hud-hud membawa kabar tentang Ratu Balqis dari negeri Saba yang menyembah matahari. Sulaiman mengirim surat mengajaknya menyembah Allah.","Ratu Balqis datang berkunjung. Ketika melihat istana yang menakjubkan dan mendengar dakwah Sulaiman, ia beriman kepada Allah.","Walaupun sangat kaya dan berkuasa, Sulaiman selalu berkata bahwa semua itu adalah ujian, bukan miliknya."],"story_en":["Prophet Sulaiman was the son of Dawud. Even young, he judged matters wisely.","He prayed for a kingdom that would be given to nobody after him. Allah granted it. The wind obeyed him, and he understood the speech of animals.","One day his army passed a valley of ants. An ant told the others to go into their homes. Sulaiman heard, smiled, and thanked Allah.","A hoopoe bird brought news of Queen Balqis of Saba, whose people worshipped the sun. Sulaiman sent a letter inviting her to worship Allah.","Queen Balqis came to visit. Seeing the amazing palace and hearing Sulaiman's call, she believed in Allah.","Though very rich and powerful, Sulaiman always said it was all a test, not truly his."],"name_id":"Sulaiman"},{"n":19,"slug":"ilyas","name":"Ilyas","ar":"إِلْيَاس","id":"Mengajak kaumnya meninggalkan penyembahan berhala Ba'al.","en":"He called his people away from worshipping the idol Ba'al.","lesson_id":"Teguh pada kebenaran walau ditolak.","lesson_en":"Stay firm on truth even when refused.","img":"ilyas.jpg","story":["Nabi Ilyas diutus kepada penduduk Ba'labak, sebuah negeri yang subur dan makmur.","Sayangnya mereka meninggalkan Allah dan menyembah patung emas besar bernama Ba'al. Mereka percaya patung itu yang memberi hujan dan panen.","Ilyas mengajak mereka kembali dengan lembut. Ia menjelaskan bahwa patung tidak bisa mendengar, tidak bisa melihat, dan tidak bisa menolong siapa pun.","Mereka menolak, mengejeknya, bahkan mengancam mengusirnya dari negeri itu. Raja mereka pun ikut memusuhinya.","Kemudian datang kemarau panjang. Sungai mengering, tanaman mati, dan ternak tidak punya makanan. Barulah mereka teringat kepada Allah dan meminta Ilyas berdoa.","Ilyas berdoa, dan hujan pun turun. Tanah kembali hijau. Namun setelah keadaan membaik, banyak yang kembali menyembah Ba'al seperti semula.","Ilyas tetap teguh menyampaikan kebenaran walau hanya sedikit yang mau mendengar. Ia tidak pernah menukar kebenaran dengan kesenangan."],"story_en":["Prophet Ilyas was sent to the people of Ba'labak, a green and prosperous land.","Sadly they left Allah and worshipped a great golden idol called Ba'al. They believed it gave them rain and harvest.","Ilyas called them back gently. He explained that an idol cannot hear, cannot see, and cannot help anyone.","They refused, mocked him, and even threatened to drive him out. Their king opposed him too.","Then a long drought came. Rivers dried, crops died, and the animals had nothing to eat. Only then did they remember Allah and ask Ilyas to pray.","Ilyas prayed, and the rain came. The land turned green again. But once things were good, many went straight back to Ba'al.","Ilyas stayed firm in telling the truth even though few would listen. He never traded the truth for comfort."],"name_id":"Ilyas"},{"n":20,"slug":"ilyasa","name":"Ilyasa","ar":"الْيَسَع","id":"Melanjutkan dakwah Nabi Ilyas dengan sabar dan lembut.","en":"He continued Ilyas's mission with patience and gentleness.","lesson_id":"Melanjutkan kebaikan orang sebelum kita.","lesson_en":"Carry on the good others began.","img":"ilyasa.jpg","story":["Nama lengkapnya Ilyasa bin Akhtub. Sejak kecil ia sudah dekat dengan Nabi Ilyas dan ikut ke mana pun gurunya pergi.","Ketika Nabi Ilyas dikejar orang-orang yang membencinya, keluarga Ilyasa menyembunyikan dan merawatnya. Dari situlah persahabatan mereka bermula.","Ilyasa belajar bertahun-tahun: cara berbicara yang lembut, cara bersabar, dan cara mengajak orang tanpa memaksa.","Setelah Nabi Ilyas tiada, Allah mengangkat Ilyasa menjadi nabi untuk melanjutkan tugas gurunya kepada kaum yang sama.","Ia mengingatkan mereka agar tidak kembali menyembah berhala, agar jujur dalam berdagang, dan agar berbuat baik kepada tetangga dan anak yatim.","Sebagian kaumnya beriman, sebagian tetap menolak. Ilyasa tidak pernah marah dan tidak pernah berhenti mengajak sampai akhir hidupnya.","Allah menyebutnya termasuk orang-orang pilihan yang terbaik."],"story_en":["His full name was Ilyasa son of Akhtub. From childhood he was close to Prophet Ilyas and followed his teacher everywhere.","When Ilyas was chased by people who hated him, Ilyasa's family hid him and cared for him. That is how their friendship began.","Ilyasa learned for years: how to speak gently, how to be patient, and how to invite people without forcing them.","After Ilyas was gone, Allah made Ilyasa a prophet to carry on his teacher's work with the same people.","He reminded them not to return to idols, to be honest in trade, and to be good to neighbours and orphans.","Some believed, some still refused. Ilyasa never grew angry and never stopped calling them until the end of his life.","Allah counted him among the chosen and the best of people."],"name_id":"Ilyasa"},{"n":21,"slug":"yunus","name":"Yunus","ar":"يُونُس","id":"Pergi sebelum diizinkan, lalu ditelan ikan besar dan berdoa di dalam kegelapan.","en":"He left before permission, was swallowed by a great fish, and prayed in the darkness.","lesson_id":"Doa dan tobat didengar di mana pun.","lesson_en":"A prayer of repentance is heard anywhere.","img":"yunus.jpg","story":["Nabi Yunus diutus kepada penduduk kota Ninawa. Ia mengajak mereka menyembah Allah, tetapi mereka menolak bertahun-tahun.","Yunus merasa lelah dan pergi meninggalkan kota itu sebelum Allah mengizinkannya. Ia naik sebuah kapal.","Di tengah laut datang badai. Para penumpang mengundi siapa yang harus turun, dan undian jatuh kepada Yunus. Ia pun terjun ke laut.","Seekor ikan besar menelannya. Di dalam kegelapan perut ikan, laut, dan malam, Yunus berdoa, 'Tidak ada tuhan selain Engkau. Maha Suci Engkau. Sesungguhnya aku termasuk orang yang zalim.'","Allah menerima doanya dan menyuruh ikan itu memuntahkannya ke pantai. Yunus lemah, lalu Allah menumbuhkan pohon untuk menaunginya.","Ketika kembali ke Ninawa, ternyata penduduknya sudah beriman. Mereka selamat karena bertobat bersama-sama."],"story_en":["Prophet Yunus was sent to the city of Nineveh. He called them to worship Allah, but for years they refused.","Yunus grew tired and left the city before Allah allowed him to. He boarded a ship.","At sea a storm came. The passengers drew lots for who should leave, and the lot fell to Yunus. He went into the water.","A great fish swallowed him. In the darkness of the fish, the sea and the night, Yunus prayed, 'There is no god but You. Glory to You. I have indeed been wrong.'","Allah accepted his prayer and told the fish to release him on the shore. Yunus was weak, so Allah grew a plant to shade him.","When he returned to Nineveh, the people had believed. They were saved because they repented together."],"name_id":"Yunus"},{"n":22,"slug":"zakaria","name":"Zakaria","ar":"زَكَرِيَّا","id":"Berdoa bertahun-tahun memohon keturunan, dan Allah mengabulkannya di usia tua.","en":"He prayed for years for a child, and Allah answered him in old age.","lesson_id":"Jangan berhenti berdoa.","lesson_en":"Never stop praying.","img":"zakaria.jpg","story":["Nabi Zakaria adalah orang tua yang menjaga rumah ibadah dan merawat Maryam sejak kecil.","Setiap kali menemui Maryam, ia mendapati makanan di sisinya. Ketika ditanya dari mana, Maryam menjawab bahwa itu dari Allah.","Melihat itu, hati Zakaria terdorong berdoa. Ia dan istrinya sudah sangat tua dan belum memiliki anak.","Ia berdoa dengan suara lembut, memohon keturunan yang saleh untuk meneruskan tugasnya.","Allah mengabulkan doanya dan memberinya seorang putra bernama Yahya. Zakaria bersyukur dan tidak pernah menyesali bertahun-tahun menunggu."],"story_en":["Prophet Zakaria was an elderly man who cared for the house of worship and looked after Maryam from childhood.","Whenever he visited Maryam, he found food beside her. When he asked where it came from, she said it was from Allah.","Seeing that, Zakaria's heart moved him to pray. He and his wife were very old and had no child.","He prayed in a soft voice, asking for righteous offspring to carry on his work.","Allah answered his prayer and gave him a son named Yahya. Zakaria gave thanks and never regretted the years of waiting."],"name_id":"Zakaria"},{"n":23,"slug":"yahya","name":"Yahya","ar":"يَحْيَىٰ","id":"Putra Nabi Zakaria, cerdas dan bijaksana sejak kecil, serta lembut hatinya.","en":"Zakaria's son, wise from childhood and gentle of heart.","lesson_id":"Berani jujur dan berhati lembut.","lesson_en":"Be honest and tender-hearted.","img":"yahya.jpg","story":["Nabi Yahya lahir sebagai jawaban doa panjang ayahnya, Nabi Zakaria, yang sudah sangat tua.","Allah sendiri yang memberi nama Yahya, dan belum pernah ada orang yang bernama seperti itu sebelumnya.","Sejak kecil Allah memberinya hikmah. Ketika anak-anak lain mengajaknya bermain, ia menjawab dengan lembut bahwa kita tidak diciptakan hanya untuk bermain.","Yahya sangat berbakti kepada kedua orang tuanya. Ia tidak pernah membentak dan tidak pernah membuat mereka sedih.","Ia juga sayang kepada binatang. Hidupnya sederhana: pakaiannya kasar, makanannya seadanya, dan ia banyak beribadah di malam hari.","Yahya berani mengatakan kebenaran kepada siapa pun, termasuk kepada penguasa, walaupun itu berbahaya bagi dirinya.","Karena keberaniannya menegakkan kebenaran, ia menghadapi ujian yang sangat berat. Ia tetap dikenang sebagai nabi yang jujur, lembut, dan berhati bersih."],"story_en":["Prophet Yahya was born as the answer to the long prayer of his father Zakaria, who was very old.","Allah Himself gave him the name Yahya, and nobody had carried that name before him.","From childhood Allah gave him wisdom. When other children called him to play, he answered gently that we were not created only for play.","Yahya was deeply devoted to his parents. He never raised his voice and never made them sad.","He was kind to animals too. His life was simple: rough clothing, plain food, and much worship at night.","Yahya dared to speak the truth to anyone, including rulers, even when it was dangerous for him.","Because of his courage for the truth he faced a very hard trial. He is still remembered as an honest, gentle prophet with a pure heart."],"name_id":"Yahya"},{"n":24,"slug":"isa","name":"Isa","ar":"عِيسَىٰ","id":"Lahir tanpa ayah, berbicara saat masih bayi, dan menyembuhkan dengan izin Allah.","en":"Born without a father, he spoke as an infant and healed by Allah's permission.","lesson_id":"Kasih sayang dan kesederhanaan.","lesson_en":"Compassion and simplicity.","img":"isa.jpg","story":["Nabi Isa lahir dari Maryam, seorang perempuan yang suci dan taat, tanpa seorang ayah. Itu adalah tanda kekuasaan Allah.","Ketika orang-orang menuduh Maryam, bayi Isa berbicara di dalam buaian. Ia berkata bahwa ia adalah hamba Allah yang diberi kitab dan dijadikan nabi.","Isa tumbuh dengan penuh kasih sayang kepada orang miskin dan sakit. Ia mengajarkan kesederhanaan dan memaafkan.","Allah memberinya mukjizat: menyembuhkan orang buta dan sakit kusta, serta menghidupkan orang mati, semuanya dengan izin Allah.","Ia menerima kitab Injil dan mengajak manusia menyembah Allah yang satu. Sebagian beriman, sebagian memusuhinya.","Ketika musuh berencana mencelakainya, Allah menyelamatkan dan mengangkatnya. Ajarannya tentang kasih sayang tetap dikenang."],"story_en":["Prophet Isa was born to Maryam, a pure and devoted woman, without a father. This was a sign of Allah's power.","When people accused Maryam, baby Isa spoke from the cradle. He said he was a servant of Allah, given a scripture and made a prophet.","Isa grew up full of compassion for the poor and the sick. He taught simplicity and forgiveness.","Allah gave him miracles: healing the blind and the leper, and giving life to the dead, all by Allah's permission.","He received the Injil and called people to worship the one God. Some believed, some opposed him.","When enemies plotted against him, Allah saved him and raised him up. His teaching of compassion is still remembered."],"name_id":"Isa"},{"n":25,"slug":"muhammad","name":"Muhammad","ar":"مُحَمَّد","id":"Nabi terakhir, dikenal sebagai Al-Amin yang terpercaya, membawa Al-Qur'an bagi seluruh manusia.","en":"The final prophet, known as Al-Amin the trustworthy, who brought the Qur'an for all people.","lesson_id":"Akhlak mulia adalah teladan terbaik.","lesson_en":"Beautiful character is the finest example.","img":"muhammad.jpg","story":["Nabi Muhammad lahir di Makkah pada Tahun Gajah. Ayahnya, Abdullah, sudah wafat sebelum beliau lahir. Kakeknya, Abdul Muthalib, yang memberi nama Muhammad, yang berarti orang yang terpuji.","Seperti kebiasaan orang Makkah, beliau disusui di padang oleh Halimah As-Sa'diyah. Halimah bercerita bahwa sejak bayi Muhammad datang, rumahnya menjadi penuh berkah: kambingnya gemuk dan susunya melimpah.","Ketika berusia enam tahun, ibunya, Aminah, wafat dalam perjalanan pulang dari Madinah. Dua tahun kemudian kakeknya juga wafat. Beliau kemudian diasuh pamannya, Abu Thalib, yang sangat menyayanginya.","Sejak kecil beliau menggembala kambing untuk membantu pamannya. Pekerjaan itu mengajarkan sabar, teliti, dan bertanggung jawab. Beliau tidak pernah ikut menyembah berhala dan tidak pernah berbohong.","Ketika remaja beliau ikut berdagang bersama pamannya ke negeri Syam. Karena selalu jujur dalam menimbang dan menepati janji, orang Makkah memanggilnya Al-Amin, yang berarti orang yang dapat dipercaya.","Seorang pedagang perempuan yang mulia bernama Khadijah mempercayakan dagangannya kepada beliau. Melihat kejujurannya, Khadijah melamar beliau. Mereka menikah dan hidup saling menyayangi. Khadijah menjadi orang pertama yang beriman.","Ketika Ka'bah diperbaiki, para pemuka suku bertengkar tentang siapa yang berhak meletakkan Hajar Aswad. Beliau membentangkan kain, meletakkan batu itu di tengahnya, dan meminta setiap kepala suku memegang ujung kain agar semua ikut mengangkat. Pertengkaran pun selesai.","Pada usia empat puluh tahun, beliau sering menyendiri di Gua Hira untuk merenung. Suatu malam Malaikat Jibril datang dan berkata, 'Bacalah!' Beliau menjawab bahwa beliau tidak bisa membaca. Jibril memeluknya dan menyampaikan wahyu pertama: 'Bacalah dengan nama Tuhanmu yang menciptakan.'","Beliau mulai mengajak keluarga dan sahabat dekat, lalu seluruh penduduk Makkah, untuk menyembah Allah yang satu, menyayangi anak yatim, dan memperlakukan budak dengan baik. Banyak pembesar Makkah marah karena ajaran itu mengubah kebiasaan mereka.","Para pengikut awal disakiti dan dihina. Bilal disiksa di terik matahari, tetapi tetap berkata 'Ahad, Ahad'. Keluarga beliau diboikot bertahun-tahun. Kemudian Khadijah dan Abu Thalib wafat pada tahun yang sama, yang disebut Tahun Kesedihan.","Allah menghibur beliau dengan perjalanan malam dari Masjidil Haram ke Masjidil Aqsa, lalu naik ke langit. Dari perjalanan itu beliau membawa perintah salat lima waktu untuk umatnya.","Atas izin Allah, beliau dan Abu Bakar berhijrah ke Madinah. Dalam perjalanan mereka bersembunyi di Gua Tsur, dan Allah melindungi mereka. Di Madinah beliau disambut dengan gembira.","Di Madinah beliau membangun masjid, mempersaudarakan penduduk Madinah dengan pendatang dari Makkah, dan membuat perjanjian damai dengan tetangga Yahudi dan suku lain. Semua orang mendapat hak yang jelas.","Beliau selalu lembut kepada anak-anak dan sering bermain dengan cucunya. Beliau menyayangi binatang dan melarang menyakitinya. Beliau menjahit sendiri sandalnya, membantu pekerjaan rumah, dan tidak pernah membalas hinaan dengan hinaan.","Bertahun-tahun kemudian beliau kembali ke Makkah bersama ribuan sahabat, tanpa peperangan. Orang-orang yang dulu menyakitinya menunggu dengan takut. Beliau berkata bahwa hari itu tidak ada balas dendam, dan memaafkan mereka semua.","Al-Qur'an diturunkan selama dua puluh tiga tahun. Pada haji terakhir beliau berpesan agar manusia saling menjaga, bahwa tidak ada kelebihan orang Arab atas bukan Arab kecuali karena takwa. Beliau wafat di Madinah, dan ajarannya tetap hidup sampai hari ini."],"story_en":["Prophet Muhammad was born in Makkah in the Year of the Elephant. His father Abdullah had died before he was born. His grandfather Abdul Muttalib named him Muhammad, meaning the praised one.","As was the custom in Makkah, he was nursed in the desert by Halimah As-Sa'diyah. Halimah said that from the moment the baby came, her home was full of blessing: her goats grew fat and there was plenty of milk.","When he was six, his mother Aminah died on the way home from Madinah. Two years later his grandfather died too. His uncle Abu Talib then raised him with great love.","From a young age he herded goats to help his uncle. That work taught patience, care and responsibility. He never joined in worshipping idols and never told a lie.","As a young man he travelled to Syria to trade with his uncle. Because he was always honest in weighing and always kept his word, the people of Makkah called him Al-Amin, the trustworthy one.","A noble merchant woman named Khadijah trusted him with her trade. Seeing his honesty, she proposed to him. They married and loved one another dearly. Khadijah became the first person to believe in him.","When the Kaaba was repaired, the tribal leaders argued over who should place the Black Stone. He spread a cloth, put the stone in the middle, and asked each leader to hold an edge so all could lift it together. The quarrel ended.","At the age of forty he often went alone to the cave of Hira to reflect. One night the angel Jibril came and said, 'Read!' He answered that he could not read. Jibril embraced him and gave the first revelation: 'Read, in the name of your Lord who created.'","He began calling his family and close friends, then all of Makkah, to worship the one God, to care for orphans, and to treat slaves well. Many leaders of Makkah were angry because this changed their ways.","The early followers were hurt and insulted. Bilal was tortured in the burning sun but kept saying 'One, One'. His family was boycotted for years. Then Khadijah and Abu Talib died in the same year, called the Year of Sorrow.","Allah comforted him with a night journey from the Sacred Mosque to Al-Aqsa, then up through the heavens. From that journey he brought back the command of the five daily prayers.","With Allah's permission, he and Abu Bakr migrated to Madinah. On the way they hid in the cave of Thawr and Allah protected them. In Madinah he was welcomed with joy.","In Madinah he built a mosque, joined the people of Madinah and the migrants from Makkah as brothers, and made peace agreements with Jewish neighbours and other tribes. Everyone was given clear rights.","He was always gentle with children and often played with his grandchildren. He was kind to animals and forbade harming them. He mended his own sandals, helped with housework, and never answered insult with insult.","Years later he returned to Makkah with thousands of companions, without a battle. Those who had hurt him waited in fear. He said there would be no revenge that day, and he forgave them all.","The Qur'an was revealed over twenty three years. At his final pilgrimage he told people to look after one another, and that no Arab is better than a non-Arab except in godliness. He passed away in Madinah, and his teaching lives on today."],"name_id":"Muhammad","chapters":["Kelahiran","Masa Bayi","Menjadi Yatim Piatu","Masa Anak dan Remaja","Al-Amin, Yang Terpercaya","Menikah dengan Khadijah","Meletakkan Hajar Aswad","Wahyu Pertama","Dakwah di Makkah","Masa Sulit","Isra dan Mikraj","Hijrah ke Madinah","Membangun Masyarakat","Akhlak Beliau","Kembali ke Makkah","Wahyu Terakhir dan Wafat"],"chapters_en":["Birth","As a baby","Losing his parents","Childhood and youth","Al-Amin, the trustworthy","Marriage to Khadijah","Placing the Black Stone","The first revelation","Calling people in Makkah","The hard years","The Night Journey","The migration to Madinah","Building a community","His character","Returning to Makkah","The last revelation and his passing"]}];
+</script>
+<script>
+const $=id=>document.getElementById(id);
+const NM=(window.SUPER&&SUPER.P)||(x=>x);
+if(window.SUPER&&SUPER.mountBack)SUPER.mountBack();
+document.body.classList.add("hasbar");
+if(window.SUPER&&SUPER.bar)SUPER.bar.mount([
+ {icon:"\u2039",fn:()=>$("prev").click()},
+ {icon:"\uD83D\uDD08",label:"Bacakan",fn:()=>$("play").click()},
+ {icon:"\u203A",label:"Lanjut",hot:true,fn:()=>$("next").click()}
+]);
+/* Illustrations from Islami-fork/Kisah-25-Nabi, bundled in assets/img/nabi.
+   That repository states no licence, so ask the author before republishing. */
+const IMG="assets/img/nabi/";
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={i:0,sound:true,seen:store.get("nabi.seen",{}),lang:store.get("islami.lang","id")};
+function say(t,lang){
+ if(!S.sound)return Promise.resolve();
+ return (window.SUPER&&SUPER.say)?SUPER.say.it(t,{lang:lang==="en"?"en":"id"}):Promise.resolve();
+}
+function renderList(){
+ const box=$("list");box.innerHTML="";
+ NABI.forEach((p,i)=>{
+  const b=document.createElement("button");
+  b.className="li"+(i===S.i?" on":"");
+  b.innerHTML='<span class="n">'+p.n+'</span><span><span class="t">Nabi '+(p.name_id||p.name)+
+   '</span><br><span class="s">'+p.ar+'</span></span>'+(S.seen[i]?'<span class="done">\u2705</span>':'');
+  b.onclick=()=>{S.i=i;render()};
+  box.appendChild(b);
+ });
+}
+function render(){
+ const p=NABI[S.i];
+ $("card").innerHTML=
+  '<div class="head"><h2>'+p.n+'. Nabi '+(p.name_id||p.name)+'</h2><span class="sub">'+p.ar+'</span></div>'+
+  '<img src="'+IMG+p.img+'" alt="" style="width:100%;max-height:44vh;object-fit:cover;'+
+   'border-radius:16px;margin:6px 0 10px;background:#EFE4C8">'+
+  '<div class="mean"><b>'+p.id+'</b><span class="en">'+p.en+'</span></div>'+
+  p.story.map(function(par,k){
+    const ch=(p.chapters&&p.chapters[k])?
+      '<div class="lbl">'+(k+1)+'. '+p.chapters[k]+'</div>':'';
+    return '<div class="ayah">'+ch+'<div class="mean"><b>'+par+'</b>'+
+      '<span class="en">'+p.story_en[k]+'</span></div></div>';}).join("")+
+  '<div class="ayah"><div class="mean"><b>Pelajaran: '+p.lesson_id+'</b>'+
+   '<span class="en">Lesson: '+p.lesson_en+'</span></div></div>';
+ document.querySelector(".readWrap").scrollTop=0;
+ $("bar").style.width=(Object.keys(S.seen).length/NABI.length*100)+"%";
+ var vwarn="";
+ if(window.SUPER&&SUPER.say&&!SUPER.say.haveIndonesian())
+  vwarn=" \u00b7 \u26a0\ufe0f Suara Indonesia belum terpasang, jadi pelafalannya belum sempurna. "+
+        "Buka Pengaturan untuk cara memasangnya.";
+ $("note").innerHTML="Nabi "+(S.i+1)+" dari "+NABI.length+" \u00b7 "+p.story.length+
+   " bagian cerita. Tekan Bacakan untuk mendengarkan seluruhnya."+vwarn;
+ if(window.SUPER&&SUPER.say&&S.sound)SUPER.say.it("Nabi "+(p.name_id||p.name));
+ if(!S.seen[S.i]){S.seen[S.i]=1;store.set("nabi.seen",S.seen);
+  if(window.SUPER&&SUPER.score){const r=SUPER.score.award("nabi",{level:3,wrongs:0});
+   if(SUPER.bar&&SUPER.bar.fly)SUPER.bar.fly(r.xp,r.streak);}}
+ renderList();
+}
+/* read the whole story aloud, paragraph by paragraph */
+$("play").onclick=()=>{
+ const p=NABI[S.i];
+ const en=S.lang==="en";
+ /* Indonesian spelling for the Indonesian voice, so "Yusuf" is not read as
+   an English word. */
+ const idName=(p.name_id||p.name);
+ const parts=en?["Prophet "+p.name+"."].concat(p.story_en,["Lesson. "+p.lesson_en])
+               :["Nabi "+idName+"."].concat(p.story,["Pelajaran. "+p.lesson_id]);
+ let k=0;
+ const nextPart=()=>{
+  if(k>=parts.length||!S.sound)return;
+  /* the story is always read in the language chosen on screen. If the device
+     has no Indonesian voice the words are respelled, never translated. */
+  const opts={lang:en?"en":"id",rate:.85};
+  (window.SUPER&&SUPER.say?SUPER.say.it(parts[k],opts):Promise.resolve())
+   .then(()=>{k++;setTimeout(nextPart,180)});
+ };
+ if(window.SUPER&&SUPER.say)SUPER.say.stop();
+ nextPart();
+};
+$("next").onclick=()=>{S.i=(S.i+1)%NABI.length;render()};
+$("prev").onclick=()=>{S.i=(S.i-1+NABI.length)%NABI.length;render()};
+$("sound").onclick=()=>{S.sound=!S.sound;$("sound").textContent=S.sound?"🔊":"🔇";
+ if(!S.sound){try{speechSynthesis.cancel()}catch(e){}}};
+$("lang").onclick=()=>{S.lang=S.lang==="id"?"en":"id";store.set("islami.lang",S.lang);
+ $("lang").textContent=S.lang.toUpperCase()};
+$("lang").textContent=S.lang.toUpperCase();
+render();
+
+</script>
+</body>
+</html>
+
