@@ -926,7 +926,7 @@ window.addEventListener("resize",()=>setTimeout(()=>{fit();fitStick()},120));
 const toL=(x,y)=>[(x-OX)/K,(y-OY)/K];
 function setT(c,tf){tf=tf||{sx:1,sy:1,tx:0,ty:0};c.setTransform(DPR*K*tf.sx,0,0,DPR*K*tf.sy,DPR*(OX+K*tf.tx),DPR*(OY+K*tf.ty));return Math.abs(tf.sx)}
 function openDraw(lv){
- D.lv=lv;D.order=shuffle(lv.items.map((_,i)=>i));if(lv.id>="t6")D.order=lv.items.map((_,i)=>i);D.i=0;
+ D.lv=lv;D.order=shuffle(lv.items.map((_,i)=>i));if(lv.id>="t6"||lv.id==="t0")D.order=lv.items.map((_,i)=>i);D.i=0;
  show("vDraw");setTimeout(()=>{fit();loadDraw()},30);
 }
 function loadDraw(){
@@ -935,7 +935,7 @@ function loadDraw(){
  D.it=it;D.ink=[];D.done=false;D.paid=false;D.active=0;D.inkN=0;D.inkOn=0;
  $("dDone").classList.remove("on");
  $("dTitle").innerHTML=T(D.lv.t)+" · "+(D.i%D.order.length+1)+"/"+D.order.length;
- const H={trace:["Tebalkan garis titik-titik dari titik ke titik!","Go over the dotted lines, dot to dot!"],
+ const H=it.hint||{trace:["Tebalkan garis titik-titik dari titik ke titik!","Go over the dotted lines, dot to dot!"],
   copy:["Lihat contoh di atas, lalu gambar di bawahnya!","Look at the top, then draw it underneath!"],
   mirror:["Gambar sisi yang satunya, seperti cermin!","Draw the other half, like a mirror!"],
   shape:["Salin gambarnya di kotak kosong!","Copy the picture into the empty box!"],
@@ -1336,9 +1336,10 @@ function actBtn(e,t,n,st,fn){const b=document.createElement("button");b.classNam
  b.onclick=fn;return b}
 function grp(p){const h=document.createElement("div");h.className="grp";h.innerHTML=T(p);return h}
 function openList(id){
+ if(id==="awal")return openProgram();
  const s=SECTIONS.find(x=>x.id===id);show("vList");$("listH").textContent=s.t[0]+" · "+s.t[1];$("listSub").innerHTML=T(s.n);
  const body=$("listBody");body.innerHTML="";const grid=()=>{const g=document.createElement("div");g.className="acts";body.appendChild(g);return g};
- if(id==="tulis")[1,2].forEach(tk=>{body.appendChild(grp(["Tingkat "+tk,"Level "+tk]));const g=grid();
+ if(id==="tulis")[0,1,2].forEach(tk=>{body.appendChild(grp(tk?["Tingkat "+tk,"Level "+tk]:["Tingkat 0: mulai dari sini","Level 0: start here"]));const g=grid();
   PW.filter(l=>l.tk===tk).forEach(l=>g.appendChild(actBtn(l.e,l.t,l.n,starsOf(l.id)+" "+l.items.length+"×",()=>openDraw(l))))});
  if(id==="stiker"){const g=grid();STICK.forEach((sh,i)=>g.appendChild(actBtn(sh.e,sh.t,["Tempel stiker di pola","Stick stickers on the pattern"],starsOf("stk-"+sh.id),()=>openStick(i))))}
  if(id==="sensori"){const g=grid();GAMES.forEach(gm=>g.appendChild(actBtn(gm.e,gm.t,gm.n,starsOf(gm.id),()=>openGame(gm))))}
@@ -1347,6 +1348,121 @@ function openList(id){
    body.appendChild(grp(h));const g=grid();
    EX.filter(x=>x.wk===wk).forEach(ex=>g.appendChild(actBtn(ex.e,ex.t,ex.why,(LOG[today()]||[]).includes(ex.id)?"✅":"",()=>openEx(ex))))})}
 }
+
+/* ============================================================
+   FROM THE BEGINNING
+   1. Garis dasar: the first shapes children learn to copy, in the
+      order they usually manage them: | then — then ○ then + then
+      / and \ then □ then X then △. Each has its own explanation.
+   2. Aku dan Tubuhku: body parts and the five senses.
+   3. The 10-step program, from body awareness to letters.
+   4. Siklus latihan harian: a daily session that goes round
+      five stages, each explained, and starts again tomorrow.
+   ============================================================ */
+function basic(d,hint){return ()=>Object.assign(traceRows(d)(),{hint})}
+PW.unshift({id:"t0",e:"✏️",lv:1,tk:0,t:["Garis dasar","First lines and shapes"],n:["Urutan yang biasa dikuasai anak: | — ○ + / \\ □ X △","The order children usually learn them: | — ○ + / \\ □ X △"],items:[
+ basic(["M300 90 L300 530","M500 90 L500 530","M700 90 L700 530"],["Garis tegak: tarik dari ATAS ke BAWAH, seperti hujan turun.","Standing lines: pull from the TOP to the BOTTOM, like falling rain."]),
+ basic(["M140 150 L860 150","M140 310 L860 310","M140 470 L860 470"],["Garis tidur: dari KIRI ke KANAN, seperti mobil berjalan.","Lying-down lines: from LEFT to RIGHT, like a car driving along."]),
+ basic(["M500 90 C330 90 250 200 250 310 C250 440 370 530 500 530 C630 530 750 440 750 310 C750 200 670 90 500 90"],["Lingkaran: mulai di atas, putar ke KIRI, sampai kembali ke titik awal.","Circle: start at the top, go round to the LEFT, back to where you began."]),
+ basic(["M500 90 L500 530","M260 310 L740 310"],["Tanda tambah: garis tegak dulu, lalu garis tidur memotong di tengah.","A cross: the standing line first, then a lying line across the middle."]),
+ basic(["M220 530 L480 90","M520 90 L780 530"],["Garis miring: ke atas seperti mendaki bukit, lalu turun seperti perosotan.","Slanting lines: up like climbing a hill, then down like a slide."]),
+ basic(["M280 110 L720 110 L720 510 L280 510 Z"],["Kotak: turun, ke kanan, naik, ke kiri. Empat sudut!","A square: along, down, back, up. Four corners!"]),
+ basic(["M280 110 L720 510","M720 110 L280 510"],["Tanda silang: dua garis miring yang bertemu di tengah.","An X: two slanting lines that meet in the middle."]),
+ basic(["M500 90 L760 510 L240 510 Z"],["Segitiga: turun miring, ke kiri, lalu naik kembali ke puncak.","A triangle: slide down, across, and back up to the top."])]});
+
+/* --- Aku dan Tubuhku: body parts and senses --- */
+const BODY=[["👁️",["mata","eyes"],["Mata untuk melihat.","Eyes are for seeing."]],["👃",["hidung","nose"],["Hidung untuk mencium bau.","Your nose is for smelling."]],
+ ["👂",["telinga","ears"],["Telinga untuk mendengar.","Ears are for hearing."]],["👅",["lidah","tongue"],["Lidah untuk mengecap rasa.","Your tongue is for tasting."]],
+ ["✋",["tangan","hands"],["Tangan dan kulit untuk meraba.","Hands and skin are for touching."]],["🦶",["kaki","feet"],["Kaki untuk berjalan dan melompat.","Feet are for walking and jumping."]],
+ ["🦷",["gigi","teeth"],["Gigi untuk mengunyah.","Teeth are for chewing."]],["💪",["lengan","arms"],["Lengan untuk mengangkat dan memeluk.","Arms are for lifting and hugging."]]];
+const SENSE=[["🌸",["Mencium bunga","Smelling a flower"],1],["🎵",["Mendengar musik","Hearing music"],2],["🍭",["Merasakan permen","Tasting a sweet"],3],
+ ["🌈",["Melihat pelangi","Seeing a rainbow"],0],["🧸",["Meraba boneka yang lembut","Feeling a soft teddy"],4],["⚽",["Menendang bola","Kicking a ball"],5]];
+function gBody(){
+ const st=$("stage");let r=0,wr=0;const rounds=[];
+ shuffle(BODY.slice(0,6)).forEach(b=>rounds.push({kind:"part",b}));shuffle(SENSE).slice(0,4).forEach(s=>rounds.push({kind:"sense",s}));
+ const c=center(`<div class="say" id="bq"></div><div class="grid9" id="bg" style="grid-template-columns:repeat(4,1fr);width:min(90%,560px)"></div><div id="bx"></div>`);
+ const go=()=>{
+  if(r>=rounds.length){const s=wr<=1?3:wr<=3?2:1;saveBest("body",s);sfxWin();confetti();$("bg").innerHTML="";$("bx").innerHTML="";
+   $("bq").innerHTML="⭐".repeat(s)+"<br>"+T(["Kamu kenal tubuhmu sendiri!","You know your own body!"]);award(1,0);return}
+  const R=rounds[r];$("gBar").style.width=r/rounds.length*100+"%";$("bx").innerHTML="";
+  const opts=shuffle(BODY.slice(0,8)).slice(0,7);const want=R.kind==="part"?R.b:BODY[R.s[2]];
+  if(!opts.includes(want))opts[0]=want;const shown=shuffle(opts).slice(0,8);if(!shown.includes(want))shown[0]=want;
+  const q=R.kind==="part"?[`Tunjuk ${want[1][0]}!`,`Point to the ${want[1][1]}!`]:[`${R.s[1][0]}: pakai apa?`,`${R.s[1][1]}: what do we use?`];
+  $("bq").innerHTML=(R.kind==="sense"?`<span style="font-family:var(--emoji)">${R.s[0]}</span> `:"")+T(q);say([q]);
+  $("bg").innerHTML="";shuffle(shown).forEach(b=>{const bt=document.createElement("button");bt.textContent=b[0];bt.style.fontSize="clamp(34px,6vw,60px)";
+   bt.onclick=()=>{if(b!==want){wr++;sfxWrong();bt.classList.remove("nope");void bt.offsetWidth;bt.classList.add("nope");return}
+    bt.classList.add("yes");sfxPop(r);say([want[2]]);
+    const act=[`Sekarang sentuh ${want[1][0]}mu sendiri!`,`Now touch your own ${want[1][1]}!`];
+    $("bx").innerHTML=`<div class="say" style="font-size:clamp(16px,2.6vw,26px)">${T(want[2])}<br>👉 ${T(act)}</div><button class="btn go" id="bok">✅ ${T(["Sudah!","Done!"])}</button>`;
+    setTimeout(()=>say([act],true),1800);$("bok").onclick=()=>{r++;go()}};
+   $("bg").appendChild(bt)})};
+ say([["Ayo kenali tubuh kita dan lima indera!","Let's get to know our body and our five senses!"]]);go();
+}
+GAMES.unshift({id:"body",e:"🧒",t:["Aku dan Tubuhku","Me and My Body"],n:["Bagian tubuh dan lima indera","Body parts and the five senses"],run:gBody});
+
+/* --- the 10-step program --- */
+const PROGRAM=[
+ {e:"🧒",t:["Kenali tubuh","Know your body"],why:["Anak perlu tahu di mana bagian tubuhnya sebelum bisa menggerakkannya dengan tepat.","Children need to know where their body parts are before they can move them precisely."],go:()=>openGame(GAMES.find(g=>g.id==="body"))},
+ {e:"🎈",t:["Napas dan tenang","Breathe and calm"],why:["Tubuh yang tenang lebih siap untuk fokus dan belajar.","A calm body is readier to focus and learn."],go:()=>openGame(GAMES.find(g=>g.id==="breath"))},
+ {e:"🤸",t:["Gerak tubuh besar","Big body movement"],why:["Otot perut, punggung, dan bahu yang kuat adalah dasar untuk duduk tegak dan menulis.","Strong tummy, back and shoulder muscles are the base for sitting up and writing."],go:()=>openList("gerak")},
+ {e:"⭐",t:["Kedua sisi tubuh","Both sides of the body"],why:["Menyeberang tengah tubuh melatih kedua belahan otak bekerja sama.","Crossing the middle of the body trains both halves of the brain to work together."],go:()=>openGame(GAMES.find(g=>g.id==="cross"))},
+ {e:"🫓",t:["Tangan yang kuat","Strong hands"],why:["Otot kecil di tangan harus kuat supaya bisa memegang pensil dengan benar.","The small muscles in the hand need strength to hold a pencil properly."],go:()=>openEx(EX.find(x=>x.id==="dough"))},
+ {e:"🌟",t:["Jari menjimpit","Pincer fingers"],why:["Menjimpit stiker melatih ibu jari dan telunjuk, seperti memegang pensil.","Picking up stickers trains the thumb and first finger, just like holding a pencil."],go:()=>openList("stiker")},
+ {e:"🦋",t:["Mata dan tangan","Eyes and hands"],why:["Mata harus memandu tangan. Ini penting untuk menulis di garis.","The eyes have to guide the hand. This matters for writing on the line."],go:()=>openGame(GAMES.find(g=>g.id==="follow"))},
+ {e:"✏️",t:["Garis dasar","First lines"],why:["Anak biasanya bisa meniru | dan — dulu, lalu ○, +, garis miring, □, X, dan △.","Children usually copy | and — first, then ○, +, slanting lines, □, X and △."],go:()=>openDraw(PW.find(l=>l.id==="t0"))},
+ {e:"〰️",t:["Pola dan bentuk","Patterns and shapes"],why:["Pola zig-zag, gelombang, dan simpul adalah bagian dari huruf.","Zigzags, waves and loops are the building blocks of letters."],go:()=>openList("tulis")},
+ {e:"🔠",t:["Huruf dan angka","Letters and numbers"],why:["Setelah garis dan bentuk lancar, anak siap menulis huruf dengan urutan garis yang benar.","Once lines and shapes are easy, he's ready to write letters with the right stroke order."],go:()=>openDraw(PW.find(l=>l.id==="t6"))}
+];
+/* --- the daily session cycle --- */
+const SESSION=[
+ {e:"🎈",t:["Pemanasan & tenang","Warm up & settle"],why:["Mulai dengan napas balon supaya tubuh siap.","Start with balloon breathing so the body is ready."],go:()=>openGame(GAMES.find(g=>g.id==="breath"))},
+ {e:"🤸",t:["Gerak tubuh besar","Big movement"],why:["Satu latihan motorik kasar untuk otot besar.","One gross motor exercise for the big muscles."],go:()=>openEx(EX[(new Date().getDate())%6])},
+ {e:"🫓",t:["Kekuatan tangan","Hand strength"],why:["Latihan jari: lilin mainan atau jepitan.","Finger work: playdough or clothes pegs."],go:()=>openEx(EX.find(x=>x.id===(new Date().getDate()%2?"dough":"pegs")))},
+ {e:"✏️",t:["Menulis","Pre-writing"],why:["Satu lembar pra-menulis di meja, duduk tegak.","One pre-writing page at the table, sitting up tall."],go:()=>openDraw(PW[Math.min(PW.length-1,LS.get("motorik.sessLv",0))])},
+ {e:"😌",t:["Tenang kembali","Cool down"],why:["Tutup dengan napas pelan dan pujian.","Finish with slow breathing and lots of praise."],go:()=>openGame(GAMES.find(g=>g.id==="breath"))}
+];
+function ringHTML(items,cur){
+ const n=items.length;let h=`<div style="position:relative;width:min(92vw,440px);aspect-ratio:1;margin:8px auto">
+  <svg viewBox="0 0 100 100" style="position:absolute;inset:0"><circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="4 4"/></svg>`;
+ items.forEach((it,i)=>{const a=2*Math.PI*i/n-Math.PI/2,x=50+36*Math.cos(a),y=50+36*Math.sin(a);
+  h+=`<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%) scale(${i===cur?1.18:1});text-align:center;width:24%;transition:.3s">
+   <div style="font-family:var(--emoji);font-size:clamp(28px,6vw,46px);background:${i===cur?"#FFB247":i<cur?"#5FE0A4":"rgba(255,255,255,.14)"};border-radius:50%;aspect-ratio:1;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.3)">${it.e}</div>
+   <div style="font-family:'Fredoka',sans-serif;font-size:12.5px;margin-top:3px">${i+1}. ${NM(S.lang==="en"?it.t[1]:it.t[0])}</div></div>`});
+ return h+`<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--emoji);font-size:34px">🔄</div></div>`;
+}
+function openSession(){
+ show("vEx");let cur=LS.get("motorik.sess",0)%SESSION.length;const s=SESSION[cur];
+ $("exBody").innerHTML=`<button class="btn back" id="sb">← Menu</button>
+  <h1>${T(["Siklus latihan harian","The daily practice cycle"])}</h1>
+  <p class="sub">${T(["Setiap hari, lakukan 5 tahap ini berurutan. Setelah tahap 5, besok mulai lagi dari tahap 1.","Every day, do these 5 stages in order. After stage 5, start again at stage 1 tomorrow."])}</p>
+  ${ringHTML(SESSION,cur)}
+  <div class="card2" style="max-width:640px;margin:10px auto"><h2>${cur+1}. ${NM(s.t[0])}</h2><div class="en">${NM(s.t[1])}</div>
+   <div class="why">💡 ${NM(s.why[0])}<br><i>${NM(s.why[1])}</i></div>
+   <div class="row" style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn go" id="sgo">▶ ${T(["Mulai tahap ini","Start this stage"])}</button>
+    <button class="btn" id="sdone" style="color:#2D2410;background:#EFE3C8">✅ ${T(["Tahap selesai","Stage done"])}</button></div></div>`;
+ $("sb").onclick=()=>{show("vMenu");drawMenu()};
+ $("sgo").onclick=()=>s.go();
+ $("sdone").onclick=()=>{let n=cur+1;award(2,0);sfxPop(n);
+  if(n>=SESSION.length){n=0;confetti();sfxWin();LS.set("motorik.sessLv",Math.min(PW.length-1,LS.get("motorik.sessLv",0)+1));
+   say([["Sesi hari ini selesai! Besok kita mulai lagi dari tahap 1.","Today's session is done! Tomorrow we start again at stage 1."]])}
+  else say([SESSION[n].t]);
+  LS.set("motorik.sess",n);openSession()};
+ say([s.t,s.why]);
+}
+function openProgram(){
+ show("vList");$("listH").textContent="Mulai dari Awal · From the Beginning";
+ $("listSub").innerHTML=T(["Sepuluh langkah dari mengenal tubuh sampai menulis huruf. Setiap langkah menyiapkan langkah berikutnya.","Ten steps from knowing your body to writing letters. Each step gets him ready for the next."]);
+ const body=$("listBody");body.innerHTML="";
+ const ses=document.createElement("button");ses.className="act";ses.style.cssText="width:100%;margin-bottom:12px;background:rgba(255,178,71,.2);border-color:#FFB247";
+ ses.innerHTML=`<span class="e">🔄</span><span><b>${NM(S.lang==="en"?"The daily practice cycle":"Siklus latihan harian")}</b><small>${T(["5 tahap setiap hari: tenang, gerak, tangan, menulis, tenang","5 stages every day: settle, move, hands, write, cool down"])}</small></span>`;
+ ses.onclick=openSession;body.appendChild(ses);
+ PROGRAM.forEach((p,i)=>{const b=document.createElement("button");b.className="act";b.style.cssText="width:100%;margin-bottom:8px";
+  b.innerHTML=`<span class="e">${p.e}</span><span><b>${S.lang==="en"?"Step":"Langkah"} ${i+1}: ${NM(S.lang==="en"?p.t[1]:p.t[0])}</b><small>${NM(p.why[0])}</small><small><i>${NM(p.why[1])}</i></small></span><span class="st">▶</span>`;
+  b.onclick=p.go;body.appendChild(b)});
+}
+SECTIONS.unshift({id:"awal",art:["1️⃣","🔄"],tone:["#C2502E","#5A1E10"],t:["Mulai dari Awal","From the Beginning"],n:["Program 10 langkah dan siklus latihan harian","The 10-step program and the daily practice cycle"]});
+
 $("home").onclick=()=>{show("vMenu");drawMenu()};
 function paintLang(){$("lang").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.l===S.lang))}
 $("lang").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.lang=b.dataset.l;LS.set("dongeng.lang",S.lang);paintLang();drawMenu();

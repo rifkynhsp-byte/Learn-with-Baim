@@ -22,8 +22,8 @@ the names are changeable in Settings.
 | `english.html` | English words, listening, conversation, reasoning | 583 items, 6 levels |
 | `ensiklopedia.html` | Animals, Latin names, science, ethics, stories, Indonesia | 2,066 items, 10 levels |
 | `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 135 pages |
-| `dongeng.html?set=siklus` | Siklus Alam: nature cycles and environmental science | 11 adventures, 85 pages |
-| `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 8 levels, 10 patterns, 6 games, 12 exercises |
+| `dongeng.html?set=siklus` | Siklus Alam: nature, cycles and environmental ethics from the beginning | 17 adventures, 200 pages |
+| `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 10-step program, daily cycle, 9 levels, 10 patterns, 7 games, 12 exercises |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
 | `menulis.html` | Handwriting and drawing with the Apple Pencil | 246 items, 18 levels |
 | `koleksi.html` | The zoo, the pets, and the parent view | 50 animals, 4 pets |
@@ -142,48 +142,75 @@ Every story is 9 to 12 pages long, with an activity on most pages.
 
 To add a story, copy one entry in `const STORIES` and change the scenes.
 
-## Siklus Alam — nature cycles and environmental science
+## Siklus Alam — nature and environmental ethics, from the beginning
 
 A second shelf in the same page (the tab at the top, or `dongeng.html?set=siklus`),
-made for a child who loves nature documentaries. Eleven adventures:
+numbered as a learning path, Langkah 1 to 17.
 
-| Adventure | Level |
-|---|---|
-| **Perjalanan Tirta** / The water cycle: evaporation, condensation, rain, rivers, saving water | 1 |
-| **Karbo** / The carbon cycle: photosynthesis, breathing, decomposers, fossil fuels, planting trees | 2 |
-| **Misteri Gas Metana** / Methane: cows, flooded rice fields, landfill, compost | 3 |
-| **Siapa Makan Siapa?** / Food chains, herbivores and carnivores, predator balance, extinction | 2 |
-| **Pekerja Kecil** / Bacteria and decomposers, tempeh and yoghurt, handwashing | 2 |
-| **Teman Hidup** / Symbiosis: mutualism, commensalism, parasitism | 2 |
-| **Bumi Kepanasan** / Climate change, melting ice, sea-level rise, mangroves | 3 |
-| **Dari Mana Energi Kita?** / Energy: food, coal, wind, solar, geothermal, saving power | 2 |
-| **Menyelam ke Laut Dalam** / Ocean zones, glowing animals, whale sharks, coral bleaching | 2 |
-| **Ekspedisi Satwa Liar** / Indonesian wildlife and the Wallace Line, the wildlife trade | 3 |
-| **Siklus Hidup** / Life cycles of butterflies and frogs | 1 |
+Every cycle is taught the same way:
 
-Four science activities on top of the story ones:
+1. **Overview**: the whole cycle as a diagram. Tap any step to hear it.
+2. **One page per step, in order**. Each step page has a small cycle map in
+   the corner showing where we are ("3/6"), a heading ("Langkah 3/6:
+   Pengembunan"), a plain explanation, and something to do.
+3. **Back to the start**: the last step always leads back to step 1.
+4. **Real life and ethics**: what this means for us and what we should do.
+5. **The whole loop**: tap round every step in order, and it keeps going.
+6. **Put it in order**: the steps come back shuffled; he places them 1, 2, 3...
+   from memory. A wrong tap gets a hint: "After evaporation, what happens next?"
 
-- **Cycle loop**: tap round a cycle diagram in order; a traveller follows the
-  arrows and then keeps going round for ever.
-- **Slider**: change the world and watch it respond. Plant trees and the smog
-  clears, add greenhouse gas and the thermometer climbs, melt the ice and the
-  polar bear's floe shrinks, raise the sea and the houses flood, add owls and
-  the rats and rice rebalance, switch to wind and solar, dive into the dark.
-- **Match**: pair symbiotic partners, parents and babies, animals and islands.
-- **Sort**: good or bad for the river, compost or recycling, herbivore or
-  carnivore, renewable or not, west or east of the Wallace Line.
+| Step | Adventure | Cycle steps |
+|---|---|---|
+| 1 | Apa itu Alam? / What is nature? | Living and non-living, the five needs, everything is connected |
+| 2 | Apa itu Siklus? / What is a cycle? | Morning, midday, evening, night; rainy and dry seasons |
+| 3 | Siklus hidup kupu-kupu / Butterfly | Egg, caterpillar, chrysalis, butterfly |
+| 4 | Siklus hidup katak / Frog | Frogspawn, tadpole, legs, frog |
+| 5 | Siklus air / Water | Sea, evaporation, condensation, wind, rain, flowing |
+| 6 | Siklus pengurai / Decomposers | Fallen leaf, worms, fungi and bacteria, soil, sprout, tree |
+| 7 | Siklus padi / Rice, field to plate | Seed, planting, growing, harvest, rice, compost |
+| 8 | Rantai makanan / Food chain | Rice, grasshopper, frog, snake, eagle, decomposers |
+| 9 | Siklus karbon / Carbon | Air, photosynthesis, eaten, breathing out, decomposers |
+| 10 | Penyerbukan / Pollination and symbiosis | Flower, bee, pollen, fruit, seed, new plant |
+| 11 | Daur ulang / Recycling | New bottle, used, binned, sorted, melted, something new |
+| 12 | Rangkong / Hornbill, forest gardener | Fruit tree, eats, flies far, seed drops, sprout |
+| 13 | Metana / Methane | Grass and rice, eaten and flooded, microbes, in the air, into CO₂ |
+| 14 | Tenaga air / Hydropower | Sun, clouds, rain in the dam, turbine, electricity, back to sea |
+| 15 | Kehidupan laut / Ocean life | Phytoplankton, zooplankton, small fish, dolphin, decomposers |
+| 16 | Es mencair / Climate, melting ice | Warming, ice melts, dark sea, warmer still |
+| 17 | Ekspedisi satwa / Wildlife expedition | Wallace Line, anoa, tarsier, bird of paradise, the wildlife trade |
 
-Every adventure ends with something the child can do for the Earth.
+The ethics run through all of it: save water, don't waste rice, thank the
+farmer, compost, reduce before recycling, never buy wild animals, watch
+animals from far away, plant trees and mangroves, switch off lights.
+
+Other activities: sliders that change the world (plant trees and the smog
+clears, add greenhouse gas and the thermometer climbs, melt the polar ice,
+raise the sea, balance owls and rats, switch to clean energy, dive deeper,
+warm the reef), matching pairs, and sorting into bins.
 
 ## Motorik & Sensori — motor and sensory
 
 Built from Baim's occupational therapy worksheets (weeks 1 and 2), as a
 support to therapy, not a replacement for it.
 
+**Mulai dari awal (from the beginning)**: a 10-step program, each step
+explained for parents and linked to its activity: know your body, breathe and
+calm, big movement, both sides of the body, strong hands, pincer fingers, eyes
+and hands, first lines, patterns and shapes, letters and numbers.
+
+**Siklus latihan harian (the daily practice cycle)**: five stages in order,
+settle, big movement, hand strength, pre-writing, cool down, shown on a cycle
+diagram. After stage 5 it goes back to stage 1 for tomorrow, and the writing
+stage moves up a level each time the cycle is completed.
+
+**Aku dan Tubuhku**: point to body parts and match the five senses, then touch
+that part of your own body.
+
 **Pra-menulis (pre-writing)**, drawn with finger or Apple Pencil:
 
 | Level | Tingkat | What he does |
 |---|---|---|
+| Garis dasar | 0 | The first lines in the order children usually manage them: \| — ○ + / \\ □ X △, each with its own instruction |
 | Tebalkan garis 1 and 2 | 1 | Trace dotted zigzags, waves, boxes, arches, straight lines, S shapes, spirals and loops, dot to dot |
 | Salin garis | 1 | Copy a pattern from the example lane into the empty lane |
 | Cermin | 1 | Finish the other half of a shape across the mirror line on a grid |
