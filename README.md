@@ -21,7 +21,7 @@ the names are changeable in Settings.
 | `membaca.html` | Reading Bahasa Indonesia by syllable | 634 words, 6 levels |
 | `english.html` | English words, listening, conversation, reasoning | 583 items, 6 levels |
 | `ensiklopedia.html` | Animals, Latin names, science, ethics, stories, Indonesia | 2,066 items, 10 levels |
-| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 135 pages |
+| `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 191 pages |
 | `dongeng.html?set=siklus` | Siklus Alam: nature, cycles and environmental ethics from the beginning | 17 adventures, 200 pages |
 | `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 10-step program, daily cycle, 9 levels, 10 patterns, 7 games, 12 exercises |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
@@ -138,7 +138,10 @@ animals that walk, hop and swim between pages, and something to do.
 - Every story ends with its lesson, a true fact about the animal, and up to
   three stars, kept on the story shelf.
 
-Every story is 9 to 12 pages long, with an activity on most pages.
+Every story is 13 to 16 pages long, with an activity on most pages, and
+carries on after the main tale: Kancil rescues a baby crocodile in a flood,
+Oki helps put out a forest fire, Kiki frees a turtle from a ghost net, Rexi
+carries a lost egg home.
 
 To add a story, copy one entry in `const STORIES` and change the scenes.
 

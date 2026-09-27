@@ -876,6 +876,24 @@ const STORIES=[
  {bg:"river",time:"dusk",fx:"hearts",actors:[A("kancil","🦌",87,26,7,{anim:"hop",n:["Kancil","Mouse-deer"]}),A("tree","🌳",90,30,18,{anim:"sway",shadow:0}),
    A("c1","🐊",60,22,8,{anim:"swim"}),A("c2","🐊",70,26,8,{anim:"swim",flip:1}),A("c3","🐊",76,21,8,{anim:"swim"})],
   t:["“Maaf ya, Buaya. Kemarin aku berbohong.” Buaya-buaya terkejut. “Terima kasih sudah jujur, Kancil. Lain kali, minta tolong saja!”","“I'm sorry, crocodiles. I told you a lie yesterday.” The crocodiles were surprised. “Thank you for being honest, Kancil. Next time, just ask us for help!”"]},
+ {bg:"river",time:"day",fx:"rain",actors:[A("kancil","🦌",20,26,7,{flip:1,anim:"shake",n:["Kancil","Mouse-deer"]}),A("c1","🐊",60,22,8,{anim:"swim"})],
+  t:["Beberapa minggu kemudian, hujan turun deras sekali. Sungai meluap dan airnya naik!","A few weeks later, heavy rain poured down. The river flooded and the water rose!"],
+  act:{type:"choice",q:["Apa yang sebaiknya Kancil lakukan saat banjir?","What should Kancil do in a flood?"],opts:[
+   {e:"⛰️",t:["Pergi ke tempat yang tinggi","Go to higher ground"],ok:1},
+   {e:"🏊",t:["Berenang di sungai yang deras","Swim in the fast river"],why:["Air banjir sangat berbahaya.","Flood water is very dangerous."]},
+   {e:"😴",t:["Tidur di tepi sungai","Sleep by the river"],why:["Air bisa naik saat Kancil tidur.","The water could rise while he sleeps."]}]}},
+ {bg:"forest",time:"dusk",fx:"rain",actors:[A("kancil","🦌",30,14,8,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("baby","🐊",70,14,5,{anim:"shake",n:["Anak buaya","Baby crocodile"]})],
+  t:["Di atas bukit, Kancil mendengar suara kecil. Seekor anak buaya terpisah dari ibunya karena banjir!","On the hill, Kancil heard a little cry. A baby crocodile had been separated from its mother by the flood!"],
+  act:{type:"choice",q:["Apa yang akan Kancil lakukan?","What will Kancil do?"],opts:[
+   {e:"🤝",t:["Menolong anak buaya","Help the baby crocodile"],ok:1},
+   {e:"🏃",t:["Lari meninggalkannya","Run away and leave it"],why:["Anak buaya itu sendirian dan takut.","The baby is alone and scared."]},
+   {e:"😝",t:["Menertawakannya","Laugh at it"],why:["Menertawakan yang sedang susah itu tidak baik.","Laughing at someone in trouble isn't kind."]}]}},
+ {bg:"river",time:"day",actors:[A("kancil","🦌",14,26,7,{flip:1,anim:"hop",n:["Kancil","Mouse-deer"]}),A("baby","🐊",24,24,4,{anim:"hop"}),
+   A("l1","🪵",38,22,6,{shadow:0}),A("l2","🪵",52,24,6,{shadow:0}),A("l3","🪵",66,22,6,{shadow:0}),A("mama","🐊",86,24,10,{anim:"swim",n:["Ibu Buaya","Mother Crocodile"]})],
+  t:["Banjir sudah surut. Kancil membawa anak buaya kembali ke ibunya lewat batang-batang kayu.","The flood went down. Kancil took the baby crocodile back to its mother across the floating logs."],
+  act:{type:"hop",hopper:"kancil",stones:["l1","l2","l3"],lift:4,end:[76,26],p:["Lompati 3 batang kayu!","Hop across 3 logs!"]}},
+ {bg:"river",time:"day",fx:"hearts",actors:[A("kancil","🦌",70,26,7,{anim:"hop",n:["Kancil","Mouse-deer"]}),A("baby","🐊",80,24,4,{anim:"hop"}),A("mama","🐊",88,24,10,{anim:"bob"})],
+  t:["Ibu Buaya menangis bahagia. “Terima kasih, Kancil! Mulai sekarang, kita berteman.” Kebaikan membuat musuh menjadi sahabat.","Mother Crocodile cried with joy. “Thank you, Kancil! From now on, we are friends.” Kindness can turn enemies into friends."]},
  {bg:"forest",time:"dusk",actors:[A("kancil","🦌",50,16,9,{flip:1,anim:"bob",n:["Kancil","Mouse-deer"]}),A("zz","💤",57,34,4,{anim:"fly",shadow:0})],
   t:["Perut Kancil kenyang. Sekarang waktunya berpikir!","Kancil's tummy is full. Now it's time to think!"],
   act:{type:"choice",q:["Berapa buaya yang dihitung Kancil?","How many crocodiles did Kancil count?"],opts:[
@@ -944,7 +962,22 @@ const STORIES=[
   act:{type:"choice",q:["Siapa yang membantu Ruru?","Who helped Ruru?"],opts:[
    {e:"🐒",t:["Monyet","Monkey"],ok:1},
    {e:"🐊",t:["Buaya","Crocodile"],why:["Tidak ada buaya di cerita ini!","There was no crocodile in this story!"]},
-   {e:"🦉",t:["Burung hantu","Owl"],why:["Burung hantu hanya melihat saja.","The owl only watched."]}]}}
+   {e:"🦉",t:["Burung hantu","Owl"],why:["Burung hantu hanya melihat saja.","The owl only watched."]}]}},
+ {bg:"meadow",time:"day",actors:[A("ruru","🦌",46,14,8,{flip:1,anim:"hop",n:["Ruru","Ruru"]}),A("mama","🦌",60,14,14,{anim:"bob"}),A("monkey","🐒",20,14,7,{flip:1,anim:"hop",n:["Monyet","Monkey"],from:[-10,14]})],
+  t:["Keesokan harinya, Ruru dan Ibu mencari Monyet untuk berterima kasih.","The next day, Ruru and Mama went to find Monkey to say thank you."],
+  act:{type:"tap",item:"🍌",to:"monkey",size:4.5,spots:[[34,40],[46,50],[58,40]],p:["Berikan 3 pisang untuk Monyet!","Give Monkey 3 bananas!"]}},
+ {bg:"meadow",time:"day",actors:[A("ruru","🦌",46,14,8,{flip:1,anim:"bob",n:["Ruru","Ruru"]}),A("mama","🦌",62,14,14,{anim:"bob"})],
+  t:["Ibu mengajari Ruru tanda-tanda jalan pulang: pohon besar, batu, dan suara sungai.","Mama taught Ruru the signs of the way home: the big tree, the rock, and the sound of the river."],
+  act:{type:"choice",q:["Kalau kamu tersesat di taman, apa yang kamu lakukan?","If you get lost in a park, what do you do?"],opts:[
+   {e:"🧍",t:["Diam di tempat dan minta tolong petugas","Stay put and ask a staff member"],ok:1},
+   {e:"🏃",t:["Lari ke mana-mana","Run everywhere"],why:["Lebih mudah ditemukan kalau diam di satu tempat.","You're easier to find if you stay in one place."]},
+   {e:"🚗",t:["Ikut orang asing","Go with a stranger"],why:["Jangan ikut orang yang tidak dikenal.","Never go off with someone you don't know."]}]}},
+ {bg:"forest",time:"day",actors:[A("ruru","🦌",10,14,8,{flip:1,anim:"bob",n:["Ruru","Ruru"]}),
+   A("s1","🌳",30,10,10,{shadow:0,anim:"sway"}),A("s2","🪨",50,8,7,{shadow:0}),A("s3","🌊",70,8,7,{shadow:0}),A("mama","🦌",90,14,12,{anim:"bob"})],
+  t:["Ayo latihan! Ikuti tanda-tanda itu sampai ke Ibu.","Let's practise! Follow the signs all the way to Mama."],
+  act:{type:"hop",hopper:"ruru",stones:["s1","s2","s3"],lift:4,end:[80,14],p:["Ketuk pohon, batu, lalu sungai!","Tap the tree, the rock, then the river!"]}},
+ {bg:"meadow",time:"night",fx:"hearts",actors:[A("ruru","🦌",46,14,8,{flip:1,anim:"bob"}),A("mama","🦌",60,14,14,{anim:"bob"}),A("moon","🌙",80,74,6,{shadow:0})],
+  t:["Malam itu Ruru tidur dekat Ibu. “Terima kasih, Ibu, sudah mengajariku.” Ibu mencium kepala Ruru.","That night Ruru slept close to Mama. “Thank you for teaching me, Mama.” Mama kissed Ruru's head."]}
  ]},
 
 {id:"dido",level:2,cover:["🥚","🦕","🌋"],tone:["#D06A3A","#7A2F1C"],
@@ -997,7 +1030,25 @@ const STORIES=[
   act:{type:"tap",item:"🦕",stay:"💧",size:6,spots:[[26,22],[40,26],[54,22],[68,26]],p:["Hitung 4 dinosaurus yang minum!","Count 4 dinosaurs having a drink!"]}},
  {bg:"pre",time:"night",actors:[A("mama","🦕",60,12,24,{anim:"bob",n:["Ibu Dinosaurus","Mama Dinosaur"]}),A("dido","🦕",40,12,12,{flip:1,anim:"bob",n:["Dido","Dido"]}),A("zz","💤",44,36,4,{shadow:0,anim:"fly"})],
   t:["Malam tiba. Dido meringkuk di dekat Ibu. Bintang-bintang bersinar terang.","Night came. Dido curled up next to Mama. The stars shone brightly."],
-  act:{type:"tap",item:"⭐",stay:"🌟",size:4,spots:[[12,78],[26,88],[40,76],[62,86],[88,80]],p:["Ketuk 5 bintang, lalu selamat tidur, Dido!","Tap 5 stars, then goodnight, Dido!"]}}
+  act:{type:"tap",item:"⭐",stay:"🌟",size:4,spots:[[12,78],[26,88],[40,76],[62,86],[88,80]],p:["Ketuk 5 bintang, lalu selamat tidur, Dido!","Tap 5 stars, then goodnight, Dido!"]}},
+ {bg:"pre",time:"day",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob",n:["Dido","Dido"]}),A("rex","🦖",70,12,12,{anim:"shake",n:["T-Rex kecil","Little T-Rex"]})],
+  t:["Pagi harinya, Dido melihat T-Rex kecil sendirian dan menangis. Ia tersesat.","In the morning, Dido saw a little T-Rex alone and crying. It was lost."],
+  act:{type:"choice",q:["Dido takut. Tapi T-Rex itu masih kecil. Apa yang Dido lakukan?","Dido is scared. But this T-Rex is just a baby. What does Dido do?"],opts:[
+   {e:"🗣️",t:["Bertanya, “Kamu kenapa?”","Ask, “What's wrong?”"],ok:1},
+   {e:"🪨",t:["Melempar batu","Throw a rock"],why:["Menyakiti itu tidak baik, apalagi pada yang kecil.","Hurting is never kind, especially to someone little."]},
+   {e:"🙈",t:["Pura-pura tidak melihat","Pretend not to see"],why:["T-Rex kecil butuh bantuan.","The little T-Rex needs help."]}]}},
+ {bg:"pre",time:"day",actors:[A("dido","🦕",20,12,13,{flip:1,anim:"walk",n:["Dido","Dido"]}),A("rex","🦖",32,12,10,{flip:1,anim:"walk"}),
+   A("p1","🐾",46,6,4,{shadow:0,rot:90}),A("p2","🐾",60,8,4,{shadow:0,rot:90}),A("p3","🐾",74,6,4,{shadow:0,rot:90})],
+  t:["Dido membantu mencari jejak kaki besar Ibu T-Rex.","Dido helped look for the big footprints of Mama T-Rex."],
+  act:{type:"hop",hopper:"dido",stones:["p1","p2","p3"],lift:0,end:[86,12],p:["Ikuti jejaknya!","Follow the footprints!"]}},
+ {bg:"pre",time:"dusk",fx:"hearts",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob"}),A("rex","🦖",56,12,10,{anim:"hop"}),A("big","🦖",76,12,22,{anim:"bob",n:["Ibu T-Rex","Mama T-Rex"]})],
+  t:["Ibu T-Rex memeluk anaknya. Ia menunduk kepada Dido, “Terima kasih.” Sejak hari itu, T-Rex tidak pernah mengganggu kawanan Dido lagi.","Mama T-Rex hugged her baby. She bowed to Dido, “Thank you.” From that day, the T-Rexes never bothered Dido's herd again."]},
+ {bg:"pre",time:"day",actors:[A("dido","🦕",50,12,14,{flip:1,anim:"hop"})],
+  t:["Dido belajar bahwa semua bayi, dinosaurus apa pun, butuh ibunya.","Dido learnt that every baby, whatever kind of dinosaur, needs its mama."],
+  act:{type:"choice",q:["Apa yang Dido pelajari?","What did Dido learn?"],opts:[
+   {e:"💞",t:["Semua bayi butuh ibunya","Every baby needs its mama"],ok:1},
+   {e:"😠",t:["Semua T-Rex jahat","All T-Rexes are mean"],why:["T-Rex kecil itu tidak jahat, ia tersesat.","The little T-Rex wasn't mean, it was lost."]},
+   {e:"🏃",t:["Selalu lari","Always run away"],why:["Kadang kita perlu menolong.","Sometimes we need to help."]}]}}
  ]},
 
 {id:"koko",level:2,cover:["🦎","🦜","🐚"],tone:["#2F87A8","#154D66"],
@@ -1042,7 +1093,24 @@ const STORIES=[
   act:{type:"choice",q:["Kenapa hewan lain mau berteman dengan Koko?","Why did the animals become Koko's friends?"],opts:[
    {e:"💛",t:["Karena Koko baik hati","Because Koko was kind"],ok:1},
    {e:"💪",t:["Karena Koko besar","Because Koko was big"],why:["Dulu mereka justru takut karena Koko besar.","His size used to scare them."]},
-   {e:"🐚",t:["Karena Koko punya kerang","Because Koko had shells"],why:["Bukan kerangnya. Coba ingat lagi!","It wasn't the shells. Think again!"]}]}}
+   {e:"🐚",t:["Karena Koko punya kerang","Because Koko had shells"],why:["Bukan kerangnya. Coba ingat lagi!","It wasn't the shells. Think again!"]}]}},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",40,14,12,{flip:1,anim:"bob",n:["Koko","Koko"]}),A("parrot","🦜",48,34,5.5,{anim:"fly",shadow:0}),A("boat","🚤",80,40,8,{anim:"swim",shadow:0})],
+  t:["Suatu hari, datang kapal penuh wisatawan untuk melihat komodo.","One day, a boat full of tourists came to see the Komodo dragons."],
+  act:{type:"choice",q:["Bagaimana cara wisatawan melihat komodo dengan aman?","How should tourists watch Komodo dragons safely?"],opts:[
+   {e:"🧍",t:["Dari jauh, bersama penjaga","From far away, with a ranger"],ok:1},
+   {e:"🤚",t:["Mengelus kepala komodo","Stroke the komodo's head"],why:["Komodo itu liar. Jangan disentuh!","Komodos are wild. Never touch them!"]},
+   {e:"🍖",t:["Memberi makan komodo","Feed the komodo"],why:["Satwa liar tidak boleh diberi makan manusia.","People shouldn't feed wild animals."]}]}},
+ {bg:"beach",time:"day",actors:[A("koko","🦎",40,14,12,{flip:1,anim:"walk"}),A("ranger","🧍",70,14,10,{anim:"bob",n:["Penjaga","Ranger"]})],
+  t:["Penjaga taman menjelaskan: komodo bisa mencium bau dengan lidahnya yang bercabang! Lidahnya keluar-masuk untuk “mencium” udara.","The ranger explained: komodos smell with their forked tongues! The tongue flicks in and out to “smell” the air."],
+  act:{type:"tapmany",k:"koko",n:4,end:{e:"🦎"},p:["Ketuk Koko 4 kali untuk menjulurkan lidah!","Tap Koko 4 times to flick his tongue!"]}},
+ {bg:"beach",time:"dusk",actors:[A("koko","🦎",30,14,12,{flip:1,anim:"bob"}),A("egg1","🥚",50,10,4,{shadow:0}),A("egg2","🥚",56,10,4,{shadow:0}),A("egg3","🥚",62,10,4,{shadow:0})],
+  t:["Koko menemukan sarang telur burung maleo di pasir. Burung maleo mengubur telurnya di pasir yang hangat.","Koko found a nest of maleo bird eggs in the sand. Maleo birds bury their eggs in warm sand."],
+  act:{type:"choice",q:["Apa yang sebaiknya Koko lakukan?","What should Koko do?"],opts:[
+   {e:"🛡️",t:["Menjaga telur sampai menetas","Guard the eggs until they hatch"],ok:1},
+   {e:"😋",t:["Memakannya","Eat them"],why:["Koko sudah belajar menjadi baik hati.","Koko has learnt to be kind."]},
+   {e:"🤾",t:["Melemparnya","Throw them"],why:["Telur itu calon burung kecil.","Those eggs are baby birds."]}]}},
+ {bg:"beach",time:"day",fx:"confetti",actors:[A("koko","🦎",30,14,12,{flip:1,anim:"hop"}),A("c1","🐣",50,10,4,{anim:"hop"}),A("c2","🐣",58,10,4,{anim:"hop"}),A("c3","🐣",66,10,4,{anim:"hop"})],
+  t:["Krek! Anak-anak burung maleo menetas dan langsung bisa terbang. Koko, si penjaga pantai, tersenyum bangga.","Crack! The maleo chicks hatched and could fly straight away. Koko, guardian of the beach, smiled proudly."]}
  ]}
 ,
 
@@ -1097,7 +1165,21 @@ const STORIES=[
   act:{type:"choice",q:["Apa yang Oki lakukan untuk hutannya?","What did Oki do for his forest?"],opts:[
    {e:"🌱",t:["Menanam pohon baru","Planted new trees"],ok:1},
    {e:"🪓",t:["Menebang pohon","Cut down trees"],why:["Bukan! Oki justru menanam pohon.","No! Oki planted trees instead."]},
-   {e:"🏙️",t:["Membangun kota","Built a city"],why:["Oki tidak membangun kota.","Oki didn't build a city."]}]}}
+   {e:"🏙️",t:["Membangun kota","Built a city"],why:["Oki tidak membangun kota.","Oki didn't build a city."]}]}},
+ {bg:"forest",time:"day",actors:[A("oki","🦧",40,14,11,{flip:1,anim:"bob",n:["Oki","Oki"]}),A("kid","🧒",66,14,10,{anim:"bob",n:["Anak","Child"]})],
+  t:["Suatu hari, anak-anak dari desa datang ke hutan. Mereka ingin membantu Oki.","One day, children from the village came to the forest. They wanted to help Oki."],
+  act:{type:"tap",item:"🌰",stay:"🌱",size:4.5,spots:[[16,8],[30,4],[74,6],[88,8]],p:["Bantu anak-anak menanam 4 biji!","Help the children plant 4 seeds!"]}},
+ {bg:"forest",time:"day",fx:"shake",actors:[A("oki","🦧",40,14,11,{flip:1,anim:"shake"}),A("smoke","🌫️",76,40,12,{shadow:0,anim:"bob"})],
+  t:["Tapi di musim kemarau, Oki mencium asap. Ada api di ujung hutan!","But in the dry season, Oki smelt smoke. There was a fire at the edge of the forest!"],
+  act:{type:"choice",q:["Apa yang harus dilakukan kalau melihat api?","What should you do if you see a fire?"],opts:[
+   {e:"📢",t:["Menjauh dan beri tahu orang dewasa","Get away and tell a grown-up"],ok:1},
+   {e:"🔥",t:["Mendekat untuk melihat","Go closer to look"],why:["Api sangat berbahaya. Menjauhlah.","Fire is very dangerous. Stay away."]},
+   {e:"🤐",t:["Diam saja","Say nothing"],why:["Orang dewasa perlu tahu supaya bisa memadamkannya.","Grown-ups need to know so they can put it out."]}]}},
+ {bg:"forest",time:"dusk",actors:[A("fire","🔥",76,14,10,{shadow:0,anim:"shake"}),A("ranger","🧑‍🚒",50,14,10,{flip:1,anim:"bob",n:["Pemadam","Firefighter"]})],
+  t:["Petugas pemadam datang. Ayo bantu padamkan apinya!","The firefighters came. Let's help put out the fire!"],
+  act:{type:"tap",item:"💧",to:"fire",size:4.5,spots:[[40,44],[50,56],[60,44],[54,34],[46,34]],p:["Siram api dengan 5 air!","Spray the fire with 5 splashes of water!"]}},
+ {bg:"forest",time:"day",fx:"hearts",actors:[A("oki","🦧",40,14,11,{flip:1,anim:"hop"}),A("baby","🦧",54,14,5,{anim:"hop"}),A("t1","🌳",76,10,20,{anim:"sway",shadow:0})],
+  t:["Apinya padam. Hutan selamat! Hutan kita dijaga oleh orangutan, petugas, dan anak-anak seperti kamu.","The fire was out. The forest was saved! Our forest is protected by orangutans, firefighters and children like you."]}
  ]},
 
 {id:"penyu",level:1,cover:["🥚","🐢","🌊"],tone:["#2B5C8A","#12304F"],
@@ -1146,7 +1228,21 @@ const STORIES=[
   act:{type:"tap",item:"🌿",to:"t3",grow:2,size:4.5,spots:[[16,20],[30,12],[70,14],[84,22]],p:["Beri penyu 4 lamun!","Feed the turtle 4 bits of seagrass!"]}},
  {bg:"beach",time:"night",fx:"hearts",actors:[A("big","🐢",50,14,14,{anim:"walk",n:["Penyu besar","Big turtle"],from:[50,34]})],
   t:["Dua puluh tahun kemudian, tukik sudah jadi penyu besar. Ia kembali ke pantai tempat ia menetas, untuk bertelur!","Twenty years later, the hatchling was a big turtle. She came back to the very beach where she hatched, to lay her own eggs!"],
-  act:{type:"tapmany",k:"big",n:4,end:{e:"🥚",s:6},after:[["big",50,12,"bob"]],p:["Bantu penyu menggali sarang! Ketuk 4 kali.","Help the turtle dig a nest! Tap 4 times."]}}
+  act:{type:"tapmany",k:"big",n:4,end:{e:"🥚",s:6},after:[["big",50,12,"bob"]],p:["Bantu penyu menggali sarang! Ketuk 4 kali.","Help the turtle dig a nest! Tap 4 times."]}},
+ {bg:"beach",time:"night",actors:[A("big","🐢",50,12,12,{anim:"walk"}),A("kid","🧒",20,14,9,{flip:1,anim:"bob",n:["Relawan","Volunteer"]}),A("light","🔦",30,24,4,{shadow:0})],
+  t:["Relawan datang menjaga sarang penyu. Mereka tidak memakai senter yang terang, karena cahaya bisa membingungkan penyu.","Volunteers came to guard the turtle nests. They don't use bright torches, because light can confuse the turtles."],
+  act:{type:"choice",q:["Kenapa lampu terang di pantai berbahaya?","Why are bright lights on the beach dangerous?"],opts:[
+   {e:"🌙",t:["Tukik bingung dan tidak menemukan laut","Hatchlings get confused and can't find the sea"],ok:1},
+   {e:"🎉",t:["Tukik suka pesta","Hatchlings like parties"],why:["Tukik mengikuti cahaya bulan di laut.","Hatchlings follow the moonlight on the sea."]},
+   {e:"🤷",t:["Tidak berbahaya","It isn't dangerous"],why:["Lampu membuat tukik berjalan ke arah yang salah.","Lights lead hatchlings the wrong way."]}]}},
+ {bg:"beach",time:"night",actors:[A("kid","🧒",20,14,9,{flip:1,anim:"bob"})],
+  t:["Relawan menghitung sarang supaya tahu berapa penyu yang datang tahun ini.","The volunteers count the nests so they know how many turtles came this year."],
+  act:{type:"tap",item:"🟤",stay:"🚩",size:4.5,spots:[[36,8],[50,10],[64,8],[78,10],[92,8]],p:["Tandai 5 sarang dengan bendera!","Mark 5 nests with a flag!"]}},
+ {bg:"reef",time:"day",actors:[A("big","🐢",40,40,12,{anim:"swim",flip:1}),A("f","🐠",70,30,5,{anim:"swim"}),A("jelly","🪼",70,64,6,{anim:"bob",shadow:0,n:["Ubur-ubur","Jellyfish"]})],
+  t:["Di laut, penyu makan ubur-ubur dan lamun. Penyu membantu menjaga padang lamun tetap sehat.","In the sea, turtles eat jellyfish and seagrass. Turtles help keep seagrass meadows healthy."],
+  act:{type:"tap",item:"🪼",to:"big",flutter:1,size:4.5,spots:[[20,60],[60,72],[84,50]],p:["Beri penyu 3 ubur-ubur!","Feed the turtle 3 jellyfish!"]}},
+ {bg:"beach",time:"day",fx:"confetti",actors:[A("kid","🧒",40,14,10,{flip:1,anim:"hop"}),A("t","🐢",60,12,6,{anim:"walk"})],
+  t:["Penyu sudah ada sejak zaman dinosaurus. Dengan bantuan kita, mereka akan terus kembali ke pantai ini.","Turtles have been around since the time of the dinosaurs. With our help, they'll keep coming back to this beach."]}
  ]},
 
 {id:"harimau",level:1,cover:["🐅","🐭","🕸️"],tone:["#C9771F","#6B3A0E"],
@@ -1189,7 +1285,21 @@ const STORIES=[
   t:["Sejak itu, mereka bersahabat. Tahukah kamu? Harimau suka berenang! Tikus naik di punggung Harimau.","From then on they were friends. Guess what? Tigers love to swim! Mouse rode on Tiger's back."]},
  {bg:"forest",time:"day",actors:[A("tiger","🐅",40,14,15,{anim:"bob",n:["Harimau","Tiger"]}),A("mouse","🐭",60,14,4,{anim:"hop",flip:1,n:["Tikus","Mouse"]}),A("net","🕸️",80,14,10,{shadow:0,n:["Jaring","Net"]})],
   t:["Tikus dan Harimau menemukan jaring pemburu lain. “Ayo kita beri tahu penjaga hutan!”","Mouse and Tiger found another hunter's net. “Let's tell the forest ranger!”"],
-  act:{type:"tapmany",k:"net",n:4,end:{e:"✨",s:6},p:["Bantu hancurkan jaringnya! Ketuk 4 kali.","Help break the net! Tap 4 times."]}}
+  act:{type:"tapmany",k:"net",n:4,end:{e:"✨",s:6},p:["Bantu hancurkan jaringnya! Ketuk 4 kali.","Help break the net! Tap 4 times."]}},
+ {bg:"forest",time:"day",actors:[A("tiger","🐅",40,14,15,{anim:"bob"}),A("mouse","🐭",60,14,4,{anim:"hop",flip:1}),A("ranger","🧍",80,14,10,{anim:"bob",n:["Penjaga hutan","Ranger"]})],
+  t:["Penjaga hutan datang dan mengambil jaring itu. “Terima kasih sudah memberi tahu!” katanya.","The ranger came and took the net away. “Thank you for telling me!” she said."],
+  act:{type:"tap",item:"🕸️",to:"ranger",size:5,spots:[[20,40],[40,56],[60,40]],p:["Kumpulkan 3 jaring pemburu!","Collect 3 hunters' nets!"]}},
+ {bg:"forest",time:"night",actors:[A("tiger","🐅",40,14,15,{anim:"bob"}),A("cubs","🐯",60,14,6,{anim:"hop",n:["Anak harimau","Tiger cubs"]})],
+  t:["Malam itu, Harimau memperkenalkan anak-anaknya kepada Tikus. Anak harimau belajar berburu dari ibunya selama dua tahun.","That night, Tiger introduced her cubs to Mouse. Tiger cubs learn to hunt from their mother for two whole years."],
+  act:{type:"tapmany",k:"cubs",n:3,end:{e:"🐯",anim:"hop"},p:["Ketuk anak harimau 3 kali untuk bermain!","Tap the cubs 3 times to play!"]}},
+ {bg:"forest",time:"day",actors:[A("mouse","🐭",40,14,5,{anim:"hop"}),A("cubs","🐯",60,14,6,{anim:"bob"})],
+  t:["Anak harimau tertawa melihat Tikus yang kecil. Tikus tersenyum. “Dulu ibumu juga menertawakanku.”","The cubs giggled at tiny Mouse. Mouse smiled. “Your mother laughed at me once, too.”"],
+  act:{type:"choice",q:["Apa pesan Tikus untuk anak harimau?","What is Mouse's message to the cubs?"],opts:[
+   {e:"🌟",t:["Yang kecil juga bisa menolong","Small ones can help too"],ok:1},
+   {e:"💪",t:["Yang besar selalu menang","The big always win"],why:["Ingat, Tikus yang menolong Harimau.","Remember, Mouse saved Tiger."]},
+   {e:"🙈",t:["Jangan berteman","Don't make friends"],why:["Tikus dan Harimau bersahabat!","Mouse and Tiger are friends!"]}]}},
+ {bg:"forest",time:"dusk",fx:"hearts",actors:[A("tiger","🐅",40,14,15,{anim:"bob"}),A("cubs","🐯",58,14,6,{anim:"hop"}),A("mouse","🐭",72,14,4,{anim:"hop"})],
+  t:["Sejak itu, harimau dan tikus hidup berdampingan di hutan Sumatra yang dijaga bersama.","From then on, tigers and mice lived side by side in the Sumatran forest they all looked after together."]}
  ]},
 
 {id:"semut",level:1,cover:["🐜","🦗","🌾"],tone:["#8FA83A","#4D6118"],
@@ -1237,7 +1347,21 @@ const STORIES=[
   t:["Tahun berikutnya, Belalang menepati janji. Dia membantu semut membawa daun besar!","The next year, Grasshopper kept his promise. He helped the ants carry a big leaf!"],
   act:{type:"tapmany",k:"leaf",also:["a1","a2"],n:5,end:{e:"🍃"},after:[["leaf",22,14,"bob"],["a1",26,10,"hop"],["a2",32,10,"hop"],["gh",40,14,"hop"]],p:["Angkat daunnya bersama! Ketuk 5 kali.","Lift the leaf together! Tap 5 times."]}},
  {bg:"sawah",time:"dusk",fx:"confetti",actors:[A("hill","⛰️",14,8,9,{shadow:0}),A("a1","🐜",30,10,4,{anim:"hop"}),A("gh","🦗",50,14,7,{anim:"hop",n:["Belalang","Grasshopper"]}),A("note","🎵",56,34,4,{anim:"fly",shadow:0})],
-  t:["Setelah bekerja, Belalang bernyanyi dan semua semut menari. Bekerja dan bermain, dua-duanya menyenangkan!","After work, Grasshopper sang and all the ants danced. Working and playing are both fun!"]}
+  t:["Setelah bekerja, Belalang bernyanyi dan semua semut menari. Bekerja dan bermain, dua-duanya menyenangkan!","After work, Grasshopper sang and all the ants danced. Working and playing are both fun!"]},
+ {bg:"sawah",time:"day",fx:"rain",actors:[A("hill","⛰️",20,8,9,{shadow:0}),A("a1","🐜",40,10,4,{anim:"shake"}),A("gh","🦗",60,14,7,{anim:"bob"})],
+  t:["Hujan turun sangat deras. Air mulai masuk ke sarang semut!","The rain came down hard. Water started pouring into the ant hill!"],
+  act:{type:"choice",q:["Siapa yang bisa menolong semut?","Who can help the ants?"],opts:[
+   {e:"🦗",t:["Belalang, dengan daun besar","Grasshopper, with a big leaf"],ok:1},
+   {e:"🐟",t:["Ikan","A fish"],why:["Ikan tidak ada di sawah yang ini.","There are no fish here."]},
+   {e:"🙅",t:["Tidak ada","Nobody"],why:["Teman selalu saling menolong!","Friends always help each other!"]}]}},
+ {bg:"sawah",time:"day",fx:"rain",actors:[A("hill","⛰️",20,8,9,{shadow:0}),A("leaf","🍃",52,30,10,{shadow:0}),A("gh","🦗",46,14,7,{anim:"hop"})],
+  t:["Belalang membawa daun besar untuk menutupi sarang semut.","Grasshopper brought a big leaf to cover the ant hill."],
+  act:{type:"tapmany",k:"gh",n:4,end:{e:"🦗"},after:[["leaf",20,20,"bob"]],p:["Ketuk Belalang 4 kali untuk membawa daun!","Tap Grasshopper 4 times to carry the leaf!"]}},
+ {bg:"sawah",time:"day",actors:[A("hill","⛰️",20,8,9,{shadow:0}),A("a1","🐜",36,10,4,{anim:"hop"}),A("a2","🐜",44,10,4,{anim:"hop"}),A("gh","🦗",60,14,7,{anim:"hop"})],
+  t:["Sarang semut selamat! Semut-semut berkata, “Kamu sahabat sejati, Belalang!”","The ant hill was safe! The ants said, “You're a true friend, Grasshopper!”"],
+  act:{type:"tap",item:"🐜",to:"gh",size:4,spots:[[20,24],[30,20],[26,32],[14,28]],p:["Ketuk 4 semut untuk berterima kasih!","Tap 4 ants to say thank you!"]}},
+ {bg:"sawah",time:"dusk",fx:"confetti",actors:[A("hill","⛰️",20,8,9,{shadow:0}),A("gh","🦗",50,14,7,{anim:"hop"}),A("note","🎵",56,34,4,{anim:"fly",shadow:0})],
+  t:["Semut mengajari Belalang bekerja, Belalang mengajari semut bernyanyi. Semua punya kelebihan untuk dibagi.","The ants taught Grasshopper to work, and Grasshopper taught the ants to sing. Everyone has something to share."]}
  ]},
 
 {id:"siput",level:2,cover:["🦌","🐌","🏁"],tone:["#4F8F6F","#244A38"],
@@ -1283,7 +1407,21 @@ const STORIES=[
   t:["Sejak itu, Kancil sering membantu siput. Siput-siput naik ke punggung Kancil untuk menyeberang sungai.","After that, Kancil often helped the snails. They rode on his back to cross the river."],
   act:{type:"tap",item:"🐌",to:"kancil",size:4,spots:[[10,40],[16,34],[4,36],[20,42]],p:["Naikkan 4 siput ke punggung Kancil!","Put 4 snails on Kancil's back!"]}},
  {bg:"river",time:"day",fx:"hearts",actors:[A("kancil","🦌",88,26,8,{anim:"hop",n:["Kancil","Mouse-deer"],from:[9,26]}),A("rain","🌈",50,70,20,{shadow:0,anim:"bob"})],
-  t:["Mereka sampai di seberang dan melihat pelangi. Teman yang cepat dan teman yang lambat, semuanya berharga.","They reached the other side and saw a rainbow. Fast friends and slow friends are all precious."]}
+  t:["Mereka sampai di seberang dan melihat pelangi. Teman yang cepat dan teman yang lambat, semuanya berharga.","They reached the other side and saw a rainbow. Fast friends and slow friends are all precious."]},
+ {bg:"meadow",time:"day",actors:[A("kancil","🦌",40,14,8,{flip:1,anim:"bob"}),A("snail","🐌",56,12,5,{anim:"walk",n:["Siput","Snail"]})],
+  t:["Kancil bertanya, “Siput, kenapa kamu membawa rumahmu ke mana-mana?” Siput menjawab, “Cangkangku melindungiku dari panas dan musuh.”","Kancil asked, “Snail, why do you carry your house everywhere?” Snail said, “My shell protects me from the heat and from enemies.”"],
+  act:{type:"tapmany",k:"snail",n:3,end:{e:"🐚"},p:["Ketuk Siput 3 kali supaya ia masuk ke cangkang!","Tap Snail 3 times to hide in its shell!"]}},
+ {bg:"forest",time:"day",fx:"rain",actors:[A("kancil","🦌",40,14,8,{flip:1,anim:"bob"}),A("snail","🐌",56,12,5,{anim:"hop"})],
+  t:["Hujan turun. Siput-siput senang sekali! Mereka suka tempat yang basah dan lembap.","It started to rain. The snails were delighted! They love damp, wet places."],
+  act:{type:"choice",q:["Kapan siput paling suka keluar?","When do snails most like to come out?"],opts:[
+   {e:"🌧️",t:["Saat hujan dan lembap","When it's rainy and damp"],ok:1},
+   {e:"☀️",t:["Saat panas terik","In hot sunshine"],why:["Panas membuat siput kering.","Heat dries snails out."]},
+   {e:"❄️",t:["Saat bersalju","When it snows"],why:["Terlalu dingin untuk siput.","Too cold for snails."]}]}},
+ {bg:"meadow",time:"day",actors:[A("kancil","🦌",14,14,8,{flip:1,anim:"bob"}),A("n1","🐌",34,10,4,{anim:"walk"}),A("n2","🐌",54,10,4,{anim:"walk"}),A("n3","🐌",74,10,4,{anim:"walk"}),A("flag","🏁",90,12,6,{shadow:0})],
+  t:["Kali ini Kancil dan siput-siput lomba estafet sebagai satu tim!","This time Kancil and the snails ran a relay race as one team!"],
+  act:{type:"hop",hopper:"kancil",stones:["n1","n2","n3"],lift:0,end:[88,14],p:["Oper tongkat ke setiap siput!","Pass the baton to each snail!"]}},
+ {bg:"meadow",time:"dusk",fx:"confetti",actors:[A("kancil","🦌",46,14,8,{flip:1,anim:"hop"}),A("n1","🐌",30,10,4,{anim:"hop"}),A("n2","🐌",60,10,4,{anim:"hop"})],
+  t:["Tim mereka menang! Kancil belajar: berlari cepat itu seru, tapi berlari bersama teman lebih menyenangkan.","Their team won! Kancil learnt: running fast is fun, but running together with friends is even better."]}
  ]},
 
 {id:"kura",level:2,cover:["🐢","🐒","🍌"],tone:["#A89A2E","#5C5210"],
@@ -1337,7 +1475,20 @@ const STORIES=[
   act:{type:"choice",q:["Kenapa kebunnya jadi besar?","Why did the garden grow so big?"],opts:[
    {e:"🤝",t:["Karena mereka bekerja sama","Because they worked together"],ok:1},
    {e:"🪄",t:["Karena sihir","By magic"],why:["Bukan sihir, tapi kerja sama!","Not magic, teamwork!"]},
-   {e:"😡",t:["Karena mereka bertengkar","Because they argued"],why:["Bertengkar tidak menumbuhkan kebun.","Arguing doesn't grow gardens."]}]}}
+   {e:"😡",t:["Karena mereka bertengkar","Because they argued"],why:["Bertengkar tidak menumbuhkan kebun.","Arguing doesn't grow gardens."]}]}},
+ {bg:"meadow",time:"day",actors:[A("turtle","🐢",30,14,7,{flip:1,anim:"bob"}),A("monkey","🐒",50,14,8,{anim:"bob"}),A("kids","🐒",72,14,6,{anim:"hop",n:["Monyet-monyet kecil","Little monkeys"]})],
+  t:["Monyet-monyet kecil datang dan ingin pisang juga. Pisangnya tinggal 6.","Some little monkeys came and wanted bananas too. There were 6 bananas left."],
+  act:{type:"tap",item:"🍌",to:["turtle","monkey","kids"],size:4.5,spots:[[20,50],[30,58],[40,50],[50,58],[60,50],[70,58]],p:["Bagi 6 pisang untuk 3 teman!","Share 6 bananas between 3 friends!"]}},
+ {bg:"meadow",time:"day",actors:[A("turtle","🐢",30,14,7,{flip:1,anim:"bob"}),A("monkey","🐒",50,14,8,{anim:"bob"}),A("kids","🐒",72,14,6,{anim:"hop"})],
+  t:["Enam pisang dibagi tiga.","Six bananas shared between three."],
+  act:{type:"choice",q:["Masing-masing dapat berapa?","How many does each friend get?"],opts:[
+   {e:"2️⃣",t:["Dua","Two"],ok:1},{e:"3️⃣",t:["Tiga","Three"],why:["Tiga kali tiga itu sembilan. Kita hanya punya enam.","Three each would need nine. We only have six."]},
+   {e:"6️⃣",t:["Enam","Six"],why:["Enam itu semuanya!","Six is all of them!"]}]}},
+ {bg:"meadow",time:"day",actors:[A("turtle","🐢",30,14,7,{flip:1,anim:"bob"}),A("peel","🍌",56,12,5,{shadow:0,rot:40}),A("bin","🪣",78,12,8,{shadow:0,n:["Kompos","Compost"]})],
+  t:["Kulit pisangnya tidak dibuang sembarangan. Kura-kura menjadikannya kompos untuk kebun.","The banana peels weren't dropped anywhere. Turtle turned them into compost for the garden."],
+  act:{type:"tap",item:"🍌",to:"bin",size:4.5,spots:[[20,30],[40,40],[60,30]],p:["Masukkan 3 kulit pisang ke kompos!","Put 3 banana peels in the compost!"]}},
+ {bg:"meadow",time:"dusk",fx:"hearts",actors:[A("turtle","🐢",30,14,7,{flip:1,anim:"hop"}),A("monkey","🐒",50,14,8,{anim:"hop"}),A("kids","🐒",70,14,6,{anim:"hop"})],
+  t:["Kebun pisang terus tumbuh, dan semakin banyak teman datang. Kalau kita berbagi, kebahagiaan juga bertambah.","The banana garden kept growing, and more and more friends came. When we share, happiness grows too."]}
  ]},
 
 {id:"badak",level:2,cover:["🦏","🐦","🦟"],tone:["#5E7F8C","#2C4652"],
@@ -1391,7 +1542,21 @@ const STORIES=[
   act:{type:"choice",q:["Siapa yang menjaga badak Jawa?","Who protects Javan rhinos?"],opts:[
    {e:"🧍",t:["Penjaga taman nasional","Park rangers"],ok:1},
    {e:"🦹",t:["Pemburu","Hunters"],why:["Pemburu justru berbahaya bagi badak.","Hunters are a danger to rhinos."]},
-   {e:"🐊",t:["Buaya","Crocodiles"],why:["Bukan buaya. Ingat kameranya!","Not crocodiles. Remember the cameras!"]}]}}
+   {e:"🐊",t:["Buaya","Crocodiles"],why:["Bukan buaya. Ingat kameranya!","Not crocodiles. Remember the cameras!"]}]}},
+ {bg:"forest",time:"day",actors:[A("bima","🦏",40,14,14,{anim:"bob"}),A("baby","🦏",60,14,7,{anim:"hop",n:["Anak badak","Baby rhino"]})],
+  t:["Kamera penjaga menangkap gambar yang membahagiakan: Bima punya anak! Anak badak Jawa sangat langka.","The rangers' camera caught a happy picture: Bima had a baby! Baby Javan rhinos are very rare."],
+  act:{type:"tapmany",k:"baby",n:3,end:{e:"🦏",anim:"hop"},p:["Ketuk anak badak 3 kali untuk menyapanya!","Tap the baby rhino 3 times to say hello!"]}},
+ {bg:"river",time:"day",actors:[A("bima","🦏",40,22,14,{anim:"swim"}),A("baby","🦏",60,22,7,{anim:"swim"}),A("bird","🐦",42,36,4,{anim:"hop",shadow:0,z:95})],
+  t:["Bima mengajari anaknya berendam di lumpur, dan Jalak ikut menjaga mereka.","Bima taught her baby to wallow in the mud, and Starling helped watch over them."],
+  act:{type:"tap",item:"🌿",to:"baby",size:4.5,spots:[[20,40],[34,50],[76,44],[88,36]],p:["Beri anak badak 4 daun!","Feed the baby rhino 4 leaves!"]}},
+ {bg:"forest",time:"day",actors:[A("kid","🧒",40,14,10,{flip:1,anim:"bob"})],
+  t:["Kita juga bisa membantu badak Jawa, walaupun tinggal jauh dari Ujung Kulon.","We can help Javan rhinos too, even if we live far from Ujung Kulon."],
+  act:{type:"choice",q:["Bagaimana caranya?","How?"],opts:[
+   {e:"📣",t:["Menceritakan tentang badak Jawa ke teman","Tell friends about Javan rhinos"],ok:1},
+   {e:"🦏",t:["Membeli cula badak","Buy a rhino horn"],why:["Pembeli cula membuat badak diburu.","People buying horns is why rhinos are hunted."]},
+   {e:"🙈",t:["Tidak peduli","Not caring"],why:["Badak butuh kita semua peduli.","Rhinos need all of us to care."]}]}},
+ {bg:"forest",time:"dusk",fx:"hearts",actors:[A("bima","🦏",40,14,14,{anim:"bob"}),A("baby","🦏",56,14,7,{anim:"bob"}),A("bird","🐦",42,30,4,{anim:"hop",shadow:0,z:95})],
+  t:["Bima, anaknya, dan Jalak hidup tenang di hutan. Setiap badak yang lahir adalah harapan baru.","Bima, her baby and Starling lived peacefully in the forest. Every rhino born is new hope."]}
  ]},
 
 {id:"kiki",level:1,cover:["🐠","🪸","🐙"],tone:["#1E88B8","#0B3F63"],
@@ -1444,7 +1609,21 @@ const STORIES=[
   act:{type:"choice",q:["Apakah hiu paus berbahaya bagi Kiki?","Is the whale shark dangerous for Kiki?"],opts:[
    {e:"😊",t:["Tidak, hiu paus jinak","No, whale sharks are gentle"],ok:1},
    {e:"😱",t:["Ya, semua hiu jahat","Yes, all sharks are mean"],why:["Tidak semua hiu sama. Hiu paus jinak.","Not all sharks are alike. Whale sharks are gentle."]},
-   {e:"🤷",t:["Tidak tahu","Don't know"],why:["Dengarkan lagi apa kata hiu paus.","Listen again to what the whale shark said."]}]}}
+   {e:"🤷",t:["Tidak tahu","Don't know"],why:["Dengarkan lagi apa kata hiu paus.","Listen again to what the whale shark said."]}]}},
+ {bg:"reef",time:"day",actors:[A("kiki","🐠",40,40,6,{anim:"swim",flip:1}),A("ws","🦈",66,50,22,{anim:"swim"})],
+  t:["Hiu paus mengajak Kiki berkeliling. “Laut itu luas sekali, Kiki. Semua laut di dunia saling terhubung.”","The whale shark took Kiki on a tour. “The ocean is enormous, Kiki. All the seas in the world are connected.”"],
+  act:{type:"tap",item:["🐬","🐙","🦑","🐡"],to:"kiki",flutter:1,size:5,spots:[[16,60],[30,26],[80,70],[86,24]],p:["Sapa 4 hewan laut!","Say hello to 4 sea animals!"]}},
+ {bg:"reef",time:"day",actors:[A("kiki","🐠",40,40,6,{anim:"swim",flip:1}),A("net","🕸️",66,40,14,{shadow:0,n:["Jaring hantu","Ghost net"]}),A("tur","🐢",66,40,7,{anim:"shake",z:1})],
+  t:["Oh tidak! Penyu tersangkut jaring nelayan yang dibuang di laut. Jaring seperti ini disebut jaring hantu.","Oh no! A turtle was tangled in a fishing net someone threw into the sea. Nets like this are called ghost nets."],
+  act:{type:"tapmany",k:"net",also:["tur"],n:5,end:{e:"✨",s:6},after:[["tur",80,64,"swim"]],p:["Bantu lepaskan penyu! Ketuk 5 kali.","Help free the turtle! Tap 5 times."]}},
+ {bg:"reef",time:"day",actors:[A("kiki","🐠",40,40,6,{anim:"swim",flip:1}),A("tur","🐢",70,60,8,{anim:"swim"})],
+  t:["Penyu selamat! Nelayan yang baik membawa pulang jaring rusaknya, tidak membuangnya ke laut.","The turtle was safe! Good fishermen take their broken nets home and never throw them in the sea."],
+  act:{type:"choice",q:["Jaring yang rusak sebaiknya dibawa ke mana?","Where should broken nets go?"],opts:[
+   {e:"🏠",t:["Dibawa pulang dan didaur ulang","Taken home and recycled"],ok:1},
+   {e:"🌊",t:["Dibuang ke laut","Thrown in the sea"],why:["Jaring di laut bisa menjerat hewan.","Nets in the sea trap animals."]},
+   {e:"🪸",t:["Disangkutkan di karang","Hung on the coral"],why:["Jaring merusak karang.","Nets damage coral."]}]}},
+ {bg:"reef",time:"day",fx:"confetti",actors:[A("kiki","🐠",44,40,7,{anim:"swim",flip:1}),A("home","🪸",40,6,12,{shadow:0,anim:"sway"}),A("tur","🐢",70,60,8,{anim:"swim"})],
+  t:["Kiki pulang ke anemonnya. Laut Raja Ampat tetap indah karena dijaga oleh ikan, nelayan, dan anak-anak yang peduli.","Kiki went home to her anemone. The sea of Raja Ampat stays beautiful because fish, fishermen and caring children look after it."]}
  ]},
 
 {id:"rexi",level:2,cover:["🦖","💪","🦕"],tone:["#B8452E","#5E1E12"],
@@ -1496,7 +1675,21 @@ const STORIES=[
    {e:"🧗",t:["Memanjat pohon","Tree climbing"],why:["Dinosaurus besar tidak bisa memanjat.","Big dinosaurs can't climb trees."]}]}},
  {bg:"pre",time:"day",fx:"confetti",actors:[A("rexi","🦖",30,12,12,{flip:1,anim:"hop",n:["Rexi","Rexi"]}),A("f1","🦕",50,12,12,{flip:1,anim:"hop"}),A("f2","🦕",66,12,10,{flip:1,anim:"hop"}),A("flag","🏁",90,12,8,{shadow:0})],
   t:["Mereka lomba lari bersama. Siapa pun yang menang, semuanya tertawa gembira!","They all had a running race. Whoever won, everyone laughed and had fun!"],
-  act:{type:"tapmany",k:"rexi",n:3,end:{e:"🦖"},after:[["rexi",86,12,"hop"],["f1",80,12,"hop"],["f2",74,12,"hop"]],p:["Ketuk Rexi 3 kali untuk mulai berlari!","Tap Rexi 3 times to start the race!"]}}
+  act:{type:"tapmany",k:"rexi",n:3,end:{e:"🦖"},after:[["rexi",86,12,"hop"],["f1",80,12,"hop"],["f2",74,12,"hop"]],p:["Ketuk Rexi 3 kali untuk mulai berlari!","Tap Rexi 3 times to start the race!"]}},
+ {bg:"pre",time:"day",actors:[A("rexi","🦖",40,12,12,{flip:1,anim:"bob"}),A("egg","🥚",60,12,6,{n:["Telur","Egg"]})],
+  t:["Rexi menemukan telur yang terguling jauh dari sarangnya.","Rexi found an egg that had rolled far from its nest."],
+  act:{type:"choice",q:["Tangan Rexi pendek. Bagaimana ia membawa telurnya dengan aman?","Rexi's arms are short. How can he carry the egg safely?"],opts:[
+   {e:"🦵",t:["Mendorong pelan dengan kaki","Push it gently with his foot"],ok:1},
+   {e:"🤾",t:["Menendang keras-keras","Kick it hard"],why:["Telurnya bisa pecah!","The egg could break!"]},
+   {e:"🙈",t:["Meninggalkannya","Leave it"],why:["Telur itu butuh bantuan.","The egg needs help."]}]}},
+ {bg:"pre",time:"day",actors:[A("rexi","🦖",14,12,11,{flip:1,anim:"bob"}),A("r1","🪨",34,8,5,{shadow:0}),A("r2","🪵",52,8,6,{shadow:0}),A("r3","🪨",70,8,5,{shadow:0}),A("nest","🪺",88,10,7,{shadow:0,n:["Sarang","Nest"]})],
+  t:["Rexi mendorong telur pelan-pelan melewati batu dan kayu menuju sarang.","Rexi gently pushed the egg past the rocks and logs to the nest."],
+  act:{type:"hop",hopper:"rexi",stones:["r1","r2","r3"],lift:4,end:[80,12],p:["Lewati 3 rintangan dengan hati-hati!","Carefully get past 3 obstacles!"]}},
+ {bg:"pre",time:"day",actors:[A("rexi","🦖",60,12,11,{anim:"bob"}),A("nest","🪺",80,10,8,{shadow:0}),A("mom","🦕",30,12,20,{flip:1,anim:"bob",from:[-20,12]})],
+  t:["Ibu dinosaurus leher panjang datang. Awalnya ia takut melihat T-Rex. Tapi Rexi mundur pelan dan tersenyum.","A long-necked mama dinosaur came. At first she was scared of the T-Rex. But Rexi stepped back slowly and smiled."],
+  act:{type:"tapmany",k:"nest",n:3,end:{e:"🐣"},p:["Ketuk sarang 3 kali. Telurnya menetas!","Tap the nest 3 times. The egg hatches!"]}},
+ {bg:"pre",time:"dusk",fx:"hearts",actors:[A("rexi","🦖",50,12,12,{flip:1,anim:"hop"}),A("mom","🦕",26,12,20,{flip:1,anim:"bob"}),A("chick","🦕",70,12,5,{anim:"hop"})],
+  t:["“Terima kasih, Rexi!” Hari itu semua belajar: jangan menilai seseorang dari penampilannya. T-Rex pun bisa berhati lembut.","“Thank you, Rexi!” That day everyone learnt: don't judge someone by how they look. Even a T-Rex can have a gentle heart."]}
  ]},
 
 {id:"gunung",level:3,cover:["🌋","🦕","🪨"],tone:["#8A3A2A","#3A140C"],
@@ -1551,7 +1744,23 @@ const STORIES=[
    {e:"🌋",t:["Untuk melihat gunung api","To look at the volcano"],why:["Gunung api berbahaya. Dido menjemput adiknya.","The volcano is dangerous. Dido went for his sister."]}]}},
  {bg:"sawah",time:"day",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob",n:["Dido","Dido"]}),A("baby","🦕",44,12,6,{flip:1,anim:"hop",n:["Dini","Dini"]})],
   t:["Bertahun-tahun kemudian, abu gunung api membuat tanah jadi sangat subur. Tanaman tumbuh lebih hijau dari sebelumnya!","Years later, the volcano's ash made the soil very rich. Plants grew greener than ever!"],
-  act:{type:"tap",item:"🌱",stay:"🌿",size:5,spots:[[56,8],[66,14],[76,6],[86,12],[94,6]],p:["Tanam 5 tunas di tanah yang subur!","Plant 5 sprouts in the rich soil!"]}}
+  act:{type:"tap",item:"🌱",stay:"🌿",size:5,spots:[[56,8],[66,14],[76,6],[86,12],[94,6]],p:["Tanam 5 tunas di tanah yang subur!","Plant 5 sprouts in the rich soil!"]}},
+ {bg:"sawah",time:"day",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob"}),A("baby","🦕",44,12,6,{flip:1,anim:"hop"}),A("volc","🌋",80,30,12,{shadow:0})],
+  t:["Dini bertanya, “Kak, kenapa gunung api meletus?” Dido menjelaskan, “Jauh di bawah tanah, batu meleleh jadi sangat panas. Saat terlalu penuh, ia keluar!”","Dini asked, “Why do volcanoes erupt?” Dido explained, “Deep underground, rock melts and gets very hot. When it's too full, it bursts out!”"],
+  act:{type:"choice",q:["Batu yang meleleh dan keluar dari gunung api disebut apa?","What's the melted rock coming out of a volcano called?"],opts:[
+   {e:"🔥",t:["Lava","Lava"],ok:1},{e:"🧃",t:["Jus","Juice"],why:["Itu batu yang meleleh, bukan jus!","It's melted rock, not juice!"]},
+   {e:"❄️",t:["Salju","Snow"],why:["Lava sangat panas, bukan dingin.","Lava is very hot, not cold."]}]}},
+ {bg:"pre",time:"day",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob"}),A("baby","🦕",44,12,6,{flip:1,anim:"hop"})],
+  t:["Dido mengajari Dini tanda-tanda bahaya gunung api: tanah bergetar, asap tebal, dan bau belerang.","Dido taught Dini the warning signs of a volcano: shaking ground, thick smoke and a smell of sulphur."],
+  act:{type:"sort",q:["Tanda bahaya atau aman?","Danger sign or safe?"],bins:[{e:"⚠️",t:["Bahaya","Danger"]},{e:"😊",t:["Aman","Safe"]}],items:[
+   {e:"🌫️",t:["Asap tebal","Thick smoke"],b:0},{e:"🌸",t:["Bunga mekar","Flowers blooming"],b:1},{e:"📳",t:["Tanah bergetar","Ground shaking"],b:0},{e:"🦋",t:["Kupu-kupu terbang","Butterflies flying"],b:1}]}},
+ {bg:"meadow",time:"day",actors:[A("dido","🦕",30,12,13,{flip:1,anim:"bob"}),A("baby","🦕",44,12,6,{flip:1,anim:"bob"})],
+  t:["Manusia di Indonesia juga hidup dekat gunung api. Mereka punya petugas yang mengawasi gunung setiap hari dan membunyikan sirene kalau ada bahaya.","People in Indonesia live near volcanoes too. Special officers watch the mountains every day and sound a siren when there's danger."],
+  act:{type:"choice",q:["Kalau sirene berbunyi, apa yang dilakukan?","If the siren sounds, what do people do?"],opts:[
+   {e:"🚶",t:["Ikuti petugas ke tempat aman","Follow the officers to safety"],ok:1},{e:"📸",t:["Mendekat untuk foto","Go closer for a photo"],why:["Jangan mendekati gunung api yang aktif!","Never go near an active volcano!"]},
+   {e:"🛌",t:["Tetap tidur","Stay in bed"],why:["Sirene artinya harus segera pindah.","A siren means move to safety now."]}]}},
+ {bg:"sawah",time:"dusk",fx:"confetti",actors:[A("dido","🦕",36,12,14,{flip:1,anim:"hop"}),A("baby","🦕",54,12,7,{flip:1,anim:"hop"}),A("mama","🦕",14,12,20,{flip:1,anim:"bob"})],
+  t:["Kawanan Dido hidup bahagia di tanah yang subur. Alam bisa menakutkan, tapi juga memberi banyak kebaikan kalau kita menghormatinya.","Dido's herd lived happily on the rich land. Nature can be scary, but it gives us so much when we respect it."]}
  ]}
 ];
 
