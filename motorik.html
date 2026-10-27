@@ -132,6 +132,19 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
 .log span{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:800;background:rgba(247,233,204,.12)}
 .log span.y{background:var(--kelp);color:#063A22}
 
+/* ---------- challenge mode (age 6) ---------- */
+.chal{position:relative;border-radius:18px;overflow:hidden;margin-top:10px;background:#140C28;
+ border:1px solid rgba(247,233,204,.2)}
+.chal .screen{height:132px;display:grid;place-items:center;align-content:center;gap:2px;text-align:center;
+ transition:background .25s ease;padding:8px}
+.chal .screen .e{font-family:var(--emoji);font-size:46px;line-height:1.05}
+.chal .screen .t{font-family:'Fredoka',sans-serif;font-size:19px;font-weight:700;color:#04191F;line-height:1.2}
+.chal .screen .s{font-size:12.5px;font-weight:800;color:rgba(4,25,31,.72)}
+.chal .foot{display:flex;gap:10px;align-items:center;padding:8px 12px;background:rgba(0,0,0,.35)}
+.chal .foot .num{font-family:'Fredoka',sans-serif;font-size:26px;min-width:46px;text-align:center}
+.chal .bar{flex:1;height:10px;border-radius:99px;background:rgba(2,18,26,.6);overflow:hidden}
+.chal .bar i{display:block;height:100%;width:100%;background:var(--amber);transition:width .2s linear}
+
 @keyframes bob{50%{transform:translateY(-8%)}}
 @keyframes popin{from{transform:scale(.3);opacity:0}}
 @keyframes nope{20%{transform:translateX(-8%)}40%{transform:translateX(8%)}60%{transform:translateX(-5%)}80%{transform:translateX(5%)}}
@@ -224,6 +237,10 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
     { id: "runner", file: "runner/index.html", icon: "\uD83C\uDFC3", en: "Move & Learn Runner", idn: "Lari Sambil Belajar",
       note: "Run with your whole body: the water cycle, butterflies, sea life, wildlife and the food chain",
       tone: "#B5541C", group: "move" },
+    { id: "petualangan", file: "petualangan.html", icon: "\uD83D\uDE80", en: "Brain & Motor Lab", idn: "Lab Petualangan",
+      note: "Five challenge games for a six year old: draw a rocket track, keep the beat with both hands, " +
+            "build tangram mirrors, code Kancil through the forest, and run the sorting factory",
+      tone: "#0F7A6B", group: "move" },
     { id: "shalat", file: "islami/shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
       note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C", group: "islami" },
     { id: "doa", file: "islami/doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
@@ -493,6 +510,115 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
   }
 
   /* ============================================================
+     SKILLS  —  the executive function and motor radar
+     XP says how much was practised. This says which skills were
+     practised. Six readings, one per competency the challenge
+     games train, each topped out at 100 clean repetitions so a
+     five year old can reach the end of a bar in a few weeks.
+     ============================================================ */
+  var SKILLS = [
+    { id: "trace",    en: "Fine motor trace",   idn: "Motorik halus" },
+    { id: "rhythm",   en: "Bilateral rhythm",   idn: "Irama dua tangan" },
+    { id: "inhibit",  en: "Inhibitory control", idn: "Menahan diri" },
+    { id: "switch",   en: "Rule switching",     idn: "Ganti aturan" },
+    { id: "rotation", en: "Spatial rotation",   idn: "Rotasi ruang" },
+    { id: "gross",    en: "Gross motor time",   idn: "Gerak tubuh" }
+  ];
+  var SKILL_MAX = 100;   /* reps before a bar is full */
+
+  function sget() {
+    try { return JSON.parse(localStorage.getItem("super.skills") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function sset(o) { try { localStorage.setItem("super.skills", JSON.stringify(o)); } catch (e) {} }
+
+  function bumpSkill(id, n) {
+    if (!id) return null;
+    var s = sget();
+    var add = (n == null || isNaN(n)) ? 1 : Number(n);
+    s[id] = Math.max(0, Math.min(SKILL_MAX, (s[id] || 0) + add));
+    s.updated = new Date().toISOString().slice(0, 10);
+    sset(s);
+    return s[id];
+  }
+  function skillPct(id) { return Math.round(100 * Math.min(1, (sget()[id] || 0) / SKILL_MAX)); }
+  function skillList() {
+    var s = sget(), out = [];
+    for (var i = 0; i < SKILLS.length; i++) {
+      out.push({ id: SKILLS[i].id, en: SKILLS[i].en, idn: SKILLS[i].idn,
+                 reps: s[SKILLS[i].id] || 0, pct: skillPct(SKILLS[i].id) });
+    }
+    return out;
+  }
+  function skillReset() { try { localStorage.removeItem("super.skills"); } catch (e) {} }
+
+  /* Accuracy and reaction time per domain, kept beside the rep count. The
+     radar reads the reps; the parent view can read these when it wants the
+     quality of the practice, not just the volume. */
+  function logSkill(domain, accuracyPct, reactionMs) {
+    if (!domain) return null;
+    var s = sget();
+    var d = s.detail = s.detail || {};
+    var e = d[domain] || { n: 0, acc: 0, ms: 0 };
+    e.n++;
+    var acc = Math.max(0, Math.min(100, Number(accuracyPct) || 0));
+    var ms = Math.max(0, Number(reactionMs) || 0);
+    e.acc = (e.acc * (e.n - 1) + acc) / e.n;
+    e.ms = (e.ms * (e.n - 1) + ms) / e.n;
+    d[domain] = e;
+    sset(s);
+    return e;
+  }
+  function skillDetail() { return sget().detail || {}; }
+
+  /* ============================================================
+     STOP-MOTION  —  one shared 8 FPS sprite clock
+     Positions run at 60 FPS; drawings step at 8. The gap is what
+     makes a sprite read as a physical object instead of a vector,
+     and it is the look the age-6 plan asks for. If the family has
+     shot real four-frame photos, drawSprite slices them out of a
+     horizontal strip; until then the games draw their own frames.
+     ============================================================ */
+  var FRAME_MS = 125;                       /* 8 FPS */
+  function frameIndex(total, clock) {
+    total = total || 4;
+    var ms = clock == null ? ((typeof performance !== "undefined" ? performance.now() : Date.now())) : clock;
+    return Math.floor(ms / FRAME_MS) % total;
+  }
+  function drawSprite(ctx, stripImg, x, y, w, h, totalFrames, fps) {
+    var n = totalFrames || 4, rate = fps || 8;
+    if (!stripImg || !stripImg.width) return false;
+    var ms = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    var idx = Math.floor(ms / (1000 / rate)) % n;
+    var fw = stripImg.width / n;
+    ctx.drawImage(stripImg, idx * fw, 0, fw, stripImg.height, x, y, w, h);
+    return true;
+  }
+
+  /* ============================================================
+     TIERS  —  when to move a game up or down a level
+     Two clean wins promote, one round with three or more mistakes
+     steps back. Never mid-round, and never below 1 or above 3.
+     ============================================================ */
+  function tget() {
+    try { return JSON.parse(localStorage.getItem("super.tier") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function tset(o) { try { localStorage.setItem("super.tier", JSON.stringify(o)); } catch (e) {} }
+  function tierOf(gameId) { return tget()[gameId] || 1; }
+  function adjustTier(gameId, wonRound, mistakes) {
+    var t = tget(), cur = t[gameId] || 1;
+    t.clean = t.clean || {};
+    t.clean[gameId] = wonRound ? (t.clean[gameId] || 0) + 1 : 0;
+    if (wonRound && t.clean[gameId] >= 2 && cur < 3) { cur++; t.clean[gameId] = 0; }
+    else if (!wonRound && (mistakes || 0) >= 3 && cur > 1) { cur--; t.clean[gameId] = 0; }
+    t[gameId] = cur;
+    tset(t);
+    return cur;
+  }
+  function tierReset() { try { localStorage.removeItem("super.tier"); } catch (e) {} }
+
+  /* ============================================================
      THE STRIP  —  a Touch Bar style row of live, contextual keys
      ============================================================ */
   function mountBar(actions) {
@@ -659,6 +785,10 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,36px);margin:6px 0 
   S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
            unlockedZoo: unlockedZoo, petStage: petStage,
            reset: function () { pset({}); } };
+  S.skills = { DEFS: SKILLS, MAX: SKILL_MAX, list: skillList, bump: bumpSkill,
+               level: skillPct, log: logSkill, detail: skillDetail, reset: skillReset };
+  S.anim = { FRAME_MS: FRAME_MS, frameIndex: frameIndex, drawSprite: drawSprite };
+  S.tier = { get: tierOf, adjust: adjustTier, reset: tierReset };
 })(window);
 </script>
 <div class="app">
@@ -1323,18 +1453,82 @@ function openEx(ex){
     <button class="btn" id="exRead">🔈 ${T(["Bacakan","Read aloud"])}</button></div>
    <div class="why">💡 ${NM(ex.why[0])}<br><i>${NM(ex.why[1])}</i></div>
    <div class="safe">⚠️ ${T(["Selalu didampingi orang dewasa. Berhenti kalau anak lelah atau kesakitan.","Always supervised by a grown-up. Stop if he is tired or anything hurts."])}</div>
+   <button class="btn" id="exChal" style="margin-top:10px">🏆 ${T(["Mode Tantangan (Level 6 Tahun)","Challenge mode (age 6)"])}</button>
+   <div id="chal"></div>
    <button class="btn go" id="exDone" style="margin-top:10px">✅ ${T(["Selesai hari ini","Done for today"])}</button>
    <div style="margin-top:10px;font-weight:800">${T(["7 hari terakhir","The last 7 days"])}</div>
    <div class="log">${days.map(d=>`<span class="${(LOG[d]||[]).includes(ex.id)?"y":""}">${d.slice(8)}</span>`).join("")}</div>
   </div></div>`;
  $("exBack").onclick=()=>{clearInterval(timer);openList("gerak")};
  $("exRead").onclick=()=>say([ex.t].concat(ex.steps.map(s=>s[0])));
+ $("exChal").onclick=()=>startChallenge();
  if(ex.sec)$("exGo").onclick=()=>{clearInterval(timer);left=ex.sec;$("exNum").textContent=left;say([["Mulai!","Go!"]]);
   timer=setInterval(()=>{left--;$("exNum").textContent=left;if(left<=5&&left>0){tone(660,.1);}
    if(left<=0){clearInterval(timer);sfxWin();say([["Selesai! Hebat!","Finished! Well done!"]])}},1000)};
  else $("exRep").onclick=()=>{reps++;$("exNum").textContent=reps+" / "+ex.reps;sfxPop(reps%8);say([NUMW[Math.min(9,reps-1)]]);if(reps===ex.reps){sfxWin();confetti()}};
  $("exDone").onclick=()=>{const d=today();LOG[d]=LOG[d]||[];if(!LOG[d].includes(ex.id)){LOG[d].push(ex.id);LS.set("motorik.log",LOG);award(3,0)}
   confetti();sfxWin();openEx(ex)};
+}
+
+/* ============================================================
+   TANTANGAN PAHLAWAN GERAK  —  the age-6 upgrade for Tab 4
+   The same gross motor exercises, but as a sixty second circuit
+   with colour codes: green means frog jumps, blue means flamingo,
+   red means freeze. The rule changes under him, which is the whole
+   point: the body has to stop and re-plan, not just repeat.
+   ============================================================ */
+const CHAL_RULES=[
+ {c:"#5FE0A4",e:"🐸",t:["Lompat katak!","Frog jumps!"],s:["Sepuluh lompatan, mendarat dua kaki.","Ten jumps, landing on both feet."]},
+ {c:"#7FC8FF",e:"🦩",t:["Flamingo!","Flamingo!"],s:["Berdiri satu kaki dan tahan.","Stand on one leg and hold it."]},
+ {c:"#FF6B5B",e:"🗿",t:["Patung beku!","Statue freeze!"],s:["Diam. Jangan bergerak sama sekali.","Freeze. Do not move at all."]}
+];
+function skillBump(id,n){try{if(window.SUPER&&SUPER.skills)SUPER.skills.bump(id,n)}catch(e){}}
+function startChallenge(){
+ const box=$("chal");if(!box)return;
+ if(box.dataset.on==="1"){const s=$("chStop");if(s)s.click();return}
+ box.dataset.on="1";
+ const ROUND=10,ROUNDS=6;
+ let round=0,left=ROUND,timer=null;
+ box.innerHTML=`<div class="screen" id="chScreen">
+   <div class="e" id="chE">🏆</div><div class="t" id="chT"></div><div class="s" id="chS"></div></div>
+  <div class="foot"><div class="num" id="chNum">${ROUND}</div>
+   <div class="bar"><i id="chBar"></i></div>
+   <button class="btn small" id="chStop">⏹</button></div>`;
+ function paint(i){
+  const r=CHAL_RULES[i%CHAL_RULES.length];
+  $("chScreen").style.background=r.c;
+  $("chE").textContent=r.e;
+  $("chT").textContent=NM(S.lang==="en"?r.t[1]:r.t[0]);
+  $("chS").textContent=NM(S.lang==="en"?r.s[1]:r.s[0]);
+  $("chNum").textContent=ROUND;
+  $("chBar").style.width="100%";
+  left=ROUND;
+  tone(i%3===2?300:520,.2,"triangle",.15);
+  say([r.t,r.s]);
+ }
+ paint(0);
+ timer=setInterval(()=>{
+  left--;
+  $("chNum").textContent=Math.max(0,left);
+  $("chBar").style.width=Math.max(0,(left/ROUND)*100)+"%";
+  if(left<=3&&left>0)tone(700,.1,"sine",.12);
+  if(left<=0){
+   tone(880,.4,"sine",.14);
+   skillBump("gross",1);
+   round++;
+   if(round>=ROUNDS){
+    clearInterval(timer);
+    box.dataset.on="";
+    award(6,0,1);
+    confetti();sfxWin();
+    box.innerHTML=`<div class="screen" style="background:#FFB247"><div class="e">🏆</div>
+      <div class="t">${NM("Pahlawan gerak!")}</div>
+      <div class="s">${T([ROUNDS+" putaran selesai.","All "+ROUNDS+" rounds done."])}</div></div>`;
+    say([["Pahlawan gerak! Hebat!","Movement hero! Well done!"]]);
+   } else paint(round);
+  }
+ },1000);
+ $("chStop").onclick=()=>{clearInterval(timer);box.dataset.on="";box.innerHTML="";try{speechSynthesis.cancel()}catch(e){}};
 }
 
 /* ============================================================

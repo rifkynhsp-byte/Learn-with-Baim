@@ -25,6 +25,7 @@ the names are changeable in Settings.
 | `dongeng.html` | Interactive animal stories in Bahasa Indonesia and English | 14 stories, 191 pages |
 | `dongeng.html?set=siklus` | Siklus Alam: nature, cycles and environmental ethics from the beginning | 17 adventures, 200 pages |
 | `motorik.html` | Motor and sensory: OT pre-writing worksheets, stickers, sensory games, body movement | 10-step program, daily cycle, 9 levels, 10 patterns, 7 games, 12 exercises |
+| `petualangan.html` | Lab Petualangan: five age-6 challenge games — rocket physics, two-hand rhythm, tangram mirrors, Kancil code, sorting factory | 5 games, 3 tiers each, skills radar |
 | `berhitung.html` | Counting through real food webs | 12 levels, endless questions |
 | `menulis.html` | Handwriting and drawing with the Apple Pencil | 246 items, 18 levels |
 | `runner/` | Lari Sambil Belajar: a camera runner played with the whole body, teaching the water cycle, butterflies, sea life, wildlife and the food chain | 5 adventures, 30 steps |
@@ -39,8 +40,9 @@ new questions forever. At 40 answers a day that is many months of material.
 ## One app
 
 The home page groups everything under four headings: **Belajar** (the
-learning games), **Bergerak** (the runner), **Rumah Islami** (shalat, doa,
-Juz 30, the prophets, and the Islamic home page) and **Koleksi**. All of it
+learning games), **Bergerak** (the runner and Lab Petualangan), **Rumah
+Islami** (shalat, doa, Juz 30, the prophets, and the Islamic home page) and
+**Koleksi**. All of it
 shares one set of names, one XP total, one streak, one pet and one zoo, so a
 surah memorised or a water cycle run counts toward the same animals as a word
 read. The Koleksi parent view shows XP from the runner and from the Islamic
@@ -286,6 +288,42 @@ week 2 (yoga poses, gym ball with stickers, crawling while pushing a ball,
 stacking cups lying down, Superman pose, crawling for stickers), plus six
 extras. Each has steps, the equipment, why it helps, a timer or rep counter,
 and a seven-day log for parents.
+
+**Mode Tantangan**: every exercise carries a sixty second challenge circuit.
+The screen goes green, blue or red, and the colour is the instruction: green
+means frog jumps, blue means flamingo balance, red means freeze like a statue.
+The rule changes under him every ten seconds, which is the point. Six rounds,
+a bell at each change, and XP and a gross-motor reading at the end.
+
+## Lab Petualangan — the age-6 brain and motor lab
+
+`petualangan.html` is the section built for the year Baim turns six: the point
+where worksheets stop being enough and he wants a game. Five games, three
+tiers each (TK, the transition year, and SD Kelas 1), and nothing ever locked.
+
+| Game | What he does | Skill it trains |
+|---|---|---|
+| 🚀 **Insinyur Jalur Roket** | Draws a track across a canyon with his finger, then watches the rover roll along it. The rover speeds down slopes, slows uphill and falls where the ink stops. Draw through two number-bond rings that add up to the target to fire the turbo. | Causal physics, velocity control, number bonds to 10 and 20 |
+| 🥁 **Irama Silang** | Four lanes, two hands. Green circles are a plain tap, purple stars need the other hand, blue diamonds show a number (left for even, right for odd), and red octagons are crab bombs that must not be touched. | Bilateral rhythm, midline crossing, inhibitory control |
+| 🔷 **Bengkel Tangram** | Drags, turns and flips the five core polygons onto a ghost shape. Tier 3 turns the board into a laser mirror: he moves the block on the left and the reflection has to land on the target. | Mental rotation, part-whole geometry, symmetry |
+| 🦌 **Misi Kancil Kode** | Lines up four to eight command cards (maju, kiri, kanan, lompat, ulangi 2×) and presses JALANKAN. The card that breaks glows amber, so he debugs one step instead of starting over. Tier 3 plans Kancil and Kura-kura together. | Working memory, sequencing, debugging |
+| 🏭 **Pabrik Sortir Kilat** | Sorts crates on a belt into three chutes. Every twenty seconds the siren flashes purple and the rule changes: colour to shape, syllables to numbers, English to "shift one". | Cognitive flexibility, set-shifting, reaction speed |
+
+Every game pays XP through `common.js` like the rest of the app, feeds the
+zoo, and records what it trained in the **motor and mind radar** on the Koleksi
+parents tab: fine motor trace, bilateral rhythm, inhibitory control, rule
+switching, spatial rotation and gross motor time.
+
+Two rules keep it kind. A quiz gate or a wrong lane costs the combo and the
+bonus, never the run. And the tier follows the child: two clean wins in a row
+offer to move him up, three or more mistakes in a round offer to move him down.
+
+The look follows the visual spec: a warm cream `#FFFDF7` canvas instead of
+glare-white, deep navy `#1E293B` ink, and four semantic action colours — green
+`#10B981` to go, red `#EF4444` to stop, purple `#8B5CF6` when the rule flips,
+amber `#F59E0B` when a step needs attention. Characters step at 8 FPS while
+their positions run at 60, the stop-motion trick that makes a vector rover feel
+like a toy.
 
 
 ## Berhitung — counting through food webs

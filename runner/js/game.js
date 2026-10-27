@@ -94,6 +94,18 @@ const FIRST_WALL = 70;     // metres before the first letter wall
 const WALL_EVERY = 120;
 const WALL_LETTERS = ['T', 'Y', 'O', 'X', 'L', 'A'];
 
+// Quiz gates: a sum or a syllable, answered by stepping into the lane that
+// carries the right card. Only in an adventure, so free runs stay a pure
+// movement course.
+const FIRST_QUIZ = 120;    // metres before the first quiz gate
+const QUIZ_EVERY = 230;
+const SYL_WORDS = [
+  { a: 'ku', b: 'da' }, { a: 'ro', b: 'ti' }, { a: 'bo', b: 'la' },
+  { a: 'me', b: 'ja' }, { a: 'bu', b: 'ku' }, { a: 'pa', b: 'di' },
+  { a: 'ma', b: 'ta' }, { a: 'sa', b: 'pi' },
+];
+const SYL_POOL = ['ba', 'bi', 'bu', 'ka', 'ki', 'la', 'ma', 'na', 'pa', 'ra', 'sa', 'ta'];
+
 // Learning adventures.
 const FIRST_LESSON = 30;   // metres before the first lesson stop
 const LESSON_EVERY = 55;   // between lesson stops
@@ -184,6 +196,7 @@ export class RunnerGame {
     this.speedMultiplier = SPEED_PRESETS.medium.multiplier;
     this.gatesEnabled = true;
     this.wallsEnabled = true;
+    this.quizEnabled = true;   // three-lane answer gates in adventures
     this.adventure = null;     // a learning adventure from lessons.js, or null
     this.lang = 'both';        // 'id', 'en' or 'both', for signs drawn on the track
     this.resize();
@@ -230,6 +243,7 @@ export class RunnerGame {
     this.pendingCrash = null;
     this.gate = null;
     this.walls = [];
+    this.quizGates = [];
     this.scenery = [];
     this.sinceProp = 0;
     this.combo = 0;
@@ -239,13 +253,15 @@ export class RunnerGame {
     this.theme = this._zones()[0];
     this.nextGateAt = FIRST_GATE;
     this.nextWallAt = FIRST_WALL;
+    this.nextQuizAt = FIRST_QUIZ;
     this.player = {
       lane: 0, x: 0, y: 0, vy: 0,
       ducking: false, duckTimer: 0,
       lastJumpAt: -99, lastDuckAt: -99, lastAirborneAt: -99,
     };
     this.stats = { jumps: 0, ducks: 0, lanes: 0, reaches: 0, poses: 0, letters: 0,
-                   learned: 0, quizRight: 0, quizTotal: 0 };
+                   learned: 0, quizRight: 0, quizTotal: 0,
+                   gateRight: 0, gateTotal: 0 };
     this.hearts = HEARTS;
     this.lesson = {
       index: 0,        // the step of the adventure coming up next
@@ -301,6 +317,7 @@ export class RunnerGame {
     this._advanceWorld(dt);
     this._collide(dt);
     this._resolveWalls(input);
+    this._resolveQuizGates();
     if (this.running) this._resolveLesson();
     this.render();
   }
@@ -417,6 +434,14 @@ export class RunnerGame {
       this._spawnWall();
       return;
     }
+    // A quiz gate: step into the lane holding the right answer.
+    if (this.quizEnabled && this.adventure && this.distance >= this.nextQuizAt &&
+        !this.lesson.stop && !this.lesson.quiz &&
+        !this.walls.some((w) => !w.resolved) &&
+        !this.quizGates.some((g) => !g.resolved)) {
+      this._spawnQuizGate();
+      return;
+    }
     this.sinceSpawn += this.speed * dt;
     if (this.sinceSpawn < this.nextGap) return;
     this.sinceSpawn = 0;
@@ -455,6 +480,87 @@ export class RunnerGame {
     this.obstacles = this.obstacles.filter((o) => o.z < FAR - 14);
     this.sinceSpawn = -14;
     this.onEvent(`Make a ${letter}!`, { wall: letter });
+  }
+
+  /**
+   * A three-lane answer gate. The question is a sum or the first syllable of a
+   * word; the three lanes carry three cards and only one is right, so the
+   * child answers by stepping. It is a decision made with the whole body,
+   * which is what makes it stick at six.
+   */
+  _spawnQuizGate() {
+    const q = this._makeQuiz();
+    this.quizGates.push({ ...q, z: FAR, resolved: false, correct: false, touched: false });
+    this.nextQuizAt += QUIZ_EVERY + Math.random() * 70;
+    this.onEvent(q.prompt, { quizGate: true, options: q.options });
+  }
+
+  _makeQuiz() {
+    if (Math.random() < 0.6) {
+      const a = 1 + Math.floor(Math.random() * 5);
+      const b = 1 + Math.floor(Math.random() * 4);
+      const sum = a + b;
+      const slot = Math.floor(Math.random() * 3);
+      const options = [];
+      const used = new Set([sum]);
+      for (let i = 0; i < 3; i++) {
+        if (i === slot) { options.push(String(sum)); continue; }
+        let v;
+        do {
+          v = Math.max(1, sum + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 4)));
+        } while (used.has(v));
+        used.add(v);
+        options.push(String(v));
+      }
+      return { prompt: `${a} + ${b} = ?`, options, lane: slot - 1, kind: 'math' };
+    }
+    const w = SYL_WORDS[Math.floor(Math.random() * SYL_WORDS.length)];
+    const slot = Math.floor(Math.random() * 3);
+    const options = [];
+    const used = new Set([w.b]);
+    for (let i = 0; i < 3; i++) {
+      if (i === slot) { options.push(w.b.toUpperCase()); continue; }
+      let s;
+      do { s = SYL_POOL[Math.floor(Math.random() * SYL_POOL.length)]; } while (used.has(s));
+      used.add(s);
+      options.push(s.toUpperCase());
+    }
+    return { prompt: `${w.a.toUpperCase()} - ... ?`, options, lane: slot - 1, kind: 'syl' };
+  }
+
+  /**
+   * A quiz gate is never fatal, like a letter wall: a wrong lane costs the
+   * combo and the bonus, not the run. The lane he is standing in when the
+   * gate arrives is the answer he gave.
+   */
+  _resolveQuizGates() {
+    for (const g of this.quizGates) {
+      if (g.resolved) continue;
+      const rel = g.z - PLAYER_Z;
+      if (rel > 2.2) continue;
+      if (Math.abs(this.player.x - g.lane) <= 0.5) g.touched = true;
+      if (rel > -0.7) continue;
+      g.resolved = true;
+      g.correct = g.touched;
+      this.stats.gateTotal++;
+      if (g.correct) {
+        this.stats.gateRight++;
+        this._addCombo();
+        this.coins += 4 * this.multiplier;
+        this.flash = 0.8;
+        this.sfx.shield();
+        this._popup('BENAR!', '#7ddf9a');
+        this.onEvent('Correct!', { quizGate: true });
+        this._burst({ lane: g.lane, z: PLAYER_Z, y: 1.2 }, '#7ddf9a', 22);
+      } else {
+        this._breakCombo();
+        this.shake = 0.45;
+        this.sfx.block();
+        this._popup('Coba lagi!', '#f0a868');
+        this.onEvent('Not that lane!', { quizGate: true });
+      }
+    }
+    this.quizGates = this.quizGates.filter((g) => g.z > -6);
   }
 
   /** Trees, buildings, cacti: whatever this zone has beside the track. */
@@ -576,6 +682,7 @@ export class RunnerGame {
     const d = this.speed * dt;
     for (const o of this.obstacles) o.z -= d;
     for (const w of this.walls) w.z -= d;
+    for (const g of this.quizGates) g.z -= d;
     if (this.lesson.stop) this.lesson.stop.z -= d;
     if (this.lesson.quiz) this.lesson.quiz.z -= d;
     for (const p of this.scenery) p.z -= d;
@@ -949,6 +1056,7 @@ export class RunnerGame {
       ...this.scenery.map((p) => ({ z: p.z, draw: () => this._drawScenery(p) })),
       ...this.obstacles.map((o) => ({ z: o.z, draw: () => this._drawObstacle(o) })),
       ...this.walls.map((w) => ({ z: w.z, draw: () => this._drawWall(w) })),
+      ...this.quizGates.map((g) => ({ z: g.z, draw: () => this._drawQuizGate(g) })),
       ...this.pickups.filter((p) => !p.taken).map((p) => ({ z: p.z, draw: () => this._drawPickup(p) })),
       { z: PLAYER_Z, draw: () => this._drawPlayer() },
     ];
@@ -1133,6 +1241,62 @@ export class RunnerGame {
       // A lesson wall shows who is making the shape: the starfish, the eagle.
       const tag = this.project(-1.2, WALL.h1 - 0.45, z);
       this._emoji(wall.emoji, tag.x, tag.y, Math.min(0.7 * this.unit * tag.s, this.h * 0.14));
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Three panels, one per lane, each carrying a card. The correct lane is the
+   * only one that stays open; the others are solid, so the choice is read at a
+   * glance from far down the track.
+   */
+  _drawQuizGate(g) {
+    const exit = PLAYER_Z - 1.2;
+    if (g.z > FAR + 6 || g.z < exit) return;
+    const alpha = Math.min(1, (g.z - exit) / 1.2);
+    const z = Math.max(g.z, -0.8);
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    for (const lane of LANES) {
+      const x0 = lane - 0.47, x1 = lane + 0.47;
+      const tl = this.project(x0, 2.15, z);
+      const tr = this.project(x1, 2.15, z);
+      const br = this.project(x1, 0, z);
+      const bl = this.project(x0, 0, z);
+      const open = lane === g.lane;
+      ctx.fillStyle = open
+        ? 'rgba(125,223,154,.16)'
+        : (g.resolved ? 'rgba(125,223,154,.10)' : 'rgba(142,92,240,.62)');
+      quad(ctx, tl, tr, br, bl);
+      ctx.strokeStyle = open ? '#7ddf9a' : 'rgba(201,167,255,.9)';
+      ctx.lineWidth = Math.max(2, 4 * tl.s);
+      ctx.stroke();
+
+      const mid = this.project(lane, 1.05, z);
+      const size = Math.min(this.unit * 0.40 * mid.s, this.h * 0.085);
+      if (size < 8) continue;
+      ctx.font = `bold ${Math.round(size)}px system-ui, "Segoe UI", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#FFFBF2';
+      ctx.fillText(g.options[lane + 1], mid.x, mid.y);
+    }
+
+    // The question itself, on a board over the middle of the gate.
+    const top = this.project(0, 2.52, z);
+    const tsize = Math.min(this.unit * 0.32 * top.s, this.h * 0.07);
+    if (tsize > 9) {
+      ctx.font = `bold ${Math.round(tsize)}px system-ui, "Segoe UI", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const w = ctx.measureText(g.prompt).width;
+      const padX = tsize * 0.45, padY = tsize * 0.30;
+      ctx.fillStyle = 'rgba(4,20,28,.86)';
+      ctx.fillRect(top.x - w / 2 - padX, top.y - tsize / 2 - padY, w + padX * 2, tsize + padY * 2);
+      ctx.fillStyle = '#FFD166';
+      ctx.fillText(g.prompt, top.x, top.y);
     }
     ctx.restore();
   }

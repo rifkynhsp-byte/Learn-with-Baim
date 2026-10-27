@@ -362,6 +362,10 @@ button{font-family:inherit}
     { id: "runner", file: "runner/index.html", icon: "\uD83C\uDFC3", en: "Move & Learn Runner", idn: "Lari Sambil Belajar",
       note: "Run with your whole body: the water cycle, butterflies, sea life, wildlife and the food chain",
       tone: "#B5541C", group: "move" },
+    { id: "petualangan", file: "petualangan.html", icon: "\uD83D\uDE80", en: "Brain & Motor Lab", idn: "Lab Petualangan",
+      note: "Five challenge games for a six year old: draw a rocket track, keep the beat with both hands, " +
+            "build tangram mirrors, code Kancil through the forest, and run the sorting factory",
+      tone: "#0F7A6B", group: "move" },
     { id: "shalat", file: "islami/shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
       note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C", group: "islami" },
     { id: "doa", file: "islami/doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
@@ -631,6 +635,115 @@ button{font-family:inherit}
   }
 
   /* ============================================================
+     SKILLS  —  the executive function and motor radar
+     XP says how much was practised. This says which skills were
+     practised. Six readings, one per competency the challenge
+     games train, each topped out at 100 clean repetitions so a
+     five year old can reach the end of a bar in a few weeks.
+     ============================================================ */
+  var SKILLS = [
+    { id: "trace",    en: "Fine motor trace",   idn: "Motorik halus" },
+    { id: "rhythm",   en: "Bilateral rhythm",   idn: "Irama dua tangan" },
+    { id: "inhibit",  en: "Inhibitory control", idn: "Menahan diri" },
+    { id: "switch",   en: "Rule switching",     idn: "Ganti aturan" },
+    { id: "rotation", en: "Spatial rotation",   idn: "Rotasi ruang" },
+    { id: "gross",    en: "Gross motor time",   idn: "Gerak tubuh" }
+  ];
+  var SKILL_MAX = 100;   /* reps before a bar is full */
+
+  function sget() {
+    try { return JSON.parse(localStorage.getItem("super.skills") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function sset(o) { try { localStorage.setItem("super.skills", JSON.stringify(o)); } catch (e) {} }
+
+  function bumpSkill(id, n) {
+    if (!id) return null;
+    var s = sget();
+    var add = (n == null || isNaN(n)) ? 1 : Number(n);
+    s[id] = Math.max(0, Math.min(SKILL_MAX, (s[id] || 0) + add));
+    s.updated = new Date().toISOString().slice(0, 10);
+    sset(s);
+    return s[id];
+  }
+  function skillPct(id) { return Math.round(100 * Math.min(1, (sget()[id] || 0) / SKILL_MAX)); }
+  function skillList() {
+    var s = sget(), out = [];
+    for (var i = 0; i < SKILLS.length; i++) {
+      out.push({ id: SKILLS[i].id, en: SKILLS[i].en, idn: SKILLS[i].idn,
+                 reps: s[SKILLS[i].id] || 0, pct: skillPct(SKILLS[i].id) });
+    }
+    return out;
+  }
+  function skillReset() { try { localStorage.removeItem("super.skills"); } catch (e) {} }
+
+  /* Accuracy and reaction time per domain, kept beside the rep count. The
+     radar reads the reps; the parent view can read these when it wants the
+     quality of the practice, not just the volume. */
+  function logSkill(domain, accuracyPct, reactionMs) {
+    if (!domain) return null;
+    var s = sget();
+    var d = s.detail = s.detail || {};
+    var e = d[domain] || { n: 0, acc: 0, ms: 0 };
+    e.n++;
+    var acc = Math.max(0, Math.min(100, Number(accuracyPct) || 0));
+    var ms = Math.max(0, Number(reactionMs) || 0);
+    e.acc = (e.acc * (e.n - 1) + acc) / e.n;
+    e.ms = (e.ms * (e.n - 1) + ms) / e.n;
+    d[domain] = e;
+    sset(s);
+    return e;
+  }
+  function skillDetail() { return sget().detail || {}; }
+
+  /* ============================================================
+     STOP-MOTION  —  one shared 8 FPS sprite clock
+     Positions run at 60 FPS; drawings step at 8. The gap is what
+     makes a sprite read as a physical object instead of a vector,
+     and it is the look the age-6 plan asks for. If the family has
+     shot real four-frame photos, drawSprite slices them out of a
+     horizontal strip; until then the games draw their own frames.
+     ============================================================ */
+  var FRAME_MS = 125;                       /* 8 FPS */
+  function frameIndex(total, clock) {
+    total = total || 4;
+    var ms = clock == null ? ((typeof performance !== "undefined" ? performance.now() : Date.now())) : clock;
+    return Math.floor(ms / FRAME_MS) % total;
+  }
+  function drawSprite(ctx, stripImg, x, y, w, h, totalFrames, fps) {
+    var n = totalFrames || 4, rate = fps || 8;
+    if (!stripImg || !stripImg.width) return false;
+    var ms = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    var idx = Math.floor(ms / (1000 / rate)) % n;
+    var fw = stripImg.width / n;
+    ctx.drawImage(stripImg, idx * fw, 0, fw, stripImg.height, x, y, w, h);
+    return true;
+  }
+
+  /* ============================================================
+     TIERS  —  when to move a game up or down a level
+     Two clean wins promote, one round with three or more mistakes
+     steps back. Never mid-round, and never below 1 or above 3.
+     ============================================================ */
+  function tget() {
+    try { return JSON.parse(localStorage.getItem("super.tier") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function tset(o) { try { localStorage.setItem("super.tier", JSON.stringify(o)); } catch (e) {} }
+  function tierOf(gameId) { return tget()[gameId] || 1; }
+  function adjustTier(gameId, wonRound, mistakes) {
+    var t = tget(), cur = t[gameId] || 1;
+    t.clean = t.clean || {};
+    t.clean[gameId] = wonRound ? (t.clean[gameId] || 0) + 1 : 0;
+    if (wonRound && t.clean[gameId] >= 2 && cur < 3) { cur++; t.clean[gameId] = 0; }
+    else if (!wonRound && (mistakes || 0) >= 3 && cur > 1) { cur--; t.clean[gameId] = 0; }
+    t[gameId] = cur;
+    tset(t);
+    return cur;
+  }
+  function tierReset() { try { localStorage.removeItem("super.tier"); } catch (e) {} }
+
+  /* ============================================================
      THE STRIP  —  a Touch Bar style row of live, contextual keys
      ============================================================ */
   function mountBar(actions) {
@@ -797,6 +910,10 @@ button{font-family:inherit}
   S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
            unlockedZoo: unlockedZoo, petStage: petStage,
            reset: function () { pset({}); } };
+  S.skills = { DEFS: SKILLS, MAX: SKILL_MAX, list: skillList, bump: bumpSkill,
+               level: skillPct, log: logSkill, detail: skillDetail, reset: skillReset };
+  S.anim = { FRAME_MS: FRAME_MS, frameIndex: frameIndex, drawSprite: drawSprite };
+  S.tier = { get: tierOf, adjust: adjustTier, reset: tierReset };
 })(window);
 </script>
 <div class="app">
