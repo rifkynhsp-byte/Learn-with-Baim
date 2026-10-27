@@ -1073,9 +1073,13 @@ GAMES[0].mount = function (root, lv) {
   const tunnels = lv >= 2
     ? [{ x: W * 0.44, top: H * 0.10, bottom: H * 0.34 }, { x: W * 0.62, top: H * 0.30, bottom: H * 0.56 }]
     : [];
-  const inkMax = (gapB - gapA) * (lv === 1 ? 2.6 : lv === 2 ? 2.2 : 1.9);
+  /* The ink budget is measured against the gap he actually has to cross, not
+     the canyon width: a straight line from the pad to the crate is already
+     749 units, so the old 1.9x canyon figure left almost no room to wobble. */
+  const inkMax = (goalX - startX) * (lv === 1 ? 2.1 : lv === 2 ? 1.8 : 1.55);
 
-  let path = [], drawing = false, ink = 0, phase = "draw", wrongs = 0, turbo = false;
+  let path = [], stroke = [], drawing = false, continuing = false, ink = 0;
+  let phase = "draw", wrongs = 0, turbo = false;
   let rover = null, raf = 0, last = 0, gotStars = 0, passedGates = [], rubber = false;
 
   root.innerHTML = `
@@ -1295,18 +1299,35 @@ GAMES[0].mount = function (root, lv) {
       ctx.fillText("⭐", s.x * SX, s.y * SY);
     });
 
-    /* the drawn track: steel blue for rigid ink, magenta for bouncy ink */
-    if (path.length > 1) {
-      const inkColor = rubber ? "#EC4899" : "#0EA5E9";
+    /* the drawn track: steel blue for rigid ink, magenta for bouncy ink.
+       While a stroke is in progress it is drawn as it is being drawn. */
+    const inkColor = rubber ? "#EC4899" : "#0EA5E9";
+    const drawLine = (line) => {
+      if (line.length < 2) return;
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.strokeStyle = rubber ? "rgba(236,72,153,.22)" : "rgba(14,165,233,.18)";
       ctx.lineWidth = 18 * Math.min(SX, SY);
-      ctx.beginPath(); ctx.moveTo(path[0].x * SX, path[0].y * SY);
-      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x * SX, path[i].y * SY);
+      ctx.beginPath();
+      ctx.moveTo(line[0].x * SX, line[0].y * SY);
+      for (let i = 1; i < line.length; i++) ctx.lineTo(line[i].x * SX, line[i].y * SY);
       ctx.stroke();
-      ctx.strokeStyle = inkColor; ctx.lineWidth = 5 * Math.min(SX, SY);
+      ctx.strokeStyle = inkColor;
+      ctx.lineWidth = 5 * Math.min(SX, SY);
       ctx.stroke();
-    }
+    };
+    drawLine(path);
+    if (drawing) drawLine(stroke);
+
+    /* the launch pad, so it is obvious where a track has to begin */
+    ctx.beginPath();
+    ctx.arc(startX * SX, groundY * SY, 15 * Math.min(SX, SY), 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(16,185,129,.16)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(16,185,129,.85)";
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([5, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
     drawRover(rover || { x: startX, y: groundY });
   }
@@ -1325,40 +1346,91 @@ GAMES[0].mount = function (root, lv) {
     return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
   };
 
-  function addPoint(pt) {
-    if (pt.x < 0 || pt.x > W) return;
-    if (!path.length) { path.push({ x: Math.max(pt.x, startX), y: pt.y }); return; }
-    const lastP = path[path.length - 1];
-    if (pt.x <= lastP.x + 0.5) return;              /* the track is a function of x */
-    const d = Math.hypot(pt.x - lastP.x, pt.y - lastP.y);
-    if (ink + d > inkMax) return;
-    ink += d;
-    path.push({ x: pt.x, y: Math.max(20, Math.min(H - 20, pt.y)) });
+  /* ---------- drawing ----------
+     A stroke can go in any direction. Points are collected as drawn and only
+     turned into a left-to-right track when the finger lifts, so dragging right
+     to left works as well as left to right, and two separate strokes glue
+     together when the second one starts where the first one stopped. */
+  function clampPoint(p) {
+    return { x: Math.max(0, Math.min(W, p.x)), y: Math.max(20, Math.min(H - 20, p.y)) };
+  }
+  /* the track has to be a function of x: sort, then collapse near-equal x */
+  function normalise(points) {
+    const sorted = points.slice().sort((a, b) => a.x - b.x);
+    const out = [];
+    for (const p of sorted) {
+      const prev = out[out.length - 1];
+      if (prev && Math.abs(p.x - prev.x) < 3) { prev.y = p.y; continue; }
+      out.push({ x: p.x, y: p.y });
+    }
+    return out;
+  }
+  /* Always leave the pad and, when the stroke gets close to the far cliff,
+     always reach the crate. Short of the goal is a real fail: he sees it. */
+  function anchor(pts) {
+    if (!pts.length) return pts;
+    if (pts[0].x > startX + 2) pts.unshift({ x: startX, y: groundY });
+    const end = pts[pts.length - 1];
+    if (end.x > goalX - 130 && end.x < goalX - 2) pts.push({ x: goalX, y: groundY });
+    return pts;
+  }
+
+  function commitStroke() {
+    if (!stroke.length) return;
+    const pts = normalise(stroke);
+    path = (continuing && path.length) ? normalise(path.concat(pts)) : pts;
+    path = anchor(path);
+    ink = 0;
+    for (let i = 1; i < path.length; i++) {
+      ink += Math.hypot(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y);
+    }
+    judgeTrack();
   }
 
   c.addEventListener("pointerdown", (e) => {
     if (phase !== "draw") return;
-    drawing = true;
-    path = []; ink = 0; gotStars = 0; passedGates = [];
     const p = toWorld(e);
-    path.push({ x: Math.min(Math.max(p.x, startX), goalX), y: p.y });
+    const tip = path[path.length - 1];
+    continuing = !!(tip && Math.hypot(p.x - tip.x, p.y - tip.y) < 80);
+    if (!continuing) {
+      path = []; ink = 0; gotStars = 0; passedGates = []; turbo = false;
+    }
+    drawing = true;
+    stroke = [clampPoint(p)];
     try { c.setPointerCapture(e.pointerId); } catch (er) {}
     updHud(); draw();
   });
   c.addEventListener("pointermove", (e) => {
     if (!drawing || phase !== "draw") return;
-    const p = toWorld(e);
-    if (!path.length) return;
-    addPoint(p);
+    const q = clampPoint(toWorld(e));
+    const lastP = stroke[stroke.length - 1];
+    if (!lastP) { stroke.push(q); return; }
+    const d = Math.hypot(q.x - lastP.x, q.y - lastP.y);
+    if (d < 3) return;
+    if (ink + d > inkMax) {
+      hint([["Tintanya habis. Tekan Hapus lalu gambar lebih pendek.", "Out of ink. Tap Erase and draw a shorter line."]]);
+      return;
+    }
+    ink += d;
+    stroke.push(q);
     updHud(); draw();
   });
-  const endStroke = () => { if (!drawing) return; drawing = false; judgeTrack(); };
+  const endStroke = () => {
+    if (!drawing) return;
+    drawing = false;
+    commitStroke();
+    stroke = [];
+    draw();
+  };
   c.addEventListener("pointerup", endStroke);
   c.addEventListener("pointercancel", endStroke);
 
   /* First look at the line: which gates and stars it touches. */
   function judgeTrack() {
-    if (path.length < 2) return;
+    if (path.length < 2) {
+      hint([["Gambar dari roket di kiri sampai kotak hadiah di kanan.", "Draw from the rocket on the left to the present on the right."]]);
+      return;
+    }
     gotStars = 0;
     stars.forEach((s) => {
       s.got = path.some((p) => Math.hypot(p.x - s.x, p.y - s.y) < 34);
@@ -1372,14 +1444,21 @@ GAMES[0].mount = function (root, lv) {
       return false;
     })();
     updHud(); draw();
-    if (turbo) { sfxBell(); hint([["Gerbangnya berjumlah " + target + "! Turbo menyala!", "Those gates add up to " + target + "! Turbo on!"]]); }
-    else hint([["Tekan Jalankan.", "Press Run."]]);
+    const end = path[path.length - 1];
+    if (end.x < goalX - 4) {
+      hint([["Jalurnya belum sampai ke seberang. Tarik terus sampai kotak hadiah.", "The track stops before the far side. Keep drawing to the present."]]);
+    } else if (turbo) {
+      hint([["Gerbangnya berjumlah " + target + "! Turbo menyala!", "Those gates add up to " + target + "! Turbo on!"]]);
+    } else {
+      hint([["Tekan Jalankan.", "Press Run."]]);
+    }
   }
 
   function reset() {
-    phase = "draw"; path = []; ink = 0; rover = null; gotStars = 0; passedGates = []; turbo = false;
-    drawing = false; $("rkGo").disabled = false; updHud(); draw();
-    hint([["Gambar jalur dari tanah ke tanah, lewat gerbang berjumlah " + target + ".", "Draw a track from ground to ground, through gates that add up to " + target + "."]]);
+    phase = "draw"; path = []; stroke = []; ink = 0; rover = null;
+    gotStars = 0; passedGates = []; turbo = false; drawing = false; continuing = false;
+    $("rkGo").disabled = false; updHud(); draw();
+    hint([["Mulai dari roket, tarik lewat gerbang berjumlah " + target + ", sampai kotak hadiah.", "Start at the rocket, draw through gates that add up to " + target + ", and reach the present."]]);
   }
 
   $("rkRub").onclick = () => { stop(); reset(); };
@@ -1418,6 +1497,13 @@ GAMES[0].mount = function (root, lv) {
 
   function step(dt) {
     const r = rover;
+    if (r.air) {
+      r.vy += 1500 * dt;
+      r.x += r.vx * dt;
+      r.y += r.vy * dt;
+      if (r.y > H + 60) r.dead = true;
+      return;
+    }
     let y = pathY(r.x);
     if (y == null && rubber) {
       /* bouncy ink bridges a small break: the nearest ink within 70px holds
@@ -1430,11 +1516,10 @@ GAMES[0].mount = function (root, lv) {
       if (best && bd < 70) { y = best.y - 6; r.vx = Math.max(r.vx, 240); }
     }
     if (y == null) {
-      /* the ink ran out: he is in the air now, and gravity has him */
+      /* the ink stopped under him: he is in the air now, and gravity has him */
       r.air = true;
-      r.vy += 1500 * dt;
-      r.x += r.vx * dt; r.y += r.vy * dt;
-      if (r.y > H + 60) { r.dead = true; }
+      r.reason = (path.length && path[path.length - 1].x < goalX - 10) ? "short" : "fell";
+      r.vy = 60;
       return;
     }
     /* on the track: slope decides the speed */
@@ -1445,6 +1530,9 @@ GAMES[0].mount = function (root, lv) {
     const cap = turbo ? 620 : 420;
     r.vx = Math.max(70, Math.min(cap, r.vx));
     r.x += r.vx * dt;
+    /* Reaching the crate wins even if this step overshot the last drop of ink:
+       falling into the void one pixel before the flag is not a real mistake. */
+    if (r.x >= goalX - 2) { r.won = true; r.x = goalX; r.y = groundY; return; }
     const ny = pathY(r.x);
     r.y = ny == null ? y : ny;
     /* tunnels: the line has to go through the gap */
@@ -1459,7 +1547,6 @@ GAMES[0].mount = function (root, lv) {
     stars.forEach((s) => {
       if (!s.got && Math.hypot(r.x - s.x, r.y - s.y) < 34) { s.got = true; gotStars++; sfxPop(gotStars); }
     });
-    if (r.x >= goalX) { r.won = true; r.x = goalX; r.y = groundY; }
   }
 
   function endRun() {
@@ -1477,7 +1564,9 @@ GAMES[0].mount = function (root, lv) {
     sfxWrong();
     const why = r.reason === "tunnel"
       ? ["Jalurnya menabrak dinding angin. Coba lewat celahnya.", "The track hit a wind tunnel wall. Try through the gap."]
-      : ["Roketnya jatuh ke jurang. Jalurnya harus menyambung sampai seberang.", "The rocket fell into the canyon. The track has to reach the other side."];
+      : r.reason === "short"
+        ? ["Jalurnya berhenti sebelum seberang. Tarik terus sampai kotak hadiah.", "The track stopped before the far side. Draw all the way to the present."]
+        : ["Roketnya jatuh ke jurang. Jalurnya harus menyambung sampai seberang.", "The rocket fell into the canyon. The track has to reach the other side."];
     hint(why);
     say([why]);
     $("rkGo").disabled = false;
