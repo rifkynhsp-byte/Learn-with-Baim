@@ -434,3 +434,69 @@ test('fruit pays the multiplier', () => {
   game.update(1 / 60, { lane: 0, ducking: false, jump: false, reach: false });
   assert.equal(game.coins - before, 3);
 });
+
+test('a quiz gate offers three different cards, one per lane', () => {
+  const game = newGame();
+  for (let i = 0; i < 300; i++) {
+    const q = game._makeQuiz();
+    assert.equal(q.options.length, 3);
+    assert.equal(new Set(q.options).size, 3, 'no two lanes may carry the same card');
+    assert.ok([-1, 0, 1].includes(q.lane), 'the answer sits in one of the three lanes');
+    assert.ok(q.prompt.length > 0);
+  }
+});
+
+test('stepping into the answer lane scores the quiz gate', () => {
+  const game = newGame();
+  game.start();
+  game.obstacles = [];
+  const gate = { prompt: '2 + 3 = ?', options: ['9', '5', '7'], lane: 0, kind: 'math',
+                 z: PLAYER_Z + 2, resolved: false, correct: false, touched: false };
+  game.quizGates.push(gate);
+  game.player.lane = 0;
+  game.player.x = 0;
+  for (let f = 0; f < 120 && !gate.resolved; f++) {
+    game.update(1 / 60, { lane: 0, ducking: false, jump: false, reach: false });
+  }
+  assert.equal(gate.resolved, true);
+  assert.equal(gate.correct, true);
+  assert.equal(game.stats.gateTotal, 1);
+  assert.equal(game.stats.gateRight, 1);
+});
+
+test('a quiz gate in the wrong lane costs the combo, never the run', () => {
+  const game = newGame();
+  game.start();
+  game.obstacles = [];
+  for (let i = 0; i < 10; i++) game._addCombo();
+  const gate = { prompt: '2 + 3 = ?', options: ['9', '5', '7'], lane: 0, kind: 'math',
+                 z: PLAYER_Z + 2, resolved: false, correct: false, touched: false };
+  game.quizGates.push(gate);
+  game.player.lane = -1;
+  game.player.x = -1;
+  for (let f = 0; f < 120 && !gate.resolved; f++) {
+    game.update(1 / 60, { lane: -1, ducking: false, jump: false, reach: false });
+  }
+  assert.equal(gate.resolved, true);
+  assert.equal(gate.correct, false);
+  assert.equal(game.stats.gateRight, 0);
+  assert.equal(game.combo, 0, 'a wrong answer breaks the combo');
+  assert.equal(game.running, true, 'and never ends the run');
+});
+
+test('quiz gates only appear inside an adventure', () => {
+  const game = newGame();
+  game.start();
+  game.distance = 400;
+  game.lesson.stop = null;
+  game.lesson.quiz = null;
+  game.lesson.nextAt = 1e9;          // keep the lesson stop out of the way
+  game.nextQuizAt = 120;
+  game._spawn(1 / 60);
+  assert.equal(game.quizGates.length, 0, 'a free run stays a pure movement course');
+
+  game.adventure = { steps: [] };
+  game.nextQuizAt = 120;
+  game._spawn(1 / 60);
+  assert.equal(game.quizGates.length, 1, 'an adventure gets the question gate');
+});

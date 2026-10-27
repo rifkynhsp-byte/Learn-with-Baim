@@ -104,6 +104,21 @@ in time is how a child decides the game is against them. The shape only has to
 be held *somewhere* during the approach, not at the exact moment of impact, and
 a Y counts for an X and vice versa.
 
+### Quiz gates
+
+In an adventure, the track also asks questions. A three-panel gate spans the
+lanes, each panel carrying a card, and the only way through is to be standing
+in the lane with the right one. The question is either a sum (`6 + 4 = ?`) or
+the first syllable of a word (`KU - … ?`), spoken as it appears and written on
+a board above the gate.
+
+Like the letter walls, a quiz gate is never fatal: the wrong lane costs the
+streak and the four-fruit bonus, and the run carries on. Gates only appear in
+an adventure, never in a free run, and never while a lesson stop or a letter
+wall is already on the track. They are counted separately from the lesson
+questions, so `stats.gateRight` / `stats.gateTotal` sit beside
+`stats.quizRight` / `stats.quizTotal`.
+
 ### Streaks
 
 Clearing things without a mistake builds a streak, and every fifth one raises

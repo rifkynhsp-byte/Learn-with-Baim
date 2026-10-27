@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Lab Petualangan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--sand:#F7E9CC;--bone:#FFFBF2;--amber:#FFB247;--coral:#FF6B5B;--kelp:#5FE0A4;--ink:#2D2410;
+ --sky1:#12796B;--sky2:#0A4A52;--sky3:#04222E;--glow:#6FE3C8;
+ /* semantic tokens from the age-6 visual spec */
+ --paper:#FFFDF7;--ink-navy:#1E293B;--go:#10B981;--nogo:#EF4444;--switch:#8B5CF6;
+ --boost:#F59E0B;--steel:#0EA5E9;--bounce:#EC4899;
+ --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overscroll-behavior:none}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--bone);display:flex;flex-direction:column;
+ min-height:100dvh;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+ background:radial-gradient(130% 80% at 50% -14%,var(--glow) 0%,transparent 56%),
+ linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 46%,var(--sky3) 100%);background-attachment:fixed}
+button{font-family:inherit}
+small{display:block}
+.app{flex:1;display:flex;flex-direction:column;max-width:1400px;width:100%;margin:0 auto;padding:8px 14px;min-height:0}
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.brand{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;color:var(--sand);margin-right:auto}
+.brand span{color:var(--amber)}
+.seg{display:flex;gap:3px;background:rgba(4,26,32,.5);padding:4px;border-radius:999px;border:1px solid rgba(247,233,204,.16)}
+.seg button{font-family:'Fredoka',sans-serif;font-weight:600;font-size:13.5px;color:rgba(255,251,242,.6);background:none;border:0;padding:6px 10px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--amber);color:#40230A}
+.icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:18px;flex:none;text-decoration:none;
+ background:rgba(247,233,204,.1);border:1px solid rgba(247,233,204,.2);color:var(--bone);cursor:pointer}
+main{flex:1;min-height:0;display:flex;flex-direction:column}
+.scroll{overflow-y:auto;padding:4px 2px 26px;flex:1}
+h1{font-family:'Fredoka',sans-serif;font-size:clamp(23px,4vw,34px);margin:4px 0 2px;color:var(--sand)}
+.sub{margin:0 0 14px;color:rgba(255,251,242,.78);font-size:14.5px;line-height:1.5;max-width:70ch}
+.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(255px,1fr))}
+.gcard{position:relative;border:0;text-align:left;cursor:pointer;border-radius:22px;overflow:hidden;color:var(--bone);padding:0;
+ background:#08333A;box-shadow:0 14px 30px rgba(0,0,0,.34);transition:transform .18s;display:flex;flex-direction:column}
+.gcard:hover{transform:translateY(-4px)}
+.gcard .art{height:96px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--emoji);font-size:44px;
+ background:linear-gradient(150deg,rgba(255,178,71,.28),rgba(95,224,164,.12))}
+.gcard .art i{font-style:normal;animation:bob 2.6s ease-in-out infinite}
+.gcard .art i:nth-child(2){animation-delay:.6s}
+.gcard .txt{flex:1;padding:12px 15px 14px;background:rgba(0,0,0,.3)}
+.gcard h3{font-family:'Fredoka',sans-serif;margin:0;font-size:19px}
+.gcard .en{font-size:12.5px;color:rgba(255,251,242,.66)}
+.gcard .nt{font-size:12.5px;margin-top:6px;line-height:1.45;color:rgba(255,251,242,.85)}
+.gcard .sk{position:absolute;right:10px;top:10px;font-size:12px;background:rgba(4,26,32,.7);border:1px solid rgba(247,233,204,.2);
+ border-radius:999px;padding:3px 9px;color:var(--sand)}
+.note{background:rgba(255,178,71,.14);border:1px solid rgba(255,178,71,.4);border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.55;margin:10px 0 0}
+.playhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 6px}
+.playhead .ttl{font-family:'Fredoka',sans-serif;font-size:17px;margin-right:auto}
+.playhead .ttl small{font-size:12.5px;color:rgba(255,251,242,.7)}
+.btn{font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px;border-radius:999px;padding:10px 18px;cursor:pointer;white-space:nowrap;
+ background:rgba(247,233,204,.13);color:var(--bone);border:1px solid rgba(247,233,204,.24)}
+.btn.go{background:var(--amber);color:#40230A;border-color:var(--amber)}
+.btn.small{padding:7px 13px;font-size:13.5px}
+.btn:disabled{opacity:.45;cursor:default}
+.stageBox{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;touch-action:none;
+ background:linear-gradient(180deg,#0B3C4E,#062028);box-shadow:0 16px 36px rgba(0,0,0,.4)}
+.stageBox canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:4;max-width:94%;text-align:center;
+ background:rgba(4,26,32,.86);color:#FFF6DF;border-radius:999px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:14.5px;pointer-events:none}
+.hint small{font-family:'Nunito',sans-serif;font-size:12px;opacity:.8}
+.meter{height:8px;border-radius:99px;background:rgba(4,26,32,.6);overflow:hidden;margin:6px 0 4px}
+.meter i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--kelp),var(--amber));transition:width .2s}
+.done{position:absolute;inset:0;z-index:9;display:none;place-items:center;background:rgba(4,20,26,.62);padding:12px}
+.done.on{display:grid}
+.done .box{background:var(--bone);color:var(--ink);border-radius:24px;padding:18px 24px;text-align:center;max-width:420px;
+ animation:popin .45s cubic-bezier(.2,1.6,.4,1)}
+.done .stars{font-size:34px;letter-spacing:4px}
+.done h2{font-family:'Fredoka',sans-serif;margin:2px 0 4px;font-size:22px}
+.done p{margin:2px 0 12px;font-weight:800;color:#6A5A3A;line-height:1.45}
+.done .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.done .btn{background:#EFE3C8;color:#3A2F16;border-color:#D8C7A3}
+.done .btn.go{background:var(--amber)}
+.hud{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:'Fredoka',sans-serif;font-size:14px;margin-bottom:6px}
+.pill{background:rgba(247,233,204,.12);border:1px solid rgba(247,233,204,.22);border-radius:999px;padding:5px 12px}
+.pill.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}
+.pill.bad{background:rgba(255,107,91,.3);border-color:rgba(255,107,91,.6)}
+
+/* ---------- rhythm ---------- */
+.lanes{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px;
+ border-radius:22px;background:linear-gradient(180deg,#0B3C4E,#062028);overflow:hidden;touch-action:none}
+.lane{position:relative;border-radius:14px;background:rgba(247,233,204,.07);border:1px solid rgba(247,233,204,.12);overflow:hidden}
+.lane.lit{background:rgba(255,178,71,.34)}
+.lane .judge{position:absolute;left:6%;right:6%;bottom:66px;height:4px;border-radius:9px;background:rgba(255,178,71,.55)}
+.note{position:absolute;left:50%;width:60px;height:60px;margin-left:-30px;display:grid;place-items:center;
+ font-family:var(--emoji);font-size:24px;font-weight:800;color:#062028;box-shadow:0 6px 12px rgba(0,0,0,.3);will-change:transform}
+/* the four shapes of the age-6 spec: circle, diamond, star, octagon */
+.note.tap{background:var(--go);border-radius:50%}
+.note.num{background:var(--steel);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.note.cross{background:var(--switch);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.note.bomb{background:var(--nogo);clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+.note.gone{transition:transform .12s,opacity .12s;opacity:0}
+.pads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.pad{font-family:var(--emoji);font-size:26px;height:64px;border-radius:16px;cursor:pointer;border:1px solid rgba(247,233,204,.22);
+ background:rgba(247,233,204,.12);color:var(--bone);display:grid;place-items:center;gap:0}
+.pad small{font-family:'Fredoka',sans-serif;font-size:11px;opacity:.75}
+.pad:active,.pad.on{background:var(--amber);color:#40230A}
+.carry{position:absolute;left:0;top:0;right:0;text-align:center;z-index:5;pointer-events:none;
+ font-family:'Fredoka',sans-serif;font-size:clamp(17px,3vw,26px);text-shadow:0 3px 10px rgba(0,0,0,.55)}
+.carry small{font-size:.5em;opacity:.85}
+
+/* ---------- tangram ---------- */
+.tangram{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;touch-action:none;
+ background:radial-gradient(circle at 50% 40%,#0E4A56,#04191F)}
+.tangram svg.ghost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.piece{position:absolute;cursor:grab;touch-action:none;transform-origin:50% 50%;will-change:transform;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.piece svg{display:block;width:100%;height:100%}
+.piece.sel{filter:drop-shadow(0 0 10px #FFB247) drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.piece.locked{cursor:default;filter:drop-shadow(0 0 8px #5FE0A4)}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+
+/* ---------- maze ---------- */
+.mazeWrap{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.maze{position:relative;flex:1 1 320px;min-width:280px;aspect-ratio:1/1;max-height:56vh;margin:0 auto;border-radius:18px;overflow:hidden;
+ background:linear-gradient(160deg,#0E4A56,#062028);display:grid;gap:2px;padding:6px}
+.cell{position:relative;border-radius:6px;background:rgba(95,224,164,.08);display:grid;place-items:center;font-family:var(--emoji);font-size:min(5vw,22px)}
+.cell.wall{background:rgba(247,233,204,.06)}
+.cell.rock{background:rgba(140,124,92,.5)}
+.cell.water{background:rgba(80,160,220,.28)}
+.cell.switch{background:rgba(255,178,71,.28);box-shadow:inset 0 0 0 2px rgba(255,178,71,.6)}
+.cell.actor{background:rgba(95,224,164,.34)}
+.cell .who{position:absolute;font-family:var(--emoji);line-height:1}
+.cmdbar{flex:0 0 100%;min-height:56px;border-radius:16px;border:1px dashed rgba(247,233,204,.3);padding:6px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;background:rgba(4,26,32,.45)}
+.cmdbar .c{font-family:'Fredoka',sans-serif;font-size:13px;background:rgba(247,233,204,.14);border:1px solid rgba(247,233,204,.24);
+ border-radius:10px;padding:6px 9px;cursor:pointer;display:flex;gap:4px;align-items:center}
+.cmdbar .c.active{background:var(--amber);color:#40230A;transform:scale(1.15);box-shadow:0 0 0 2px rgba(95,224,164,.7)}
+.cmdbar .c.warn{background:#F59E0B;color:#40230A;animation:nudge .4s ease-in-out 3}
+.cmdbar .c.badglow{background:var(--coral);color:#fff}
+.cmdbar .c em{font-style:normal;font-family:var(--emoji)}
+.tray2{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.tray2 .c{font-family:'Fredoka',sans-serif;font-size:13.5px;background:rgba(247,233,204,.12);border:1px solid rgba(247,233,204,.24);
+ border-radius:12px;padding:8px 11px;cursor:pointer;display:flex;gap:5px;align-items:center;color:var(--bone)}
+.tray2 .c em{font-style:normal;font-family:var(--emoji);font-size:16px}
+
+/* ---------- factory ---------- */
+.factory{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;
+ background:linear-gradient(180deg,#0B3C4E,#062028);touch-action:none}
+.rulebar{display:flex;gap:8px;align-items:center;justify-content:center;padding:8px;font-family:'Fredoka',sans-serif;font-size:clamp(15px,2.6vw,20px);
+ background:rgba(4,26,32,.55);border-bottom:1px solid rgba(247,233,204,.14)}
+.rulebar.flash{animation:siren .5s ease-in-out 4}
+.belt{position:relative;flex:1;min-height:80px;margin:0 10px;border-radius:14px;background:repeating-linear-gradient(90deg,rgba(247,233,204,.09) 0 22px,rgba(247,233,204,.04) 22px 44px);overflow:hidden}
+.belt .item{position:absolute;top:50%;width:68px;height:68px;margin-top:-34px;border-radius:16px;display:grid;place-items:center;
+ font-family:var(--emoji);font-size:30px;color:#062028;box-shadow:0 6px 12px rgba(0,0,0,.35);will-change:left}
+.belt .item b{font-family:'Fredoka',sans-serif;font-size:19px}
+.chutes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}
+.chute{border-radius:16px;border:2px solid rgba(247,233,204,.28);background:rgba(247,233,204,.1);color:var(--bone);
+ font-family:'Fredoka',sans-serif;font-size:clamp(13px,2.2vw,17px);padding:10px 6px;cursor:pointer;min-height:64px;line-height:1.25}
+.chute em{display:block;font-style:normal;font-family:var(--emoji);font-size:22px}
+.chute.ok{background:var(--kelp);color:#063A22}
+.chute.no{background:var(--coral);color:#3A0F08}
+
+@keyframes bob{50%{transform:translateY(-8%)}}
+@keyframes popin{from{transform:scale(.3);opacity:0}}
+@keyframes siren{50%{background:rgba(139,92,246,.85)}}
+@keyframes nudge{50%{transform:scale(1.15) translateX(3px)}}
+@keyframes fallDown{to{transform:translateY(140%) rotate(540deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+.confetti{position:fixed;top:-20px;z-index:90;pointer-events:none;width:10px;height:14px;border-radius:2px;animation:fall 2.4s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+  <div class="brand">Lab <span>Petualangan</span></div>
+  <div class="seg" id="tiers">
+   <button data-lv="1" class="on">TK</button>
+   <button data-lv="2">Transisi</button>
+   <button data-lv="3">SD 1</button>
+  </div>
+  <button class="icon" id="lang" title="Bahasa / Language">🇮🇩</button>
+  <button class="icon" id="snd" title="Sound">🔊</button>
+  <a class="icon" href="index.html" title="Home">🏠</a>
+ </div>
+ <main id="main"></main>
+</div>
+<script>
+/* ============================================================
+   common.js  —  shared by every game in the super app
+   Names, settings, navigation, credits.
+   ============================================================ */
+(function (global) {
+
+  var DEFAULTS = {
+    child: "Baim",        // the learner
+    dad: "Papi Rifky",
+    mum: "Mommy Keke",
+    sib: "Ade Yahya",
+    dadShort: "Papi",
+    mumShort: "Mommy",
+    childShort: "Baim",
+    sibShort: "Ade"
+  };
+
+  function load() {
+    try {
+      var raw = JSON.parse(localStorage.getItem("super.names") || "{}");
+      var out = {};
+      for (var k in DEFAULTS) out[k] = (raw[k] && String(raw[k]).trim()) || DEFAULTS[k];
+      return out;
+    } catch (e) { return Object.assign({}, DEFAULTS); }
+  }
+  function save(n) {
+    try { localStorage.setItem("super.names", JSON.stringify(n)); } catch (e) {}
+    N = load();
+  }
+  var N = load();
+
+  /* Replace the built-in family names anywhere they appear in text or speech.
+     Longest first so "Papi Rifky" wins over "Papi". */
+  var MAP = [
+    ["Papi Rifky", "dad"], ["Mommy Keke", "mum"], ["Ade Yahya", "sib"],
+    ["Rifky", "dadShort"], ["Keke", "mumShort"], ["Yahya", "sibShort"],
+    ["Mommy", "mumShort"], ["Papi", "dadShort"], ["Baim", "child"]
+  ];
+  function P(s) {
+    if (s == null) return s;
+    s = String(s);
+    for (var i = 0; i < MAP.length; i++) {
+      var from = MAP[i][0], to = N[MAP[i][1]];
+      if (to && to !== from) s = s.split(from).join(to);
+    }
+    return s;
+  }
+
+  /* short forms derived from a full name: "Papi Rifky" -> "Papi" */
+  function shorten(full, fallback) {
+    if (!full) return fallback;
+    var bits = String(full).trim().split(/\s+/);
+    return bits[0] || fallback;
+  }
+
+  var GAMES = [
+    { id: "membaca", file: "membaca.html", icon: "\uD83D\uDCD6", en: "Reading", idn: "Membaca",
+      note: "Bahasa Indonesia, metode suku kata", tone: "#0C556C" },
+    { id: "english", file: "english.html", icon: "\uD83D\uDDE3\uFE0F", en: "English", idn: "Bahasa Inggris",
+      note: "Cambridge Starters & Movers", tone: "#2E7A55" },
+    { id: "ensiklopedia", file: "ensiklopedia.html", icon: "\uD83E\uDD81", en: "Encyclopedia", idn: "Ensiklopedia",
+      note: "Animals, Latin names, science, stories", tone: "#7A4A22" },
+    { id: "dongeng", file: "dongeng.html", icon: "\uD83E\uDD95", en: "Animal Stories", idn: "Dongeng Hewan",
+      note: "Interactive tales of Kancil, deer, dinosaurs and Komodo", tone: "#2F6B3F" },
+    { id: "siklus", file: "dongeng.html?set=siklus", icon: "\uD83C\uDF0D", en: "Nature Cycles", idn: "Siklus Alam",
+      note: "Water, carbon, methane, food chains, climate, energy, oceans and wildlife", tone: "#1F5F8A" },
+    { id: "motorik", file: "motorik.html", icon: "\uD83E\uDD38", en: "Motor & Sensory", idn: "Motorik & Sensori",
+      note: "Pre-writing worksheets, sticker patterns, sensory games, body movement", tone: "#6B3E9A" },
+    { id: "berhitung", file: "berhitung.html", icon: "\uD83D\uDD22", en: "Counting", idn: "Berhitung",
+      note: "Food webs, adding and taking away", tone: "#5A3E8A" },
+    { id: "menulis", file: "menulis.html", icon: "\u270F\uFE0F", en: "Writing", idn: "Menulis",
+      note: "Trace letters, numbers and words", tone: "#8A3552" },
+    { id: "runner", file: "runner/index.html", icon: "\uD83C\uDFC3", en: "Move & Learn Runner", idn: "Lari Sambil Belajar",
+      note: "Run with your whole body: the water cycle, butterflies, sea life, wildlife and the food chain",
+      tone: "#B5541C", group: "move" },
+    { id: "petualangan", file: "petualangan.html", icon: "\uD83D\uDE80", en: "Brain & Motor Lab", idn: "Lab Petualangan",
+      note: "Five challenge games for a six year old: draw a rocket track, keep the beat with both hands, " +
+            "build tangram mirrors, code Kancil through the forest, and run the sorting factory",
+      tone: "#0F7A6B", group: "move" },
+    { id: "shalat", file: "islami/shalat.html", icon: "\uD83E\uDDCE", en: "Prayer, step by step", idn: "Shalat",
+      note: "92 steps with Arabic, meaning and audio", tone: "#1F6E4C", group: "islami" },
+    { id: "doa", file: "islami/doa.html", icon: "\uD83E\uDD32", en: "Everyday duas", idn: "Doa Harian",
+      note: "20 duas for waking, eating and travelling", tone: "#0C556C", group: "islami" },
+    { id: "juz30", file: "islami/juz30.html", icon: "\uD83D\uDCD6", en: "Memorising Juz 30", idn: "Hafalan Juz 30",
+      note: "37 surahs, listen and follow along", tone: "#7A4A22", group: "islami" },
+    { id: "nabi", file: "islami/nabi.html", icon: "\u2B50", en: "Stories of 25 prophets", idn: "Kisah 25 Nabi",
+      note: "Who they were and what they teach us", tone: "#5A3E8A", group: "islami" },
+    { id: "islami", file: "islami/index.html", icon: "\uD83D\uDD4C", en: "Islamic Home", idn: "Rumah Islami",
+      note: "All of the above in one place, with progress and the recitation checker", tone: "#2F6B3F", group: "islami" },
+    { id: "koleksi", file: "koleksi.html", icon: "\uD83E\uDD81", en: "Zoo & Pets", idn: "Koleksi",
+      note: "Animals to collect, pets that grow, progress for parents", tone: "#1F6E4C", group: "zoo" }
+  ];
+
+  /* The hub groups the cards under these headings, in this order. Games with
+     no group are the core learning games. */
+  var GROUPS = [
+    { id: "learn",  en: "Learn",           idn: "Belajar" },
+    { id: "move",   en: "Move and learn",  idn: "Bergerak" },
+    { id: "islami", en: "Islamic studies", idn: "Rumah Islami" },
+    { id: "zoo",    en: "Zoo and progress", idn: "Koleksi" }
+  ];
+
+  var CREDITS = "Created with love and care by Papi Rifky and Mommy Keke " +
+                "for beloved Abang Baim and Ade Yahya.";
+
+  var CURRICULUM = [
+    ["Cambridge Pre A1 Starters / A1 Movers", "English vocabulary and listening papers"],
+    ["Cambridge Primary English & Science", "progression of comprehension and enquiry"],
+    ["NSW Early Stage 1 and Stage 1 (Australia)", "phonics, number sense, handwriting"],
+    ["Kurikulum Merdeka PAUD & SD (Indonesia)", "calistung, IPAS, Profil Pelajar Pancasila"],
+    ["Metode Suku Kata & SAS", "Indonesian syllable reading method"]
+  ];
+
+  /* a back button injected into any game page */
+  function mountBack(title) {
+    if (document.getElementById("superbar")) { if (title) document.title = P(title); return; }
+    var a = document.createElement("a");
+    a.href = "index.html";
+    a.className = "super-back";
+    a.setAttribute("aria-label", "Back to the menu");
+    a.innerHTML = "\u2190";
+    document.body.appendChild(a);
+    var css = document.createElement("style");
+    css.textContent =
+      ".super-back{position:fixed;left:10px;bottom:10px;z-index:95;width:44px;height:44px;" +
+      "border-radius:50%;display:grid;place-items:center;font-size:22px;text-decoration:none;" +
+      "background:rgba(4,34,46,.72);color:#FFFBF2;border:1px solid rgba(247,233,204,.28);" +
+      "box-shadow:0 6px 18px rgba(2,18,26,.45)}" +
+      ".super-back:hover{background:rgba(4,34,46,.92)}" +
+      "@media (min-aspect-ratio:1/1){.super-back{left:8px;bottom:8px;width:40px;height:40px}}";
+    document.head.appendChild(css);
+    if (title) document.title = P(title);
+  }
+
+  global.SUPER = {
+    names: function () { return N; },
+    defaults: DEFAULTS,
+    save: save,
+    reset: function () { try { localStorage.removeItem("super.names"); } catch (e) {} N = load(); },
+    P: P,
+    shorten: shorten,
+    GAMES: GAMES,
+    GROUPS: GROUPS,
+    CREDITS: CREDITS,
+    CURRICULUM: CURRICULUM,
+    mountBack: mountBack
+  };
+})(window);
+
+/* ============================================================
+   PROGRESS: xp, grade bands, the zoo and the pets
+   ============================================================ */
+(function (global) {
+  var S = global.SUPER;
+
+  /* Thresholds assume roughly 40 answers a day. Early bands sit on level 1-2
+     work (about 4 XP an answer), later bands on level 6+ work (about 18).
+     Kindy A to Kindy B is around two weeks of real practice, not two days. */
+  var GRADES = [
+    { xp: 0,      id: "kindy-a", label: "Kindy A",         note: "getting started" },
+    { xp: 2500,   id: "kindy-b", label: "Kindy B",         note: "letters, sounds, counting to 10" },
+    { xp: 7000,   id: "prep",    label: "Preparatory",     note: "blending, first words, writing" },
+    { xp: 15000,  id: "g1",      label: "Primary Grade 1", note: "reading sentences, adding and taking away" },
+    { xp: 28000,  id: "g2",      label: "Primary Grade 2", note: "comprehension, groups of animals" },
+    { xp: 46000,  id: "g3",      label: "Primary Grade 3", note: "reasoning, food webs, longer writing" },
+    { xp: 70000,  id: "g4",      label: "Primary Grade 4", note: "science vocabulary, Latin names" },
+    { xp: 100000, id: "g5",      label: "Primary Grade 5", note: "systems, ethics, history" },
+    { xp: 140000, id: "g6",      label: "Primary Grade 6", note: "independent reading and writing" }
+  ];
+
+  /* 50 animals to collect. The cost rises steeply so the rare ones
+     really are rare. Kangaroo and koala are the last two. */
+  var ZOO = [
+    ["ant","\uD83D\uDC1C","Ant","Semut",40],
+    ["fish","\uD83D\uDC1F","Fish","Ikan",45],
+    ["chicken","\uD83D\uDC13","Chicken","Ayam",55],
+    ["duck","\uD83E\uDD86","Duck","Bebek",65],
+    ["cat","\uD83D\uDC08","Cat","Kucing",75],
+    ["dog","\uD83D\uDC15","Dog","Anjing",90],
+    ["rabbit","\uD83D\uDC30","Rabbit","Kelinci",110],
+    ["butterfly","\uD83E\uDD8B","Butterfly","Kupu-kupu",130],
+    ["bee","\uD83D\uDC1D","Bee","Lebah",150],
+    ["frog","\uD83D\uDC38","Frog","Katak",180],
+    ["snail","\uD83D\uDC0C","Snail","Siput",210],
+    ["cow","\uD83D\uDC04","Cow","Sapi",240],
+    ["goat","\uD83D\uDC10","Goat","Kambing",290],
+    ["horse","\uD83D\uDC0E","Horse","Kuda",340],
+    ["sheep","\uD83D\uDC11","Sheep","Domba",400],
+    ["bird","\uD83D\uDC26","Bird","Burung",470],
+    ["owl","\uD83E\uDD89","Owl","Burung hantu",560],
+    ["turtle","\uD83D\uDC22","Turtle","Penyu",650],
+    ["crab","\uD83E\uDD80","Crab","Kepiting",770],
+    ["shrimp","\uD83E\uDD90","Shrimp","Udang",910],
+    ["squid","\uD83E\uDD91","Squid","Cumi",1050],
+    ["octopus","\uD83D\uDC19","Octopus","Gurita",1250],
+    ["snake","\uD83D\uDC0D","Snake","Ular",1500],
+    ["lizard","\uD83E\uDD8E","Lizard","Kadal",1750],
+    ["monkey","\uD83D\uDC12","Monkey","Monyet",2050],
+    ["deer","\uD83E\uDD8C","Deer","Rusa",2450],
+    ["fox","\uD83E\uDD8A","Fox","Rubah",2850],
+    ["boar","\uD83D\uDC17","Wild boar","Babi hutan",3400],
+    ["penguin","\uD83D\uDC27","Penguin","Penguin",4000],
+    ["peacock","\uD83E\uDD9A","Peacock","Merak",4700],
+    ["parrot","\uD83E\uDD9C","Parrot","Nuri",5550],
+    ["eagle","\uD83E\uDD85","Eagle","Elang",6550],
+    ["dolphin","\uD83D\uDC2C","Dolphin","Lumba-lumba",7700],
+    ["shark","\uD83E\uDD88","Shark","Hiu",9100],
+    ["whale","\uD83D\uDC0B","Whale","Paus",10500],
+    ["crocodile","\uD83D\uDC0A","Crocodile","Buaya",12500],
+    ["zebra","\uD83E\uDD93","Zebra","Zebra",15000],
+    ["camel","\uD83D\uDC2A","Camel","Unta",17500],
+    ["buffalo","\uD83D\uDC03","Buffalo","Kerbau",20500],
+    ["hippo","\uD83E\uDD9B","Hippopotamus","Kuda nil",24500],
+    ["rhino","\uD83E\uDD8F","Rhinoceros","Badak",28500],
+    ["giraffe","\uD83E\uDD92","Giraffe","Jerapah",34000],
+    ["elephant","\uD83D\uDC18","Elephant","Gajah",40000],
+    ["gorilla","\uD83E\uDD8D","Gorilla","Gorila",47000],
+    ["orangutan","\uD83E\uDDA7","Orangutan","Orangutan",55500],
+    ["lion","\uD83E\uDD81","Lion","Singa",65500],
+    ["tiger","\uD83D\uDC05","Tiger","Harimau",77000],
+    ["panda","\uD83D\uDC3C","Giant panda","Panda",90500],
+    ["kangaroo","\uD83E\uDD98","Kangaroo","Kanguru",107000],
+    ["koala","\uD83D\uDC28","Koala","Koala",126000]
+  ].map(function (r) { return { id: r[0], emo: r[1], en: r[2], idn: r[3], xp: r[4] }; });
+
+  /* pets grow up as the xp goes in */
+  var PETS = [
+    { id: "cat", en: "Cat", idn: "Kucing", stages: [
+      { emo: "\uD83D\uDC31", en: "Kitten", xp: 0 },
+      { emo: "\uD83D\uDC08", en: "Young cat", xp: 450 },
+      { emo: "\uD83D\uDC08\u200D\u2B1B", en: "Grown cat", xp: 1500 },
+      { emo: "\uD83D\uDC06", en: "Big wild cat", xp: 3600 } ] },
+    { id: "chick", en: "Chicken", idn: "Ayam", stages: [
+      { emo: "\uD83E\uDD5A", en: "Egg", xp: 0 },
+      { emo: "\uD83D\uDC23", en: "Hatching", xp: 270 },
+      { emo: "\uD83D\uDC24", en: "Chick", xp: 780 },
+      { emo: "\uD83D\uDC14", en: "Hen", xp: 1860 },
+      { emo: "\uD83D\uDC13", en: "Rooster", xp: 4200 } ] },
+    { id: "frog", en: "Frog", idn: "Katak", stages: [
+      { emo: "\uD83E\uDEB1", en: "Eggs in the pond", xp: 0 },
+      { emo: "\uD83D\uDC1B", en: "Tadpole", xp: 330 },
+      { emo: "\uD83D\uDC38", en: "Young frog", xp: 1020 },
+      { emo: "\uD83D\uDC0A", en: "Big pond friend", xp: 2700 } ] },
+    { id: "tree", en: "Tree", idn: "Pohon", stages: [
+      { emo: "\uD83C\uDF30", en: "Seed", xp: 0 },
+      { emo: "\uD83C\uDF31", en: "Sprout", xp: 240 },
+      { emo: "\uD83E\uDEB4", en: "Young tree", xp: 900 },
+      { emo: "\uD83C\uDF33", en: "Big tree", xp: 2340 },
+      { emo: "\uD83C\uDF33\uD83C\uDF3A", en: "Tree full of life", xp: 4800 } ] }
+  ];
+
+  function pget() {
+    try { return JSON.parse(localStorage.getItem("super.progress") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function pset(o) { try { localStorage.setItem("super.progress", JSON.stringify(o)); } catch (e) {} }
+
+  function addXp(game, n) {
+    var p = pget();
+    p.xp = (p.xp || 0) + n;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + n;
+    p.answers = (p.answers || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + n;
+    pset(p);
+    return p.xp;
+  }
+  function gradeFor(xp) {
+    var g = GRADES[0];
+    for (var i = 0; i < GRADES.length; i++) if (xp >= GRADES[i].xp) g = GRADES[i];
+    return g;
+  }
+  function nextGrade(xp) {
+    for (var i = 0; i < GRADES.length; i++) if (xp < GRADES[i].xp) return GRADES[i];
+    return null;
+  }
+  function unlockedZoo(xp) { return ZOO.filter(function (z) { return xp >= z.xp; }); }
+  function petStage(pet, xp) {
+    var s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (xp >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+  function stats() {
+    var p = pget(), xp = p.xp || 0;
+    return { xp: xp, answers: p.answers || 0, games: p.games || {}, days: p.days || {},
+             grade: gradeFor(xp), next: nextGrade(xp),
+             zoo: unlockedZoo(xp).length, zooTotal: ZOO.length };
+  }
+
+
+  /* ============================================================
+     SCORING
+     Research note: streaks help young learners, but rewards that
+     pay for volume alone push guessing. So points are paid for
+     QUALITY: first time right is worth full marks, a second try
+     less than half, and a third barely anything. The streak only
+     counts clean first-time answers, so it cannot be farmed.
+     ============================================================ */
+  var FOOD_COST = 25;      /* one feed */
+  var FOOD_VALUE = 25;     /* how much the pet grows per feed */
+
+  function award(game, o) {
+    o = o || {};
+    var level = o.level || 1, wrongs = o.wrongs || 0;
+    /* difficulty is weighted, not linear: level 1 is worth 3, level 8 is worth 22.
+       Easy levels can no longer be farmed to climb the grades. */
+    var base = Math.round(2 + Math.pow(level, 1.55));
+    var quality = wrongs === 0 ? 1 : (wrongs === 1 ? 0.45 : 0.2);
+    if (o.partial != null) quality *= Math.max(0.15, Math.min(1, o.partial));
+    var p = pget();
+    var streak = wrongs === 0 ? (p.streak || 0) + 1 : 0;
+    var mult = 1 + Math.min(10, streak) * 0.06;          /* caps at 1.6x */
+    var xp = Math.max(1, Math.round(base * quality * mult));
+    p.streak = streak;
+    p.best = Math.max(p.best || 0, streak);
+    p.food = (p.food || 0) + Math.max(1, Math.round(xp / 3));
+    p.xp = (p.xp || 0) + xp;
+    p.games = p.games || {};
+    p.games[game] = (p.games[game] || 0) + xp;
+    p.answers = (p.answers || 0) + 1;
+    if (wrongs === 0) p.clean = (p.clean || 0) + 1;
+    var today = new Date().toISOString().slice(0, 10);
+    p.days = p.days || {};
+    p.days[today] = (p.days[today] || 0) + xp;
+    pset(p);
+    return { xp: xp, streak: streak, mult: mult, food: p.food, total: p.xp };
+  }
+  function food() { return pget().food || 0; }
+  function streakNow() { return pget().streak || 0; }
+  function petFed(id) { var p = pget(); return (p.fed || {})[id] || 0; }
+  function feed(id) {
+    var p = pget();
+    if ((p.food || 0) < FOOD_COST) return null;
+    p.food -= FOOD_COST;
+    p.fed = p.fed || {};
+    p.fed[id] = (p.fed[id] || 0) + FOOD_VALUE;
+    pset(p);
+    return { food: p.food, fed: p.fed[id] };
+  }
+  function stageOf(pet) {
+    var f = petFed(pet.id), s = pet.stages[0];
+    for (var i = 0; i < pet.stages.length; i++) if (f >= pet.stages[i].xp) s = pet.stages[i];
+    return s;
+  }
+
+  /* ============================================================
+     SKILLS  —  the executive function and motor radar
+     XP says how much was practised. This says which skills were
+     practised. Six readings, one per competency the challenge
+     games train, each topped out at 100 clean repetitions so a
+     five year old can reach the end of a bar in a few weeks.
+     ============================================================ */
+  var SKILLS = [
+    { id: "trace",    en: "Fine motor trace",   idn: "Motorik halus" },
+    { id: "rhythm",   en: "Bilateral rhythm",   idn: "Irama dua tangan" },
+    { id: "inhibit",  en: "Inhibitory control", idn: "Menahan diri" },
+    { id: "switch",   en: "Rule switching",     idn: "Ganti aturan" },
+    { id: "rotation", en: "Spatial rotation",   idn: "Rotasi ruang" },
+    { id: "gross",    en: "Gross motor time",   idn: "Gerak tubuh" }
+  ];
+  var SKILL_MAX = 100;   /* reps before a bar is full */
+
+  function sget() {
+    try { return JSON.parse(localStorage.getItem("super.skills") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function sset(o) { try { localStorage.setItem("super.skills", JSON.stringify(o)); } catch (e) {} }
+
+  function bumpSkill(id, n) {
+    if (!id) return null;
+    var s = sget();
+    var add = (n == null || isNaN(n)) ? 1 : Number(n);
+    s[id] = Math.max(0, Math.min(SKILL_MAX, (s[id] || 0) + add));
+    s.updated = new Date().toISOString().slice(0, 10);
+    sset(s);
+    return s[id];
+  }
+  function skillPct(id) { return Math.round(100 * Math.min(1, (sget()[id] || 0) / SKILL_MAX)); }
+  function skillList() {
+    var s = sget(), out = [];
+    for (var i = 0; i < SKILLS.length; i++) {
+      out.push({ id: SKILLS[i].id, en: SKILLS[i].en, idn: SKILLS[i].idn,
+                 reps: s[SKILLS[i].id] || 0, pct: skillPct(SKILLS[i].id) });
+    }
+    return out;
+  }
+  function skillReset() { try { localStorage.removeItem("super.skills"); } catch (e) {} }
+
+  /* Accuracy and reaction time per domain, kept beside the rep count. The
+     radar reads the reps; the parent view can read these when it wants the
+     quality of the practice, not just the volume. */
+  function logSkill(domain, accuracyPct, reactionMs) {
+    if (!domain) return null;
+    var s = sget();
+    var d = s.detail = s.detail || {};
+    var e = d[domain] || { n: 0, acc: 0, ms: 0 };
+    e.n++;
+    var acc = Math.max(0, Math.min(100, Number(accuracyPct) || 0));
+    var ms = Math.max(0, Number(reactionMs) || 0);
+    e.acc = (e.acc * (e.n - 1) + acc) / e.n;
+    e.ms = (e.ms * (e.n - 1) + ms) / e.n;
+    d[domain] = e;
+    sset(s);
+    return e;
+  }
+  function skillDetail() { return sget().detail || {}; }
+
+  /* ============================================================
+     STOP-MOTION  —  one shared 8 FPS sprite clock
+     Positions run at 60 FPS; drawings step at 8. The gap is what
+     makes a sprite read as a physical object instead of a vector,
+     and it is the look the age-6 plan asks for. If the family has
+     shot real four-frame photos, drawSprite slices them out of a
+     horizontal strip; until then the games draw their own frames.
+     ============================================================ */
+  var FRAME_MS = 125;                       /* 8 FPS */
+  function frameIndex(total, clock) {
+    total = total || 4;
+    var ms = clock == null ? ((typeof performance !== "undefined" ? performance.now() : Date.now())) : clock;
+    return Math.floor(ms / FRAME_MS) % total;
+  }
+  function drawSprite(ctx, stripImg, x, y, w, h, totalFrames, fps) {
+    var n = totalFrames || 4, rate = fps || 8;
+    if (!stripImg || !stripImg.width) return false;
+    var ms = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    var idx = Math.floor(ms / (1000 / rate)) % n;
+    var fw = stripImg.width / n;
+    ctx.drawImage(stripImg, idx * fw, 0, fw, stripImg.height, x, y, w, h);
+    return true;
+  }
+
+  /* ============================================================
+     TIERS  —  when to move a game up or down a level
+     Two clean wins promote, one round with three or more mistakes
+     steps back. Never mid-round, and never below 1 or above 3.
+     ============================================================ */
+  function tget() {
+    try { return JSON.parse(localStorage.getItem("super.tier") || "{}"); }
+    catch (e) { return {}; }
+  }
+  function tset(o) { try { localStorage.setItem("super.tier", JSON.stringify(o)); } catch (e) {} }
+  function tierOf(gameId) { return tget()[gameId] || 1; }
+  function adjustTier(gameId, wonRound, mistakes) {
+    var t = tget(), cur = t[gameId] || 1;
+    t.clean = t.clean || {};
+    t.clean[gameId] = wonRound ? (t.clean[gameId] || 0) + 1 : 0;
+    if (wonRound && t.clean[gameId] >= 2 && cur < 3) { cur++; t.clean[gameId] = 0; }
+    else if (!wonRound && (mistakes || 0) >= 3 && cur > 1) { cur--; t.clean[gameId] = 0; }
+    t[gameId] = cur;
+    tset(t);
+    return cur;
+  }
+  function tierReset() { try { localStorage.removeItem("super.tier"); } catch (e) {} }
+
+  /* ============================================================
+     THE STRIP  —  a Touch Bar style row of live, contextual keys
+     ============================================================ */
+  function mountBar(actions) {
+    if (document.getElementById("superbar")) return;
+    var css = document.createElement("style");
+    css.textContent =
+     "#superbar{position:fixed;left:0;right:0;bottom:0;z-index:96;display:flex;align-items:center;gap:6px;" +
+     "padding:6px 10px;background:linear-gradient(180deg,rgba(6,20,28,.86),rgba(3,12,18,.96));" +
+     "border-top:1px solid rgba(247,233,204,.18);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}" +
+     "#superbar::-webkit-scrollbar{display:none}" +
+     "#superbar .k{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:12px;" +
+     "background:rgba(247,233,204,.10);border:1px solid rgba(247,233,204,.18);color:#FFFBF2;cursor:pointer;" +
+     "font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:14px;white-space:nowrap;transition:.15s}" +
+     "#superbar .k:hover{background:rgba(247,233,204,.2)}#superbar .k:active{transform:scale(.95)}" +
+     "#superbar .k.stat{cursor:default;background:rgba(6,20,28,.5)}" +
+     "#superbar .k .em{font-size:17px}" +
+     "#superbar .k.hot{background:linear-gradient(180deg,#FFB247,#E58A2C);color:#40230A;border-color:#FFB247}" +
+     "#superbar .grow{flex:1 1 auto;min-width:4px}" +
+     "#superbar .gain{position:fixed;pointer-events:none;font-family:Fredoka,sans-serif;font-weight:700;" +
+     "font-size:18px;color:#5FE0A4;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+     "@keyframes floatup{to{transform:translateY(-46px);opacity:0}}" +
+     "body{padding-bottom:56px}.super-back{bottom:60px!important}" +
+     "@media (min-aspect-ratio:1/1){#superbar{padding:4px 8px}#superbar .k{height:36px;font-size:13px;padding:0 11px}" +
+     "body{padding-bottom:48px}.super-back{bottom:52px!important}}";
+    document.head.appendChild(css);
+    var bar = document.createElement("div");
+    bar.id = "superbar";
+    document.body.appendChild(bar);
+    barActions = actions || [];
+    renderBar();
+    return bar;
+  }
+  var barActions = [];
+  function renderBar() {
+    var bar = document.getElementById("superbar"); if (!bar) return;
+    var st = stats(), fd = food(), sk = streakNow();
+    var pet = PETS[0], stage = stageOf(pet);
+    var html = "";
+    barActions.forEach(function (a, i) {
+      html += '<button class="k' + (a.hot ? " hot" : "") + '" data-i="' + i + '">' +
+              '<span class="em">' + a.icon + '</span>' + (a.label ? "<span>" + a.label + "</span>" : "") + "</button>";
+    });
+    html += '<span class="grow"></span>';
+    html += '<a class="k" href="index.html" title="Home"><span class="em">\uD83C\uDFE0</span></a>';
+    html += '<button class="k" id="sbSet" title="Settings"><span class="em">\u2699\uFE0F</span></button>';
+    html += '<div class="k stat" title="Streak of clean first-time answers"><span class="em">' +
+            (sk >= 3 ? "\uD83D\uDD25" : "\u26A1") + '</span><span>' + sk + '</span></div>';
+    html += '<div class="k stat" title="Total XP"><span class="em">\u2B50</span><span>' + st.xp + "</span></div>";
+    html += '<a class="k" href="koleksi.html" title="Zoo, pets and progress"><span class="em">' +
+            stage.emo + '</span><span>\uD83C\uDF3D ' + fd + "</span></a>";
+    bar.innerHTML = html;
+    var setBtn = bar.querySelector("#sbSet");
+    if (setBtn) setBtn.addEventListener("click", function () { openSettings(); });
+    bar.querySelectorAll("button[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = barActions[Number(b.dataset.i)];
+        if (a && a.fn) a.fn();
+      });
+    });
+  }
+  function flyXp(n, streak) {
+    var bar = document.getElementById("superbar");
+    var g = document.createElement("div");
+    g.className = "gain";
+    g.textContent = "+" + n + (streak >= 3 ? "  \uD83D\uDD25" + streak : "");
+    g.style.right = "18px";
+    g.style.bottom = "60px";
+    g.style.animation = "floatup 1s ease-out forwards";
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 1000);
+    renderBar();
+  }
+
+
+  /* ============================================================
+     SETTINGS, available from every page in the app
+     ============================================================ */
+  function openSettings() {
+    if (document.getElementById("supersheet")) {
+      document.getElementById("supersheet").classList.add("on");
+      fillSettings(); return;
+    }
+    var css = document.createElement("style");
+    css.textContent =
+     "#supersheet{position:fixed;inset:0;z-index:120;background:rgba(3,16,22,.95);display:none;" +
+     "overflow-y:auto;padding:18px;font-family:Nunito,system-ui,sans-serif}" +
+     "#supersheet.on{display:block}" +
+     "#supersheet .pn{background:#0B3C4E;border:1px solid rgba(247,233,204,.2);border-radius:22px;" +
+     "padding:20px;max-width:640px;margin:0 auto;color:#FFFBF2}" +
+     "#supersheet h2{font-family:Fredoka,sans-serif;margin:0 0 4px;font-size:21px;color:#F7E9CC}" +
+     "#supersheet h3{font-family:Fredoka,sans-serif;margin:16px 0 6px;font-size:15px;color:#FFB247}" +
+     "#supersheet p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:rgba(255,251,242,.82)}" +
+     "#supersheet label{display:block;font-size:12px;color:rgba(255,251,242,.7);margin:9px 0 4px}" +
+     "#supersheet input{width:100%;padding:11px 13px;border-radius:12px;font-size:15px;font-family:inherit;" +
+     "background:rgba(4,34,46,.6);color:#FFFBF2;border:1px solid rgba(247,233,204,.25)}" +
+     "#supersheet .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}" +
+     "#supersheet ul{font-size:12.5px;line-height:1.6;padding-left:16px;margin:0;color:rgba(255,251,242,.78)}" +
+     "#supersheet li{margin-bottom:5px}#supersheet li b{color:#F7E9CC}" +
+     "#supersheet .luv{background:rgba(255,178,71,.13);border:1px solid rgba(255,178,71,.35);" +
+     "border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.6;text-align:center}" +
+     "#supersheet .rw{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}" +
+     "#supersheet button{font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;border-radius:999px;" +
+     "padding:11px 20px;cursor:pointer;background:rgba(247,233,204,.13);color:#FFFBF2;" +
+     "border:1px solid rgba(247,233,204,.24)}" +
+     "#supersheet button.go{background:#FFB247;color:#40230A;border-color:#FFB247}";
+    document.head.appendChild(css);
+    var sh = document.createElement("div");
+    sh.id = "supersheet";
+    sh.innerHTML =
+     '<div class="pn">' +
+      '<h2>Settings</h2>' +
+      '<p>Change the names and the whole app follows: every prompt, every bit of praise, every voice.</p>' +
+      '<label for="sxChild">Who is learning?</label><input id="sxChild" type="text" autocomplete="off">' +
+      '<div class="two"><div><label for="sxDad">Father</label><input id="sxDad" type="text" autocomplete="off"></div>' +
+      '<div><label for="sxMum">Mother</label><input id="sxMum" type="text" autocomplete="off"></div></div>' +
+      '<label for="sxSib">Brother or sister</label><input id="sxSib" type="text" autocomplete="off">' +
+      '<h3>Built on</h3><ul id="sxRefs"></ul>' +
+      '<h3>With love</h3><div class="luv" id="sxLove"></div>' +
+      '<div class="rw">' +
+       '<button class="go" id="sxSave">Save</button>' +
+       '<button id="sxReset">Reset names</button>' +
+       '<a href="index.html" style="text-decoration:none"><button>\uD83C\uDFE0 Home</button></a>' +
+       '<button id="sxClose">Close</button>' +
+      '</div></div>';
+    document.body.appendChild(sh);
+    sh.addEventListener("click", function (e) { if (e.target.id === "supersheet") sh.classList.remove("on"); });
+    document.getElementById("sxClose").onclick = function () { sh.classList.remove("on"); };
+    document.getElementById("sxReset").onclick = function () { S.reset(); fillSettings(); };
+    document.getElementById("sxSave").onclick = function () {
+      var D = S.defaults;
+      var c = document.getElementById("sxChild").value.trim() || D.child;
+      var d = document.getElementById("sxDad").value.trim() || D.dad;
+      var m = document.getElementById("sxMum").value.trim() || D.mum;
+      var b = document.getElementById("sxSib").value.trim() || D.sib;
+      S.save({ child: c, dad: d, mum: m, sib: b,
+             childShort: S.shorten(c, c), dadShort: S.shorten(d, "Papi"),
+             mumShort: S.shorten(m, "Mommy"), sibShort: S.shorten(b, "Ade") });
+      sh.classList.remove("on");
+      location.reload();
+    };
+    sh.classList.add("on");
+    fillSettings();
+  }
+  function fillSettings() {
+    var n = S.names();
+    document.getElementById("sxChild").value = n.child;
+    document.getElementById("sxDad").value = n.dad;
+    document.getElementById("sxMum").value = n.mum;
+    document.getElementById("sxSib").value = n.sib;
+    document.getElementById("sxRefs").innerHTML = S.CURRICULUM
+      .map(function (r) { return "<li><b>" + r[0] + "</b> — " + r[1] + "</li>"; }).join("");
+    document.getElementById("sxLove").innerHTML =
+      "Created with love and care by <b>" + n.dad + "</b> and <b>" + n.mum +
+      "</b><br>for beloved <b>" + n.child + "</b> and <b>" + n.sib + "</b>.";
+  }
+  S.settings = { open: openSettings };
+
+  S.score = { award: award, food: food, streak: streakNow, feed: feed,
+              stageOf: stageOf, petFed: petFed, FOOD_COST: FOOD_COST };
+  S.bar = { mount: mountBar, render: renderBar, fly: flyXp,
+            set: function (a) { barActions = a || []; renderBar(); } };
+
+  S.GRADES = GRADES; S.ZOO = ZOO; S.PETS = PETS;
+  S.xp = { add: addXp, stats: stats, award: award, gradeFor: gradeFor, nextGrade: nextGrade,
+           unlockedZoo: unlockedZoo, petStage: petStage,
+           reset: function () { pset({}); } };
+  S.skills = { DEFS: SKILLS, MAX: SKILL_MAX, list: skillList, bump: bumpSkill,
+               level: skillPct, log: logSkill, detail: skillDetail, reset: skillReset };
+  S.anim = { FRAME_MS: FRAME_MS, frameIndex: frameIndex, drawSprite: drawSprite };
+  S.tier = { get: tierOf, adjust: adjustTier, reset: tierReset };
+})(window);
+</script>
+<script>
+/* ============================================================
+   LAB PETUALANGAN  —  the age-6 motor and mind challenge lab
+   Five games that carry Baim from kindergarten worksheets into
+   primary school, and that give every skill its own reading:
+     1 Insinyur Jalur Roket  causal physics + number bonds
+     2 Irama Silang          bilateral rhythm + Go/No-Go
+     3 Bengkel Tangram       mental rotation + symmetry
+     4 Misi Kancil Kode      4-7 step working memory + planning
+     5 Pabrik Sortir Kilat   mid-round rule switching
+   Every game pays XP through common.js and records the skill it
+   trains in the radar on koleksi.html.
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const NM = (window.SUPER && SUPER.P) || ((x) => x);
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const S = { lang: LS.get("petualangan.lang", "id"), sound: true, level: 1 };
+const T = (p) => NM(S.lang === "en" ? p[1] : p[0]) +
+      (S.lang === "both" ? "<small>" + NM(p[1]) + "</small>" : "");
+const TI = (p) => NM(S.lang === "en" ? p[1] : p[0]);   /* text only, no <small> */
+
+/* ---------- voices and sounds, the same helpers every page uses ---------- */
+let AC = null, vEN = null, vID = null, sayTok = 0;
+function pickVoices() {
+  if (!("speechSynthesis" in window)) return;
+  const vs = speechSynthesis.getVoices() || [];
+  vEN = vs.find((v) => /^en[-_]?(GB|US)/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang)) || null;
+  vID = vs.find((v) => /^id[-_]?/i.test(v.lang)) || vs.find((v) => /indones/i.test(v.name)) || null;
+}
+if ("speechSynthesis" in window) { pickVoices(); speechSynthesis.addEventListener("voiceschanged", pickVoices); setTimeout(pickVoices, 800); }
+function speak1(text, lang) {
+  text = NM(text);
+  return new Promise((res) => {
+    if (!S.sound || !("speechSynthesis" in window) || !text || (lang === "id" && !vID)) { res(); return; }
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === "id" ? "id-ID" : "en-GB";
+      u.voice = lang === "id" ? vID : vEN;
+      u.rate = lang === "id" ? 0.92 : 0.86; u.pitch = 1.08;
+      let d = false; const f = () => { if (!d) { d = true; res(); } };
+      u.onend = f; u.onerror = f;
+      speechSynthesis.speak(u); setTimeout(f, Math.max(1800, text.length * 85));
+    } catch (e) { res(); }
+  });
+}
+function stopAudio() { sayTok++; try { speechSynthesis.cancel(); } catch (e) {} }
+async function say(pairs, keep) {
+  if (!keep) stopAudio();
+  const tok = sayTok;
+  for (const p of pairs) {
+    if (!p) continue;
+    for (const l of (S.lang === "both" ? ["id", "en"] : [S.lang])) {
+      if (tok !== sayTok) return;
+      await speak1(l === "id" ? p[0] : p[1], l);
+    }
+  }
+}
+function tone(f, d, type, g) {
+  if (!S.sound) return;
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === "suspended") AC.resume();
+    const o = AC.createOscillator(), gn = AC.createGain();
+    o.type = type || "sine"; o.frequency.value = f;
+    gn.gain.setValueAtTime(0, AC.currentTime);
+    gn.gain.linearRampToValueAtTime(g || 0.15, AC.currentTime + 0.02);
+    gn.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + d);
+    o.connect(gn).connect(AC.destination); o.start(); o.stop(AC.currentTime + d);
+  } catch (e) {}
+}
+const sfxWin = () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.28, "triangle", 0.16), i * 100));
+const sfxPop = (n) => { const f = 440 + (n || 0) * 60; tone(f, 0.12, "sine", 0.16); setTimeout(() => tone(f * 1.5, 0.12, "sine", 0.12), 60); };
+const sfxWrong = () => { tone(200, 0.2, "sawtooth", 0.09); setTimeout(() => tone(150, 0.24, "sawtooth", 0.08), 100); };
+const sfxBell = () => { tone(880, 0.5, "sine", 0.14); setTimeout(() => tone(1320, 0.5, "sine", 0.09), 40); };
+document.addEventListener("pointerdown", () => {
+  try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume(); } catch (e) {}
+  if ("speechSynthesis" in window) { try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } catch (e) {} }
+}, { once: true });
+function confetti() {
+  const c = ["#FFB247", "#5FE0A4", "#FF6B5B", "#7FC8FF", "#F7E9CC", "#C79BFF"];
+  for (let i = 0; i < 46; i++) {
+    const d = document.createElement("div");
+    d.className = "confetti"; d.style.left = Math.random() * 100 + "vw";
+    d.style.background = c[i % c.length]; d.style.animationDelay = Math.random() * 0.5 + "s";
+    document.body.appendChild(d); setTimeout(() => d.remove(), 3200);
+  }
+}
+const PRAISE = [["Hebat!", "Great job!"], ["Keren!", "Awesome!"], ["Pintar!", "Clever!"], ["Luar biasa!", "Amazing!"]];
+const praise = () => PRAISE[Math.floor(Math.random() * PRAISE.length)];
+
+/* ---------- shared scoring ---------- */
+function award(level, wrongs, partial) {
+  let r = null;
+  try {
+    if (window.SUPER && SUPER.score) {
+      r = SUPER.score.award("petualangan", { level, wrongs: wrongs || 0, partial });
+      if (SUPER.bar && SUPER.bar.fly) SUPER.bar.fly(r.xp, r.streak);
+    }
+  } catch (e) {}
+  return r;
+}
+function skill(id, n) { try { if (window.SUPER && SUPER.skills) SUPER.skills.bump(id, n); } catch (e) {} }
+const BEST = LS.get("petualangan.best", {});
+function saveBest(id, stars) { BEST[id] = Math.max(BEST[id] || 0, stars); LS.set("petualangan.best", BEST); }
+function starsFor(wrongs) { return wrongs === 0 ? 3 : (wrongs === 1 ? 2 : 1); }
+
+const LVNAME = [["TK", "Kindergarten"], ["Transisi", "Transition"], ["SD Kelas 1", "Grade 1"]];
+
+/* ---------- teardown ----------
+   Every game adds window listeners. Changing game, level or language has to
+   take the old ones away, or the previous game keeps answering taps. */
+let CLEAN = [];
+const onCleanup = (fn) => CLEAN.push(fn);
+function runCleanup() {
+  CLEAN.forEach((f) => { try { f(); } catch (e) {} });
+  CLEAN = [];
+}
+function listenWindow(type, fn, opts) {
+  window.addEventListener(type, fn, opts);
+  onCleanup(() => window.removeEventListener(type, fn, opts));
+}
+
+/* ============================================================
+   THE HUB
+   ============================================================ */
+const GAMES = [
+  { id: "roket", icon: ["🚀", "🛠️"], t: ["Insinyur Jalur Roket", "Rocket Track Engineer"], sk: "trace",
+    n: ["Gambar jalur, lalu lihat roketmu meluncur dan jatuh karena gaya tarik.", "Draw a track and watch your rocket roll, fall and fly because of gravity."] },
+  { id: "irama", icon: ["🥁", "🙌"], t: ["Irama Silang", "Cross-Hand Rhythm"], sk: "rhythm",
+    n: ["Ketuk dengan dua tangan, jangan ketuk bom kepiting.", "Tap with both hands, and never tap the crab bombs."] },
+  { id: "tangram", icon: ["🔷", "🪞"], t: ["Bengkel Tangram", "Tangram & Mirror Workshop"], sk: "rotation",
+    n: ["Putar, balik, dan susun potongan sampai bentuknya jadi.", "Rotate, flip and fit the pieces until the shape appears."] },
+  { id: "kancil", icon: ["🦌", "🤖"], t: ["Misi Kancil Kode", "Kancil Code Mission"], sk: "switch",
+    n: ["Susun kartu perintah, lalu tekan JALANKAN.", "Line up command cards, then press RUN."] },
+  { id: "pabrik", icon: ["🏭", "📦"], t: ["Pabrik Sortir Kilat", "Speed Sorting Factory"], sk: "switch",
+    n: ["Sortir barang di ban berjalan sebelum aturannya berganti.", "Sort the belt before the rule changes on you."] }
+];
+
+function syncTierButtons() {
+  document.querySelectorAll("#tiers button").forEach((b) =>
+    b.classList.toggle("on", Number(b.dataset.lv) === S.level));
+}
+
+function hub() {
+  S.view = "hub";
+  runCleanup();
+  stopAudio();
+  const m = $("main");
+  const best = (id) => (BEST[id] ? "⭐".repeat(BEST[id]) : "");
+  m.innerHTML = `<div class="scroll">
+    <h1>${T(["Lab Petualangan", "Adventure Lab"])}</h1>
+    <p class="sub">${T(["Lima tantangan untuk Abang Baim yang sudah enam tahun. Pilih tingkat di atas, lalu pilih permainan. Setiap permainan menambah XP, memberi makan hewan di Koleksi, dan mengisi radar keterampilan di halaman orang tua.",
+      "Five challenges for a six year old. Pick a level above, then pick a game. Every game adds XP, feeds the animals in Koleksi, and fills in the skills radar on the parents page."])}</p>
+    <div class="cards">${GAMES.map((g) => `
+      <button class="gcard" data-g="${g.id}">
+        ${best(g.id) ? `<span class="sk">${best(g.id)}</span>` : ""}
+        <div class="art"><i>${g.icon[0]}</i><i>${g.icon[1]}</i></div>
+        <div class="txt">
+          <h3>${TI(g.t)}</h3>
+          <div class="en">${TI(S.lang === "en" ? g.t : [g.t[1], g.t[0]])}</div>
+          <div class="nt">${TI(g.n)}</div>
+        </div>
+      </button>`).join("")}</div>
+    <div class="note">👨‍👩‍👦 <b>${T(["Untuk orang tua", "For parents"])}:</b> ${T([
+      "Tingkat 1 untuk TK, tingkat 2 untuk masa transisi ke SD, tingkat 3 untuk kelas 1 SD. Semua bisa dibuka, tidak ada yang dikunci. Dampingi saat bermain, dan berhenti kalau anak lelah.",
+      "Level 1 is kindergarten, level 2 is the transition into primary school, level 3 is Grade 1. Nothing is ever locked. Sit alongside, and stop when he is tired."])}</div>
+  </div>`;
+  m.querySelectorAll("[data-g]").forEach((b) => b.addEventListener("click", () => open(b.dataset.g)));
+}
+
+function open(id) {
+  const g = GAMES.find((x) => x.id === id);
+  if (!g) return hub();
+  runCleanup();
+  stopAudio();
+  const m = $("main");
+  m.innerHTML = "";
+  const box = document.createElement("div");
+  box.className = "scroll";
+  box.style.display = "flex";
+  box.style.flexDirection = "column";
+  m.appendChild(box);
+  g.mount(box, S.level);
+}
+
+/* ---------- the little overlay every game ends with ---------- */
+function finish(root, o) {
+  const stars = starsFor(o.wrongs);
+  const r = award(o.level, o.wrongs, o.partial);
+  saveBest(o.gameId, stars);
+
+  /* Quality beside the volume, and the tier follows the child: two clean
+     wins promote, three or more mistakes in a round step back. */
+  let nextTier = o.level;
+  try {
+    if (window.SUPER && SUPER.skills) {
+      const total = Math.max(1, o.questions || 0);
+      const right = Math.max(0, total - (o.wrongs || 0));
+      SUPER.skills.log(o.gameId, total > 1 ? (100 * right) / total : (o.wrongs ? 40 : 100), o.reactionMs || 0);
+    }
+    if (window.SUPER && SUPER.tier) {
+      nextTier = SUPER.tier.adjust(o.gameId, (o.wrongs || 0) === 0, o.wrongs || 0);
+    }
+  } catch (e) {}
+
+  if (stars === 3) confetti();
+  sfxWin();
+  const box = document.createElement("div");
+  box.className = "done on";
+  box.innerHTML = `<div class="box">
+    <div class="stars">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+    <h2>${o.title || T(["Selesai!", "Finished!"])}</h2>
+    <p>${o.text || ""}${r ? `<br><small style="color:#6A5A3A">+${r.xp} XP</small>` : ""}</p>
+    <div class="row">
+      <button class="btn go" data-act="again">🔁 ${T(["Main lagi", "Play again"])}</button>
+      <button class="btn" data-act="hub">🏠 ${T(["Pilih permainan", "Choose a game"])}</button>
+    </div></div>`;
+  root.style.position = "relative";
+  root.appendChild(box);
+  box.querySelector('[data-act="again"]').onclick = () => { box.remove(); if (o.again) o.again(); else open(o.gameId); };
+  box.querySelector('[data-act="hub"]').onclick = hub;
+
+  if (nextTier !== o.level) {
+    const b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = (nextTier > o.level ? "⬆️ " : "⬇️ ") + T(["Tingkat", "Level"]) + " " + nextTier;
+    b.onclick = () => { S.level = nextTier; syncTierButtons(); box.remove(); open(o.gameId); };
+    box.querySelector(".row").insertBefore(b, box.querySelector(".row").firstChild);
+  }
+
+  say([[o.title ? "" : T(["Selesai!", "Finished!"]), T(["Selesai!", "Finished!"])], praise()]);
+  return box;
+}
+
+/* ============================================================
+   GAME 1 — INSINYUR JALUR ROKET
+   Draw the track on the canvas, then run it. The rover is a
+   point mass: it speeds up downhill, slows uphill, and falls if
+   the ink stops. That is the whole physics, and it is enough for
+   a six year old to feel the consequence of his own line.
+   ============================================================ */
+const ROKET_WORDS = [["ku-da", "ku", "da"], ["ro-ket", "ro", "ket"], ["mo-bil", "mo", "bil"]];
+
+GAMES[0].mount = function (root, lv) {
+  S.view = "roket";
+  const W = 960, H = 560;            /* logical drawing board */
+  const groundY = H * 0.68;
+  const startX = W * 0.10, goalX = W * 0.88;
+  const gapA = W * 0.26, gapB = W * 0.74;
+  const gates = lv === 1
+    ? [{ x: W * 0.36, y: H * 0.40, v: 4 }, { x: W * 0.56, y: H * 0.34, v: 6 }]
+    : [{ x: W * 0.33, y: H * 0.42, v: 7 }, { x: W * 0.50, y: H * 0.30, v: 4 },
+       { x: W * 0.66, y: H * 0.46, v: 6 }];
+  const target = lv === 1 ? 10 : (lv === 2 ? 11 : 13);   /* two gates must add up to this */
+  const stars = [];
+  const starCount = 6;
+  for (let i = 0; i < starCount; i++) {
+    const t = (i + 1) / (starCount + 1);
+    stars.push({ x: gapA + (gapB - gapA) * t, y: groundY - 40 - Math.sin(t * Math.PI * 3 + 1) * 90 - 40, got: false });
+  }
+  const tunnels = lv >= 2
+    ? [{ x: W * 0.44, top: H * 0.10, bottom: H * 0.34 }, { x: W * 0.62, top: H * 0.30, bottom: H * 0.56 }]
+    : [];
+  const inkMax = (gapB - gapA) * (lv === 1 ? 2.6 : lv === 2 ? 2.2 : 1.9);
+
+  let path = [], drawing = false, ink = 0, phase = "draw", wrongs = 0, turbo = false;
+  let rover = null, raf = 0, last = 0, gotStars = 0, passedGates = [], rubber = false;
+
+  root.innerHTML = `
+    <div class="playhead">
+      <div class="ttl">🚀 ${T(["Insinyur Jalur Roket", "Rocket Track Engineer"])}
+        <small>${T(["Tingkat", "Level"])} ${lv} · ${TI(LVNAME[lv - 1])}</small></div>
+      <button class="btn small" id="rkRub">🧽 ${T(["Hapus", "Erase"])}</button>
+      ${lv >= 2 ? `<button class="btn small" id="rkMode">🎈 ${T(["Karet", "Rubber"])}</button>` : ""}
+      <button class="btn go" id="rkGo">▶ ${T(["Jalankan", "Run"])}</button>
+    </div>
+    <div class="hud">
+      <span class="pill" id="rkInk">🖊️ ${T(["Tinta", "Ink"])} 100%</span>
+      <span class="pill" id="rkStar">⭐ 0/${starCount}</span>
+      <span class="pill" id="rkGate">🔢 ${T(["Gerbang", "Gates"])} 0/2</span>
+    </div>
+    <div class="stageBox" id="rkStage">
+      <canvas id="rkCv"></canvas>
+      <div class="hint" id="rkHint"></div>
+    </div>
+    <div class="meter"><i id="rkMeter"></i></div>`;
+
+  const c = $("rkCv"), ctx = c.getContext("2d");
+  let px = 1, py = 1, dpr = Math.min(2, window.devicePixelRatio || 1);
+  function fit() {
+    const box = $("rkStage").getBoundingClientRect();
+    px = box.width; py = box.height;
+    c.width = Math.round(px * dpr); c.height = Math.round(py * dpr);
+    c.style.width = px + "px"; c.style.height = py + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  const sx = () => px / W, sy = () => py / H;
+
+  function pathY(x) {
+    if (path.length < 2) return null;
+    if (x < path[0].x || x > path[path.length - 1].x) return null;
+    for (let i = 1; i < path.length; i++) {
+      if (x <= path[i].x) {
+        const a = path[i - 1], b = path[i];
+        const t = (x - a.x) / Math.max(1e-6, b.x - a.x);
+        return a.y + (b.y - a.y) * t;
+      }
+    }
+    return path[path.length - 1].y;
+  }
+  function segLen(a, b) { return Math.hypot(b.x - a.x, b.y - a.y); }
+  function inkUsed() { let n = 0; for (let i = 1; i < path.length; i++) n += segLen(path[i - 1], path[i]); return n; }
+
+  function newRover() { return { x: startX, y: groundY, vx: 150, vy: 0, air: false, dead: false }; }
+
+  /* the shared 8 FPS clock from common.js, with a local fallback */
+  const frameIndex = (n) => ((window.SUPER && SUPER.anim) ? SUPER.anim.frameIndex(n)
+                                                          : Math.floor(performance.now() / 125) % (n || 4));
+
+  function drawCliff(x0, x1) {
+    const SX = sx(), SY = sy(), r = 10;
+    ctx.beginPath();
+    ctx.moveTo(x0 * SX, py);
+    ctx.lineTo(x0 * SX, groundY * SY + r);
+    ctx.quadraticCurveTo(x0 * SX, groundY * SY, x0 * SX + r, groundY * SY);
+    ctx.lineTo(x1 * SX - r, groundY * SY);
+    ctx.quadraticCurveTo(x1 * SX, groundY * SY, x1 * SX, groundY * SY + r);
+    ctx.lineTo(x1 * SX, py);
+    ctx.closePath();
+    ctx.fillStyle = "#F3E8D2";
+    ctx.fill();
+    ctx.strokeStyle = "#1E293B";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
+
+  function gear(cx, cy, rad, phase) {
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a0 = phase + (i / 8) * Math.PI * 2;
+      ctx.moveTo(cx + Math.cos(a0) * rad * 0.55, cy + Math.sin(a0) * rad * 0.55);
+      ctx.lineTo(cx + Math.cos(a0) * rad, cy + Math.sin(a0) * rad);
+    }
+    ctx.strokeStyle = "#1E293B"; ctx.lineWidth = 2.2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rad * 0.62, 0, Math.PI * 2);
+    ctx.fillStyle = "#F3E8D2"; ctx.fill();
+    ctx.strokeStyle = "#1E293B"; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rad * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = "#1E293B"; ctx.fill();
+  }
+
+  /* The rover: red and teal, two gear wheels, and a four-frame exhaust.
+     Physics is smooth; the sprite steps at 8 FPS, which is the look the
+     visual spec asks for. */
+  function drawRover(r) {
+    const SX = sx(), SY = sy();
+    const s = Math.max(0.55, Math.min(1.25, (SX + SY) / 2.4));
+    const gx = r.x * SX, gy = r.y * SY;
+    const w = 78 * s, h = 50 * s, rad = 17 * s;
+    const f = frameIndex(4);
+    const phase = (f * Math.PI) / 4;
+    const dip = [-3, 2, 0, 0][f] * s;
+
+    ctx.save();
+    ctx.translate(gx, gy - h / 2 + dip);
+    ctx.strokeStyle = "#1E293B"; ctx.lineWidth = 2.4 * s;
+    /* chassis */
+    ctx.fillStyle = "#0EA5E9";
+    ctx.beginPath();
+    ctx.moveTo(-w / 2, 0);
+    ctx.lineTo(-w / 2 + 10 * s, -h * 0.62);
+    ctx.lineTo(w / 2 - 16 * s, -h * 0.62);
+    ctx.lineTo(w / 2, -h * 0.12);
+    ctx.lineTo(w / 2, 0);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    /* the red nose */
+    ctx.fillStyle = "#EF4444";
+    ctx.beginPath();
+    ctx.ellipse(w / 2 - 7 * s, -h * 0.34, 12 * s, 10 * s, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    /* exhaust, four frames of flame */
+    const flame = [10, 18, 26, 16][f] * s;
+    ctx.fillStyle = f === 2 ? "#F59E0B" : "#FB923C";
+    ctx.beginPath();
+    ctx.moveTo(-w / 2, -h * 0.30);
+    ctx.lineTo(-w / 2 - flame, -h * 0.22);
+    ctx.lineTo(-w / 2, -h * 0.12);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    gear(gx - w * 0.22, gy - rad * 0.75, rad, phase);
+    gear(gx + w * 0.24, gy - rad * 0.75, rad, -phase);
+  }
+
+  function draw() {
+    if (!px) return;
+    const SX = sx(), SY = sy();
+    ctx.clearRect(0, 0, px, py);
+
+    /* warm cream paper with a faint dot grid, like the OT worksheets */
+    ctx.fillStyle = "#FFFDF7";
+    ctx.fillRect(0, 0, px, py);
+    ctx.fillStyle = "rgba(30,41,59,.10)";
+    for (let x = 28; x < px; x += 28) {
+      for (let y = 28; y < py; y += 28) {
+        ctx.beginPath(); ctx.arc(x, y, 0.9, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    /* the canyon, hatched so it reads as a drop */
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(gapA * SX, groundY * SY, (gapB - gapA) * SX, py - groundY * SY);
+    ctx.clip();
+    ctx.strokeStyle = "rgba(239,68,68,.22)";
+    ctx.lineWidth = 1.4;
+    for (let x = gapA * SX - py; x < gapB * SX; x += 16) {
+      ctx.beginPath();
+      ctx.moveTo(x, groundY * SY);
+      ctx.lineTo(x + (py - groundY * SY), py);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    drawCliff(0, gapA);
+    drawCliff(gapB, W);
+
+    /* level 1 keeps a wide glowing guide band, level 3 hardly any */
+    if (lv === 1) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(16,185,129,.20)";
+      ctx.lineWidth = 36 * Math.min(SX, SY) * 0.8;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(gapA * SX, groundY * SY);
+      ctx.bezierCurveTo(W * 0.40 * SX, (groundY - 130) * SY,
+                        W * 0.60 * SX, (groundY - 130) * SY,
+                        gapB * SX, groundY * SY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* goal: the rescue crate with a zoo pet inside */
+    ctx.fillStyle = "#1E293B";
+    ctx.fillRect(goalX * SX - 1, (groundY - 96) * SY, 3, 96 * SY);
+    ctx.font = `${Math.round(34 * Math.min(SX, SY) * 1.1)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("🎁", goalX * SX + 26 * SX, (groundY - 74) * SY);
+
+    /* wind tunnels */
+    tunnels.forEach((t) => {
+      ctx.fillStyle = "rgba(139,92,246,.14)";
+      ctx.fillRect((t.x - 16) * SX, t.top * SY, 32 * SX, (t.bottom - t.top) * SY);
+      ctx.strokeStyle = "rgba(139,92,246,.75)"; ctx.lineWidth = 2;
+      ctx.strokeRect((t.x - 16) * SX, t.top * SY, 32 * SX, (t.bottom - t.top) * SY);
+    });
+
+    /* number-bond rings */
+    gates.forEach((gt) => {
+      const ok = passedGates.includes(gt);
+      const rad = 30 * (SX + SY) / 2 * 0.55;
+      ctx.beginPath();
+      ctx.arc(gt.x * SX, gt.y * SY, rad + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = ok ? "rgba(16,185,129,.35)" : "rgba(245,158,11,.30)";
+      ctx.lineWidth = 9; ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(gt.x * SX, gt.y * SY, rad, 0, Math.PI * 2);
+      ctx.fillStyle = ok ? "rgba(16,185,129,.22)" : "rgba(245,158,11,.18)";
+      ctx.fill();
+      ctx.strokeStyle = ok ? "#10B981" : "#F59E0B"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = "#1E293B";
+      ctx.font = `bold ${Math.round(22 * Math.min(SX, SY) * 1.2)}px Fredoka, system-ui, sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(gt.v, gt.x * SX, gt.y * SY);
+    });
+
+    /* stars */
+    stars.forEach((s) => {
+      if (s.got) return;
+      ctx.font = `${Math.round(26 * Math.min(SX, SY) * 1.2)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("⭐", s.x * SX, s.y * SY);
+    });
+
+    /* the drawn track: steel blue for rigid ink, magenta for bouncy ink */
+    if (path.length > 1) {
+      const inkColor = rubber ? "#EC4899" : "#0EA5E9";
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = rubber ? "rgba(236,72,153,.22)" : "rgba(14,165,233,.18)";
+      ctx.lineWidth = 18 * Math.min(SX, SY);
+      ctx.beginPath(); ctx.moveTo(path[0].x * SX, path[0].y * SY);
+      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x * SX, path[i].y * SY);
+      ctx.stroke();
+      ctx.strokeStyle = inkColor; ctx.lineWidth = 5 * Math.min(SX, SY);
+      ctx.stroke();
+    }
+
+    drawRover(rover || { x: startX, y: groundY });
+  }
+
+  function hint(pair) { $("rkHint").innerHTML = T(pair); }
+  function updHud() {
+    const pct = Math.max(0, 100 - (ink / inkMax) * 100);
+    $("rkMeter").style.width = pct + "%";
+    $("rkInk").textContent = "🖊️ " + T(["Tinta", "Ink"]) + " " + Math.round(pct) + "%";
+    $("rkStar").textContent = "⭐ " + gotStars + "/" + starCount;
+    $("rkGate").textContent = "🔢 " + T(["Gerbang", "Gates"]) + " " + passedGates.length + "/2";
+  }
+
+  const toWorld = (e) => {
+    const r = c.getBoundingClientRect();
+    return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+  };
+
+  function addPoint(pt) {
+    if (pt.x < 0 || pt.x > W) return;
+    if (!path.length) { path.push({ x: Math.max(pt.x, startX), y: pt.y }); return; }
+    const lastP = path[path.length - 1];
+    if (pt.x <= lastP.x + 0.5) return;              /* the track is a function of x */
+    const d = Math.hypot(pt.x - lastP.x, pt.y - lastP.y);
+    if (ink + d > inkMax) return;
+    ink += d;
+    path.push({ x: pt.x, y: Math.max(20, Math.min(H - 20, pt.y)) });
+  }
+
+  c.addEventListener("pointerdown", (e) => {
+    if (phase !== "draw") return;
+    drawing = true;
+    path = []; ink = 0; gotStars = 0; passedGates = [];
+    const p = toWorld(e);
+    path.push({ x: Math.min(Math.max(p.x, startX), goalX), y: p.y });
+    try { c.setPointerCapture(e.pointerId); } catch (er) {}
+    updHud(); draw();
+  });
+  c.addEventListener("pointermove", (e) => {
+    if (!drawing || phase !== "draw") return;
+    const p = toWorld(e);
+    if (!path.length) return;
+    addPoint(p);
+    updHud(); draw();
+  });
+  const endStroke = () => { if (!drawing) return; drawing = false; judgeTrack(); };
+  c.addEventListener("pointerup", endStroke);
+  c.addEventListener("pointercancel", endStroke);
+
+  /* First look at the line: which gates and stars it touches. */
+  function judgeTrack() {
+    if (path.length < 2) return;
+    gotStars = 0;
+    stars.forEach((s) => {
+      s.got = path.some((p) => Math.hypot(p.x - s.x, p.y - s.y) < 34);
+      if (s.got) gotStars++;
+    });
+    passedGates = gates.filter((gt) => path.some((p) => Math.hypot(p.x - gt.x, p.y - gt.y) < 40));
+    turbo = passedGates.length >= 2 && !!(function () {
+      for (let i = 0; i < passedGates.length; i++)
+        for (let j = i + 1; j < passedGates.length; j++)
+          if (passedGates[i].v + passedGates[j].v === target) return true;
+      return false;
+    })();
+    updHud(); draw();
+    if (turbo) { sfxBell(); hint([["Gerbangnya berjumlah " + target + "! Turbo menyala!", "Those gates add up to " + target + "! Turbo on!"]]); }
+    else hint([["Tekan Jalankan.", "Press Run."]]);
+  }
+
+  function reset() {
+    phase = "draw"; path = []; ink = 0; rover = null; gotStars = 0; passedGates = []; turbo = false;
+    drawing = false; $("rkGo").disabled = false; updHud(); draw();
+    hint([["Gambar jalur dari tanah ke tanah, lewat gerbang berjumlah " + target + ".", "Draw a track from ground to ground, through gates that add up to " + target + "."]]);
+  }
+
+  $("rkRub").onclick = () => { stop(); reset(); };
+  if ($("rkMode")) $("rkMode").onclick = () => {
+    rubber = !rubber;
+    $("rkMode").textContent = rubber ? "🛠️ " + TI(["Baja", "Steel"]) : "🎈 " + TI(["Karet", "Rubber"]);
+    tone(rubber ? 620 : 320, 0.12, "sine", 0.12);
+    hint(rubber
+      ? [["Tinta karet: jalur yang putus sedikit akan memantul.", "Rubber ink: a small break in the track will bounce."]]
+      : [["Tinta baja: jalur harus bersambung penuh.", "Steel ink: the track must be unbroken."]]);
+    draw();
+  };
+  $("rkGo").onclick = () => {
+    if (phase !== "draw") return;
+    if (path.length < 2) { hint([["Gambarlah jalurnya dulu.", "Draw the track first."]]); return; }
+    phase = "run"; $("rkGo").disabled = true;
+    rover = newRover();
+    if (turbo) rover.vx = 260;
+    last = performance.now();
+    say([[turbo ? "Turbo! Ayo!" : "Ayo!", turbo ? "Turbo! Go!" : "Go!"]]);
+    loop();
+  };
+
+  function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
+
+  function loop(t) {
+    raf = requestAnimationFrame(loop);
+    const now = t || performance.now();
+    let dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!rover || rover.dead) return;
+    step(dt * 1.0);
+    draw();
+    if (rover.won || rover.dead) { stop(); endRun(); }
+  }
+
+  function step(dt) {
+    const r = rover;
+    let y = pathY(r.x);
+    if (y == null && rubber) {
+      /* bouncy ink bridges a small break: the nearest ink within 70px holds
+         him up, and the rover gets a little hop out of it */
+      let best = null, bd = 1e9;
+      for (const p of path) {
+        const d = Math.abs(p.x - r.x);
+        if (d < bd) { bd = d; best = p; }
+      }
+      if (best && bd < 70) { y = best.y - 6; r.vx = Math.max(r.vx, 240); }
+    }
+    if (y == null) {
+      /* the ink ran out: he is in the air now, and gravity has him */
+      r.air = true;
+      r.vy += 1500 * dt;
+      r.x += r.vx * dt; r.y += r.vy * dt;
+      if (r.y > H + 60) { r.dead = true; }
+      return;
+    }
+    /* on the track: slope decides the speed */
+    const ahead = pathY(r.x + 14);
+    const slope = ahead == null ? 0 : (ahead - y) / 14;
+    const g = 1500;
+    r.vx += (g * slope / Math.sqrt(1 + slope * slope)) * dt * 0.55;
+    const cap = turbo ? 620 : 420;
+    r.vx = Math.max(70, Math.min(cap, r.vx));
+    r.x += r.vx * dt;
+    const ny = pathY(r.x);
+    r.y = ny == null ? y : ny;
+    /* tunnels: the line has to go through the gap */
+    tunnels.forEach((t) => {
+      if (r.x > t.x - 6 && r.x < t.x + 6) {
+        if (r.y < t.top || r.y > t.bottom) {
+          r.dead = true; r.reason = "tunnel";
+        }
+      }
+    });
+    /* stars and gates are collected as he passes */
+    stars.forEach((s) => {
+      if (!s.got && Math.hypot(r.x - s.x, r.y - s.y) < 34) { s.got = true; gotStars++; sfxPop(gotStars); }
+    });
+    if (r.x >= goalX) { r.won = true; r.x = goalX; r.y = groundY; }
+  }
+
+  function endRun() {
+    const r = rover;
+    if (r.won) {
+      skill("trace", 2);
+      phase = "won";
+      if (lv === 3) { hangar(); return; }
+      if (lv === 1) { countStars(); return; }
+      win();
+      return;
+    }
+    wrongs++;
+    phase = "draw";
+    sfxWrong();
+    const why = r.reason === "tunnel"
+      ? ["Jalurnya menabrak dinding angin. Coba lewat celahnya.", "The track hit a wind tunnel wall. Try through the gap."]
+      : ["Roketnya jatuh ke jurang. Jalurnya harus menyambung sampai seberang.", "The rocket fell into the canyon. The track has to reach the other side."];
+    hint(why);
+    say([why]);
+    $("rkGo").disabled = false;
+    rover = null;
+    draw();
+  }
+
+  /* Level 1 asks him to count what he collected: stars 1 to 10. */
+  function countStars() {
+    phase = "ask";
+    const right = Math.min(10, gotStars);
+    /* four distinct choices, always: the answer plus three others */
+    const others = [];
+    for (let v = 0; v <= 10; v++) if (v !== right) others.push(v);
+    others.sort(() => Math.random() - 0.5);
+    const opts = [right].concat(others.slice(0, 3)).sort(() => Math.random() - 0.5);
+    const box = document.createElement("div");
+    box.className = "done on";
+    box.innerHTML = `<div class="box">
+      <h2>${T(["Berapa bintang yang kau lewati?", "How many stars did you pass?"])}</h2>
+      <p style="font-size:22px;letter-spacing:2px">${"⭐".repeat(Math.min(10, gotStars)) || "—"}</p>
+      <div class="row" style="gap:10px">${opts.map((v) => `<button class="btn go" data-v="${v}" style="font-size:22px;min-width:58px">${v}</button>`).join("")}</div>
+    </div>`;
+    $("rkStage").appendChild(box);
+    say([["Berapa bintang yang kau lewati?", "How many stars did you pass?"]]);
+    box.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
+      if (Number(b.dataset.v) === right) { box.remove(); win(); }
+      else { b.style.opacity = .35; wrongs++; sfxWrong(); say([["Coba hitung lagi.", "Count again."]]); }
+    });
+  }
+
+  /* Level 3: trace the two-syllable word to open the hangar door. */
+  function hangar() {
+    phase = "hangar";
+    const word = ROKET_WORDS[Math.floor(Math.random() * ROKET_WORDS.length)];
+    const box = document.createElement("div");
+    box.className = "done on";
+    box.innerHTML = `<div class="box" style="max-width:520px">
+      <h2>${T(["Pintu hanggar terkunci!", "The hangar door is locked!"])}</h2>
+      <p>${T(["Tebalkan tulisan ini untuk membukanya.", "Trace this word to open it."])}</p>
+      <div style="position:relative;width:100%;height:110px;background:#FFFDF6;border-radius:14px;overflow:hidden">
+        <div id="hwGuide" style="position:absolute;inset:0;display:grid;place-items:center;font-family:Fredoka,sans-serif;
+             font-size:64px;color:#D9CBA6;letter-spacing:4px">${word[0]}</div>
+        <canvas id="hwCv" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas>
+      </div>
+      <div class="meter" style="margin-top:8px"><i id="hwMeter" style="width:0%"></i></div>
+      <div class="row"><button class="btn go" id="hwDone">🔓 ${T(["Buka", "Open"])}</button></div>
+    </div>`;
+    $("rkStage").appendChild(box);
+    const cv = $("hwCv"), hc = cv.getContext("2d");
+    let hp = [], drawing2 = false, cover = 0;
+    const fitH = () => {
+      const r = cv.getBoundingClientRect();
+      cv.width = r.width * dpr; cv.height = r.height * dpr;
+      hc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    setTimeout(fitH, 30); window.addEventListener("resize", fitH);
+    onCleanup(() => window.removeEventListener("resize", fitH));
+    const hpt = (e) => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    cv.addEventListener("pointerdown", (e) => { drawing2 = true; hp = []; try { cv.setPointerCapture(e.pointerId); } catch (er) {} const p = hpt(e); hp.push(p); });
+    cv.addEventListener("pointermove", (e) => {
+      if (!drawing2) return;
+      const p = hpt(e); const a = hp[hp.length - 1] || p;
+      if (Math.hypot(p.x - a.x, p.y - a.y) < 2) return;
+      hp.push(p);
+      hc.strokeStyle = "#1C6B7A"; hc.lineWidth = 6; hc.lineCap = "round";
+      hc.beginPath(); hc.moveTo(a.x, a.y); hc.lineTo(p.x, p.y); hc.stroke();
+      const r = cv.getBoundingClientRect();
+      /* coverage: how much of the word box the ink has touched */
+      const gx = word[0].length * 34, gy = 34;
+      cover = Math.min(100, Math.round(100 * Math.min(1, (hp.length * 3) / (gx + gy))));
+      $("hwMeter").style.width = cover + "%";
+    });
+    cv.addEventListener("pointerup", () => drawing2 = false);
+    $("hwDone").onclick = () => {
+      if (cover >= 45 || hp.length > 60) { box.remove(); win(); }
+      else { sfxWrong(); wrongs++; say([["Tebalkan lebih penuh lagi.", "Trace more of the word."]]); }
+    };
+    say([["Tebalkan kata " + word[0], "Trace the word " + word[1]]]);
+  }
+
+  function win() {
+    phase = "won";
+    finish($("rkStage"), {
+      gameId: "roket", level: lv, wrongs,
+      questions: 1 + passedGates.length + (gotStars ? 1 : 0),
+      title: T(["Roketnya mendarat!", "The rocket landed!"]),
+      text: T(["Bintang: " + gotStars + " · Gerbang: " + passedGates.length + "/2", "Stars: " + gotStars + " · Gates: " + passedGates.length + "/2"]),
+      again: () => open("roket")
+    });
+  }
+
+  window.addEventListener("resize", fit);
+  onCleanup(() => window.removeEventListener("resize", fit));
+  setTimeout(fit, 30);
+  reset();
+};
+
+/* ============================================================
+   GAME 2 — IRAMA SILANG (Go / No-Go)
+   Four lanes, two hands. Green is a plain tap, purple is a cross
+   (the other hand takes it), a red crab bomb must be left alone,
+   and from level 2 a number means "left hand for even, right hand
+   for odd". Level 3 takes the notes away and asks for the pattern
+   back from memory.
+   ============================================================ */
+const PAD_KEYS = ["a", "s", "j", "k"];
+
+GAMES[1].mount = function (root, lv) {
+  S.view = "irama";
+  const bpm = lv === 1 ? 80 : (lv === 2 ? 100 : 112);
+  const beatMs = 60000 / bpm;
+  const fallBeats = 2.2;                 /* a note takes this many beats to fall */
+
+  let notes = [], raf = 0, last = 0, spawnAt = 0, beat = 0;
+  let wrongs = 0, hits = 0, misses = 0, running = false, ending = false;
+  const ROUND = lv === 1 ? 22 : (lv === 2 ? 26 : 24);
+  const endAt = beat + ROUND;
+
+  root.innerHTML = `
+    <div class="playhead">
+      <div class="ttl">🥁 ${T(["Irama Silang", "Cross-Hand Rhythm"])}
+        <small>${T(["Tingkat", "Level"])} ${lv} · ${bpm} BPM</small></div>
+      <button class="btn small" id="irStop">⏹ ${T(["Berhenti", "Stop"])}</button>
+    </div>
+    <div class="hud">
+      <span class="pill" id="irHit">✅ 0</span>
+      <span class="pill" id="irMiss">❌ 0</span>
+      <span class="pill" id="irBeat">🎵 0/${ROUND}</span>
+    </div>
+    <div class="lanes" id="irLanes">
+      <div class="carry" id="irCall"></div>
+      ${[0, 1, 2, 3].map((i) => `<div class="lane" data-l="${i}"><div class="judge"></div></div>`).join("")}
+    </div>
+    <div class="pads">${[0, 1, 2, 3].map((i) =>
+      `<button class="pad" data-p="${i}">${["🖐️", "✋", "🤚", "🖐️"][i]}<small>${PAD_KEYS[i].toUpperCase()}</small></button>`).join("")}</div>
+    <div class="hint" style="position:static;transform:none;margin-top:6px;border-radius:14px" id="irHint"></div>`;
+
+  if (lv === 3) return echoMode();
+
+  const lanes = Array.from(root.querySelectorAll(".lane"));
+  const pads = Array.from(root.querySelectorAll(".pad"));
+  const hallH = () => $("irLanes").getBoundingClientRect().height || 320;
+  let judgeY = 0;
+  setTimeout(() => { judgeY = hallH() - 70; }, 50);
+
+  function hint(pair) { $("irHint").innerHTML = T(pair); }
+  function upd() {
+    $("irHit").textContent = "✅ " + hits;
+    $("irMiss").textContent = "❌ " + wrongs;
+    $("irBeat").textContent = "🎵 " + Math.min(ROUND, beat) + "/" + ROUND;
+  }
+
+  function makeNote(k) {
+    const roll = Math.random();
+    const lane = Math.floor(Math.random() * 4);
+    let kind = "tap";
+    if (lv === 1) kind = roll < 0.15 ? "bomb" : "tap";
+    else if (lv === 2) kind = roll < 0.16 ? "bomb" : roll < 0.40 ? "cross" : roll < 0.70 ? "num" : "tap";
+    else kind = roll < 0.14 ? "bomb" : roll < 0.36 ? "cross" : roll < 0.64 ? "num" : "tap";
+    const n = { lane, kind, y: -60, done: false, id: "n" + Math.random().toString(36).slice(2, 7) };
+    if (kind === "num") n.value = 1 + Math.floor(Math.random() * 9);
+    if (kind === "cross") n.lane = lane;
+    return n;
+  }
+  /* Which pads are allowed to take this note? */
+  function wantPads(n) {
+    if (n.kind === "tap") return [n.lane];
+    if (n.kind === "cross") return [3 - n.lane];
+    if (n.kind === "num") return n.value % 2 === 0 ? [0, 1] : [2, 3];
+    return [];
+  }
+  function label(n) {
+    if (n.kind === "bomb") return "🦀";
+    if (n.kind === "cross") return "🌟";
+    if (n.kind === "num") return n.value;
+    return "●";
+  }
+
+  function drawNote(n) {
+    if (!n.el) {
+      const el = document.createElement("div");
+      el.className = "note " + n.kind;
+      el.textContent = label(n);
+      lanes[n.lane].appendChild(el);
+      n.el = el;
+    }
+    n.el.style.top = n.y + "px";
+    n.el.style.transform = "";
+  }
+
+  function spawn() {
+    if (beat >= endAt) return;
+    const b = beat;
+    /* rest beats keep the pulse without crowding the screen */
+    if (b % 4 === 3 && Math.random() < 0.35) { beat++; return; }
+    const n = makeNote(b);
+    notes.push(n);
+    if (n.kind !== "tap") {
+      const call = n.kind === "bomb" ? ["Jangan ketuk!", "Don't tap!"]
+        : n.kind === "cross" ? ["Silang! Tangan lain!", "Cross! Other hand!"]
+        : [n.value % 2 === 0 ? "Genap, kiri!" : "Ganjil, kanan!", n.value % 2 === 0 ? "Even, left!" : "Odd, right!"];
+      $("irCall").innerHTML = T(call);
+    }
+    beat++;
+  }
+
+  function tick(t) {
+    raf = requestAnimationFrame(tick);
+    const now = t || performance.now();
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!running) return;
+    const h = hallH();
+    judgeY = h - 70;
+    if (now >= spawnAt) { spawn(); spawnAt = now + beatMs; }
+    const v = (h + 60) / (fallBeats * beatMs / 1000);   /* px per second */
+    notes.forEach((n) => { n.y += v * dt; drawNote(n); });
+    /* notes that passed the line untouched */
+    notes.forEach((n) => {
+      if (n.done) return;
+      if (n.y > judgeY + 34) {
+        n.done = true;
+        if (n.kind !== "bomb") { misses++; if (n.kind !== "tap") wrongs++; }
+        n.el.classList.add("gone");
+        setTimeout(() => n.el.remove(), 200);
+      }
+    });
+    upd();
+    if (beat >= endAt && notes.every((n) => n.done)) end();
+  }
+
+  function tap(padIdx) {
+    if (!running) return;
+    const pad = pads[padIdx];
+    pad.classList.add("on"); setTimeout(() => pad.classList.remove("on"), 110);
+    tone(300 + padIdx * 70, 0.08, "sine", 0.1);
+    const h = hallH();
+    /* nearest live note in the judge window */
+    let best = null, bestD = 1e9;
+    notes.forEach((n) => {
+      if (n.done) return;
+      if (Math.abs(n.y - (h - 70)) > 62) return;
+      const d = Math.abs(n.y - (h - 70));
+      if (d < bestD) { bestD = d; best = n; }
+    });
+    if (!best) return;
+    const want = wantPads(best);
+    if (best.kind === "bomb") {
+      wrongs++; sfxWrong(); best.done = true;
+      best.el.classList.add("gone"); setTimeout(() => best.el.remove(), 200);
+      $("irCall").innerHTML = T(["Aduh, itu bom!", "Oops, that was a bomb!"]);
+      return;
+    }
+    if (want.includes(padIdx)) {
+      hits++; best.done = true; sfxPop(hits % 6);
+      best.el.classList.add("gone"); setTimeout(() => best.el.remove(), 200);
+      $("irCall").innerHTML = "✅";
+    } else {
+      wrongs++; sfxWrong();
+      best.el.style.background = "#FF6B5B";
+      $("irCall").innerHTML = T(["Tangan lain!", "The other hand!"]);
+    }
+    upd();
+  }
+
+  pads.forEach((p, i) => p.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); }));
+  lanes.forEach((ln, i) => ln.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); }));
+  const key = (e) => {
+    const i = PAD_KEYS.indexOf(e.key.toLowerCase());
+    if (i >= 0) { e.preventDefault(); tap(i); }
+  };
+  listenWindow("keydown", key);
+
+  function end() {
+    if (ending) return;
+    ending = true; running = false; cancelAnimationFrame(raf);
+    skill("rhythm", Math.max(1, Math.round(hits / 4)));
+    skill("inhibit", Math.max(1, Math.round((hits - wrongs) / 6)));
+    finish(root, {
+      gameId: "irama", level: lv, wrongs: Math.min(3, wrongs),
+      questions: Math.max(1, hits + wrongs + misses),
+      title: T(["Iramanya selesai!", "The rhythm is done!"]),
+      text: T(["Tepat: " + hits + " · Meleset: " + (wrongs + misses), "On time: " + hits + " · Missed: " + (wrongs + misses)]),
+      again: () => open("irama")
+    });
+  }
+
+  $("irStop").onclick = () => { running = false; cancelAnimationFrame(raf); open("irama"); };
+  hint([["Ketuk pad saat not melewati garis. Merah = jangan!", "Tap the pad as a note crosses the line. Red = never!"]]);
+  running = true; last = performance.now(); spawnAt = last + 900;
+  raf = requestAnimationFrame(tick);
+  say([["Siap? Ikuti iramanya.", "Ready? Follow the beat."]]);
+
+  /* ---------- level 3: echo blackout ---------- */
+  function echoMode() {
+    const INSTR = [
+      { e: "🥁", f: 180, name: ["drum", "drum"] },
+      { e: "🔔", f: 660, name: ["bell", "bell"] },
+      { e: "🎹", f: 440, name: ["piano", "piano"] },
+      { e: "🎺", f: 523, name: ["trumpet", "terompet"] }
+    ];
+    let round = 0, seq = [], input = [], phase2 = "ready", wrongs2 = 0;
+    const padRow = [0, 1, 2, 3].map((i) => `<button class="pad" data-e="${i}">${INSTR[i].e}<small>${PAD_KEYS[i].toUpperCase()}</small></button>`).join("");
+    root.innerHTML = `
+      <div class="playhead">
+        <div class="ttl">🥁 ${T(["Irama Silang", "Cross-Hand Rhythm"])}
+          <small>${T(["Tingkat 3", "Level 3"])} · ${T(["Echo Blackout", "Echo Blackout"])}</small></div>
+        <button class="btn small" id="irStop">⏹ ${T(["Berhenti", "Stop"])}</button>
+      </div>
+      <div class="hud"><span class="pill" id="ecRound">🎵 1/3</span><span class="pill" id="ecState">👀</span></div>
+      <div class="stageBox" style="min-height:180px;display:grid;place-items:center;text-align:center">
+        <div>
+          <div id="ecShow" style="font-family:var(--emoji);font-size:clamp(38px,9vw,64px);letter-spacing:10px;min-height:70px"></div>
+          <div id="ecMsg" style="font-family:Fredoka,sans-serif;font-size:17px;margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="pads">${padRow}</div>`;
+    const pads2 = Array.from(root.querySelectorAll("[data-e]"));
+    const msg = (pair) => { $("ecMsg").innerHTML = T(pair); };
+    function playSeq() {
+      phase2 = "play"; input = [];
+      seq = [0, 0, 0, 0].map(() => Math.floor(Math.random() * 4));
+      $("ecShow").textContent = "";
+      msg([["Dengarkan dulu...", "Listen first..."]]);
+      $("ecState").textContent = "👂";
+      seq.forEach((i, k) => setTimeout(() => {
+        $("ecShow").textContent = INSTR[i].e;
+        tone(INSTR[i].f, 0.3, "triangle", 0.18);
+        setTimeout(() => { $("ecShow").textContent = ""; }, 260);
+        if (k === seq.length - 1) setTimeout(() => { phase2 = "input"; msg([["Sekarang ulangi!", "Now repeat it!"]]); $("ecState").textContent = "🙌"; }, 420);
+      }, 520 * k + 300));
+    }
+    function press(i) {
+      if (phase2 !== "input") return;
+      tone(INSTR[i].f, 0.22, "triangle", 0.16);
+      input.push(i);
+      $("ecShow").textContent = INSTR[i].e;
+      setTimeout(() => { $("ecShow").textContent = ""; }, 200);
+      if (input.length === 4) {
+        const ok = input.every((v, k) => v === seq[k]);
+        if (!ok) { wrongs2++; sfxWrong(); msg([["Hampir! Coba ingat lagi.", "Almost! Remember it again."]]); }
+        else { sfxPop(round); msg([["Tepat!", "Exactly!"]]); }
+        round++;
+        $("ecRound").textContent = "🎵 " + Math.min(3, round + 1) + "/3";
+        if (round >= 3) {
+          skill("rhythm", 4); skill("inhibit", 2);
+          finish(root, {
+            gameId: "irama", level: 3, wrongs: Math.min(3, wrongs2),
+            title: T(["Ingatan iramamu kuat!", "Your rhythm memory is strong!"]),
+            text: T(["Tiga pola diingat.", "Three patterns remembered."]),
+            again: () => open("irama")
+          });
+          return;
+        }
+        setTimeout(playSeq, 900);
+      }
+    }
+    pads2.forEach((p, i) => p.addEventListener("pointerdown", (e) => { e.preventDefault(); press(i); }));
+    listenWindow("keydown", (e) => { const i = PAD_KEYS.indexOf(e.key.toLowerCase()); if (i >= 0) { e.preventDefault(); press(i); } });
+    $("irStop").onclick = () => open("irama");
+    setTimeout(playSeq, 600);
+    say([["Dengarkan empat bunyi, lalu ulangi.", "Listen to four sounds, then repeat them."]]);
+  }
+};
+
+/* ============================================================
+   GAME 3 — BENGKEL TANGRAM & CERMIN
+   Drag the pieces onto the ghost shape. Rotate in 90 degree steps
+   at level 1, 45 at level 2, and at level 3 the ghost is a mirror
+   reflection: he moves the left-hand block, the reflection on the
+   right has to land on the target.
+   ============================================================ */
+const SHAPES = {
+  tri: "50,0 100,100 0,100",      /* equilateral, point up */
+  triR: "0,0 100,50 0,100",       /* right triangle */
+  sq: "0,0 100,0 100,100 0,100",
+  para: "20,0 100,0 80,100 0,100",
+  thin: "0,0 100,0 100,34 0,34",
+  trap: "20,0 80,0 100,100 0,100", /* isosceles trapezoid */
+  hex: "50,0 93,25 93,75 50,100 7,75 7,25"
+};
+/* the five core polygons of the visual spec, each with one meaning */
+const SHAPE_COLORS = {
+  tri: "#0EA5E9",    /* sky blue, equilateral */
+  triR: "#F97316",   /* orange, right triangle */
+  para: "#8B5CF6",   /* purple, parallelogram */
+  trap: "#EAB308",   /* gold, trapezoid */
+  hex: "#10B981",    /* green, hexagon */
+  sq: "#F59E0B",
+  thin: "#94A3B8"
+};
+
+/* A layout: where each piece belongs, in percent of the board. */
+const LAYOUTS = {
+  1: {   /* rocket, 5 pieces, seams shown */
+    name: ["Roket", "Rocket"],
+    pieces: [
+      { s: "tri", size: 18, x: 50, y: 12, rot: 0, flip: 1 },
+      { s: "sq", size: 18, x: 50, y: 30, rot: 0, flip: 1 },
+      { s: "thin", size: 18, x: 50, y: 46, rot: 0, flip: 1 },
+      { s: "triR", size: 15, x: 38, y: 60, rot: 0, flip: 1 },
+      { s: "triR", size: 15, x: 62, y: 60, rot: 0, flip: -1 }
+    ]
+  },
+  2: {   /* kancil / deer head, 7 pieces, silhouette only */
+    name: ["Rusa", "Deer"],
+    pieces: [
+      { s: "tri", size: 16, x: 46, y: 18, rot: 0, flip: 1 },
+      { s: "tri", size: 12, x: 32, y: 9, rot: 45, flip: 1 },
+      { s: "tri", size: 12, x: 60, y: 9, rot: -45, flip: -1 },
+      { s: "hex", size: 15, x: 46, y: 36, rot: 0, flip: 1 },
+      { s: "para", size: 15, x: 46, y: 54, rot: 0, flip: 1 },
+      { s: "trap", size: 14, x: 34, y: 70, rot: 0, flip: 1 },
+      { s: "trap", size: 14, x: 60, y: 70, rot: 180, flip: -1 }
+    ]
+  },
+  3: {   /* mirror workshop */
+    name: ["Cermin Laser", "Laser Mirror"],
+    mirror: true,
+    pieces: [
+      { s: "tri", size: 15, x: 22, y: 22, rot: 0, flip: 1 },
+      { s: "sq", size: 14, x: 22, y: 44, rot: 0, flip: 1 },
+      { s: "para", size: 14, x: 22, y: 64, rot: 0, flip: 1 },
+      { s: "triR", size: 13, x: 30, y: 80, rot: 90, flip: 1 }
+    ],
+    targets: [ { x: 78, y: 22 }, { x: 78, y: 44 }, { x: 78, y: 64 }, { x: 70, y: 80 } ]
+  }
+};
+
+GAMES[2].mount = function (root, lv) {
+  S.view = "tangram";
+  const L = LAYOUTS[lv] || LAYOUTS[1];
+  const step = lv === 1 ? 90 : 45;
+  const SNAP_PX = 18;      /* the spec: within 18 screen pixels */
+  const SNAP_DEG = 10;     /* and within ten degrees */
+  let placed = 0, wrongs = 0, sel = null, dragging = null;
+
+  root.innerHTML = `
+    <div class="playhead">
+      <div class="ttl">🔷 ${T(["Bengkel Tangram", "Tangram Workshop"])}
+        <small>${T(["Tingkat", "Level"])} ${lv} · ${TI(L.name)}</small></div>
+      <button class="btn small" id="tgHint">👀 ${T(["Lihat bentuk", "Show shape"])}</button>
+    </div>
+    <div class="hud"><span class="pill" id="tgProg">🧩 0/${L.pieces.length}</span>
+      <span class="pill" id="tgTip">${T(["Sentuh potongan, lalu putar", "Tap a piece, then turn it"])}</span></div>
+    <div class="tangram" id="tgBoard">
+      <svg class="ghost" id="tgGhost" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="tools">
+      <button class="btn go" id="tgRot">↻ ${T(["Putar", "Turn"])}</button>
+      <button class="btn" id="tgFlip">↔ ${T(["Balik", "Flip"])}</button>
+      <button class="btn small" id="tgReset">🧽 ${T(["Ulang", "Reset"])}</button>
+    </div>`;
+
+  const board = $("tgBoard");
+  const ghost = $("tgGhost");
+  const total = L.pieces.length;
+
+  function paintGhost() {
+    ghost.innerHTML = "";
+    if (L.mirror) {
+      /* targets on the right, and the laser axis in the middle */
+      L.targets.forEach((t) => {
+        ghost.insertAdjacentHTML("beforeend",
+          `<circle cx="${t.x}" cy="${t.y}" r="9" fill="none" stroke="rgba(255,107,91,.75)" stroke-width="0.7" stroke-dasharray="2 2"/>`);
+      });
+      ghost.insertAdjacentHTML("beforeend",
+        `<line x1="50" y1="4" x2="50" y2="96" stroke="rgba(199,155,255,.8)" stroke-width="0.6" stroke-dasharray="3 2"/>`);
+      return;
+    }
+    if (lv === 2) {
+      /* silhouette only: the union is drawn as a soft blob behind the slots */
+      const pts = L.pieces.map((p) => `${p.x},${p.y}`);
+      ghost.innerHTML = `<g opacity=".22">${L.pieces.map((p) =>
+        `<polygon points="${SHAPES[p.s]}" fill="#5FE0A4"
+          transform="translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${p.flip} 1) translate(-50 -50) scale(${p.size / 100})"/>`).join("")}</g>`;
+      return;
+    }
+    /* level 1 keeps the seams so he can see how the pieces tile */
+    L.pieces.forEach((p) => {
+      const rot = p.rot, fl = p.flip, sz = p.size;
+      ghost.insertAdjacentHTML("beforeend",
+        `<g transform="translate(${p.x} ${p.y}) rotate(${rot}) scale(${fl} 1) translate(-50 -50)">
+           <polygon points="${SHAPES[p.s]}" fill="rgba(95,224,164,.14)" stroke="rgba(95,224,164,.6)" stroke-width="0.6"
+             transform="scale(${sz / 100})"/>
+         </g>`);
+    });
+  }
+  paintGhost();
+
+  const pieces = L.pieces.map((spec, i) => {
+    const el = document.createElement("div");
+    el.className = "piece";
+    const w = spec.size, h = spec.size;
+    el.style.width = w + "%"; el.style.height = h + "%";
+    el.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="${SHAPES[spec.s]}" fill="${SHAPE_COLORS[spec.s] || "#94A3B8"}" stroke="rgba(30,41,59,.55)" stroke-width="2"/></svg>`;
+    board.appendChild(el);
+
+    /* At level 3 every block carries a live mirror twin, so he can watch the
+       reflection travel while he is still moving the block itself. */
+    let twin = null;
+    if (L.mirror) {
+      twin = el.cloneNode(true);
+      twin.className = "piece";
+      twin.style.pointerEvents = "none";
+      twin.style.opacity = ".8";
+      board.appendChild(twin);
+    }
+
+    const p = {
+      el, twin, spec, i, locked: false,
+      rot: (i % 2 ? step : 0),
+      flip: 1,
+      x: 10 + (i * 80) / Math.max(1, total - 1),
+      y: 90
+    };
+    apply(p);
+    el.addEventListener("pointerdown", (e) => {
+      if (p.locked) return;
+      e.preventDefault();
+      sel = p; markSel();
+      dragging = { id: e.pointerId, dx: 0, dy: 0 };
+      const r = board.getBoundingClientRect();
+      const cxp = r.left + (p.x / 100) * r.width, cyp = r.top + (p.y / 100) * r.height;
+      dragging.dx = cxp - e.clientX; dragging.dy = cyp - e.clientY;
+      try { el.setPointerCapture(e.pointerId); } catch (er) {}
+    });
+    el.addEventListener("pointermove", (e) => {
+      if (!dragging || dragging.id !== e.pointerId || p.locked) return;
+      const r = board.getBoundingClientRect();
+      p.x = Math.max(3, Math.min(97, ((e.clientX + dragging.dx - r.left) / r.width) * 100));
+      p.y = Math.max(3, Math.min(97, ((e.clientY + dragging.dy - r.top) / r.height) * 100));
+      apply(p);
+    });
+    const drop = () => { if (dragging) { dragging = null; trySnap(p); } };
+    el.addEventListener("pointerup", drop);
+    el.addEventListener("pointercancel", drop);
+    return p;
+  });
+
+  function apply(p) {
+    p.el.style.left = p.x + "%";
+    p.el.style.top = p.y + "%";
+    p.el.style.transform = `translate(-50%,-50%) rotate(${p.rot}deg) scaleX(${p.flip})`;
+    if (p.twin) {
+      p.twin.style.left = (100 - p.x) + "%";
+      p.twin.style.top = p.y + "%";
+      p.twin.style.transform = `translate(-50%,-50%) rotate(${-p.rot}deg) scaleX(${-p.flip})`;
+    }
+  }
+  function markSel() {
+    pieces.forEach((p) => p.el.classList.toggle("sel", p === sel));
+  }
+  /* full turns are the same turn: 360 is 0 */
+  const norm = (d) => ((d % 360) + 360) % 360;
+  /* distance in screen pixels, so the tolerance means the same thing on a
+     phone and on an iPad */
+  function gapPx(x0, y0, x1, y1) {
+    const r = board.getBoundingClientRect();
+    return Math.hypot((x0 - x1) / 100 * r.width, (y0 - y1) / 100 * r.height);
+  }
+
+  function trySnap(p) {
+    if (L.mirror) {
+      /* Only the reflection has to land: the block itself stays where he put it. */
+      const t = L.targets[p.i];
+      if (gapPx(100 - p.x, p.y, t.x, t.y) < SNAP_PX) {
+        p.locked = true; p.el.classList.add("locked");
+        if (p.twin) p.twin.style.opacity = "1";
+        placed++; sfxPop(placed); tone(440 + placed * 55, 0.18, "triangle", 0.15);
+        $("tgProg").textContent = "🧩 " + placed + "/" + total;
+        if (placed === total) done();
+      }
+      return;
+    }
+    const t = p.spec;
+    const d = gapPx(p.x, p.y, t.x, t.y);
+    const rotOk = Math.abs(norm(p.rot - t.rot)) < SNAP_DEG ||
+                  Math.abs(norm(p.rot - t.rot) - 360) < SNAP_DEG;
+    /* a square and an isoceles triangle look the same when flipped */
+    const flipSym = t.s === "sq" || t.s === "tri";
+    const flipOk = lv === 1 || flipSym || p.flip === t.flip;
+    if (d < SNAP_PX && rotOk && flipOk) {
+      p.x = t.x; p.y = t.y; p.rot = t.rot; p.flip = t.flip;
+      p.locked = true; p.el.classList.add("locked");
+      apply(p);
+      placed++; sfxPop(placed); tone(440 + placed * 55, 0.18, "triangle", 0.15);
+      $("tgProg").textContent = "🧩 " + placed + "/" + total;
+      $("tgTip").innerHTML = T(["Pas! Lanjut.", "It fits! Keep going."]);
+      if (placed === total) done();
+    } else if (d < SNAP_PX * 3) {
+      $("tgTip").innerHTML = T(["Dekat! Coba putar atau balik.", "Close! Try turning or flipping it."]);
+    }
+  }
+
+  function rotate() {
+    if (!sel || sel.locked) { hintSel(); return; }
+    sel.rot = (sel.rot + step) % 360;
+    apply(sel); tone(560, 0.1, "sine", 0.1); trySnap(sel);
+  }
+  function flip() {
+    if (!sel || sel.locked) { hintSel(); return; }
+    sel.flip = -sel.flip;
+    apply(sel); tone(420, 0.1, "sine", 0.1); trySnap(sel);
+  }
+  function hintSel() {
+    $("tgTip").innerHTML = T(["Sentuh satu potongan dulu.", "Tap a piece first."]);
+  }
+  $("tgRot").onclick = rotate;
+  $("tgFlip").onclick = flip;
+  $("tgHint").onclick = () => {
+    ghost.style.opacity = ghost.style.opacity === "0" ? "1" : "0";
+  };
+  $("tgReset").onclick = () => open("tangram");
+  const keyTurn = (e) => {
+    if (e.key === "r") rotate();
+    if (e.key === "f") flip();
+  };
+  listenWindow("keydown", keyTurn);
+
+  function done() {
+    skill("rotation", 3);
+    confetti();
+    finish(board, {
+      gameId: "tangram", level: lv, wrongs,
+      questions: total,
+      title: T(["Bentuknya jadi!", "The shape is complete!"]),
+      text: L.mirror ? T(["Semua pantulan mengenai sasaran.", "Every reflection hit its target."])
+                     : T([total + " potongan tersusun.", total + " pieces fitted."]),
+      again: () => open("tangram")
+    });
+  }
+
+  $("tgProg").textContent = "🧩 0/" + total;
+  $("tgTip").innerHTML = L.mirror
+    ? T(["Geser balok kiri sampai pantulannya kena lingkaran.", "Move the left block until its reflection lands in a circle."])
+    : T(["Geser potongan ke bayangannya.", "Drag each piece onto its ghost."]);
+  say([[L.mirror ? "Cermin laser" : "Susun potongannya", L.mirror ? "Laser mirror" : "Build the shape"]]);
+};
+
+/* ============================================================
+   GAME 4 — MISI KANCIL KODE
+   A grid, a memory bar of 4 to 7 command cards, and a RUN button.
+   The program is executed step by step; the card that fails glows
+   yellow so he can debug just that step. Level 3 runs Kancil and
+   Kura-kura side by side, each with its own program.
+   ============================================================ */
+const CMD = {
+  fwd: { e: "⬆️", id: "Maju", en: "Forward" },
+  left: { e: "↰", id: "Kiri", en: "Left" },
+  right: { e: "↱", id: "Kanan", en: "Right" },
+  jump: { e: "⤒", id: "Lompat", en: "Jump" },
+  loop: { e: "🔁", id: "Ulangi 2x", en: "Repeat 2x" }
+};
+
+GAMES[3].mount = function (root, lv) {
+  S.view = "kancil";
+  const N = lv === 1 ? 4 : (lv === 2 ? 6 : 6);
+  const goalSteps = lv === 1 ? 6 : (lv === 2 ? 7 : 3);
+
+  /* A hand-made course per level. Every one is solvable with the cards on
+     the tray; the count in goalSteps is the shortest sensible plan. */
+  const courses = {
+    1: {
+      size: 4, start: { x: 0, y: 3 }, dir: 0,
+      walls: ["3,3", "0,1"],
+      rocks: ["1,2"],
+      picks: [{ x: 1, y: 3, label: "1" }, { x: 2, y: 3, label: "2" }, { x: 2, y: 2, label: "3" }],
+      goal: { x: 2, y: 0 }
+    },
+    2: {
+      size: 6, start: { x: 0, y: 5 }, dir: 0,
+      walls: ["0,4", "2,2", "3,3", "4,4", "5,1"],
+      rocks: ["4,3"],
+      picks: [{ x: 1, y: 4, label: "1" }, { x: 1, y: 3, label: "2" }, { x: 1, y: 2, label: "3" }],
+      goal: { x: 1, y: 0 }
+    },
+    3: {
+      size: 6, start: { x: 0, y: 2 }, dir: 0,
+      walls: ["0,1", "1,1", "4,1", "5,1"],
+      rocks: [],
+      picks: [],
+      goal: { x: 3, y: 2 },
+      /* the turtle starts bottom-right and has to reach the switch */
+      turtle: { start: { x: 5, y: 5 }, dir: 2, goal: { x: 2, y: 5 } },
+      switchAt: { x: 2, y: 5 },
+      /* Kancil cannot step onto the bridge until the turtle holds the switch */
+      bridge: ["3,2"]
+    }
+  };
+  const C = courses[lv] || courses[1];
+  const n = C.size;
+
+  const prog = { kancil: [], kura: [] };
+  let active = lv === 3 ? "kancil" : "kancil";
+  let running = false, wrongs = 0, collected = [], cursor = 0;
+
+  root.innerHTML = `
+    <div class="playhead">
+      <div class="ttl">🦌 ${T(["Misi Kancil Kode", "Kancil Code Mission"])}
+        <small>${T(["Tingkat", "Level"])} ${lv} · ${T(["susun", "plan"])} ${goalSteps}+</small></div>
+      <button class="btn small" id="knClear">🧽 ${T(["Hapus", "Clear"])}</button>
+      <button class="btn go" id="knRun">▶ ${T(["Jalankan", "Run"])}</button>
+    </div>
+    <div class="hud">
+      <span class="pill" id="knPick">🥒 0/${C.picks.length}</span>
+      <span class="pill" id="knStep">👣 0</span>
+      ${lv === 3 ? `<span class="pill" id="knWho">🦌 Kancil</span>` : ""}
+    </div>
+    <div class="mazeWrap">
+      <div class="maze" id="knMaze" style="grid-template-columns:repeat(${n},1fr)"></div>
+      <div style="flex:1 1 260px;min-width:240px">
+        <div class="cmdbar" id="knBar"></div>
+        <div class="tray2" id="knTray"></div>
+        <div class="hint" style="position:static;transform:none;margin-top:8px;border-radius:14px" id="knHint"></div>
+      </div>
+    </div>`;
+
+  const cells = {};
+  const maze = $("knMaze");
+  maze.style.gridTemplateRows = `repeat(${n},1fr)`;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const d = document.createElement("div");
+    d.className = "cell";
+    const key = x + "," + y;
+    if (C.walls.includes(key)) d.classList.add("wall");
+    if (C.rocks.includes(key)) { d.classList.add("rock"); d.textContent = "🪨"; }
+    if (C.goal && C.goal.x === x && C.goal.y === y) d.textContent = "🏁";
+    if (lv === 3 && C.switchAt && C.switchAt.x === x && C.switchAt.y === y) d.classList.add("switch");
+    maze.appendChild(d);
+    cells[key] = d;
+  }
+
+  function render() {
+    Object.values(cells).forEach((c) => { c.classList.remove("actor"); const w = c.querySelector(".who"); if (w) w.remove(); });
+    C.picks.forEach((p) => {
+      if (collected.includes(p.label)) return;
+      const c = cells[p.x + "," + p.y];
+      if (c && !c.querySelector(".pick")) { const s = document.createElement("span"); s.className = "pick"; s.textContent = "🥒"; c.appendChild(s); }
+    });
+    const put = (who, x, y, emo) => {
+      const c = cells[x + "," + y]; if (!c) return;
+      c.classList.add("actor");
+      const s = document.createElement("span"); s.className = "who"; s.textContent = emo;
+      s.style.fontSize = "min(7vw,30px)";
+      c.appendChild(s);
+    };
+    put("kancil", state.kx, state.ky, "🦌");
+    if (lv === 3) put("kura", state.tx, state.ty, "🐢");
+  }
+
+  const state = { kx: C.start.x, ky: C.start.y, dir: C.dir, tx: 0, ty: 0, tdir: 0 };
+  if (lv === 3) { state.tx = C.turtle.start.x; state.ty = C.turtle.start.y; state.tdir = C.turtle.dir; }
+
+  function renderBar() {
+    const list = prog[active];
+    $("knBar").innerHTML = list.length
+      ? list.map((c, i) => `<span class="c" data-i="${i}" title="tap to remove"><em>${CMD[c].e}</em>${TI([CMD[c].id, CMD[c].en])}</span>`).join("")
+      : `<span style="opacity:.6;font-size:13px">${T(["Kartu perintah muncul di sini", "Command cards appear here"])}</span>`;
+    $("knBar").querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
+      if (running) return;
+      prog[active].splice(Number(b.dataset.i), 1); renderBar();
+    });
+  }
+  function renderTray() {
+    const keys = lv === 2 || lv === 3 ? ["fwd", "left", "right", "loop"] : ["fwd", "left", "right", "jump"];
+    $("knTray").innerHTML = keys.map((k) =>
+      `<button class="c" data-k="${k}"><em>${CMD[k].e}</em>${TI([CMD[k].id, CMD[k].en])}</button>`).join("");
+    $("knTray").querySelectorAll("[data-k]").forEach((b) => b.onclick = () => {
+      if (running) return;
+      if (prog[active].length >= 8) return;
+      prog[active].push(b.dataset.k); sfxPop(prog[active].length); renderBar();
+    });
+  }
+
+  function hint(pair, keep) { $("knHint").innerHTML = T(pair); if (!keep) say([pair]); }
+
+  /* ---------- the executor ---------- */
+  const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];  /* E S W N */
+  function cellFree(x, y, rock) {
+    if (x < 0 || y < 0 || x >= n || y >= n) return false;
+    const k = x + "," + y;
+    if (C.walls.includes(k)) return false;
+    if (!rock && C.rocks.includes(k)) return false;
+    return true;
+  }
+
+  function expand(list) {
+    /* "Ulangi 2x" repeats the card that follows it; a trailing loop card is
+       simply ignored rather than failing the whole plan */
+    const out = [];
+    for (let i = 0; i < list.length; i++) {
+      if (list[i] === "loop") {
+        const nxt = list[i + 1];
+        if (nxt && nxt !== "loop") { out.push(nxt, nxt); i++; }
+      } else out.push(list[i]);
+    }
+    return out;
+  }
+
+  function run() {
+    if (running) return;
+    const plan = expand(prog.kancil);
+    if (!plan.length) { hint([["Susun kartu dulu.", "Add some cards first."]]); return; }
+    running = true; cursor = 0; wrongs = 0;
+    const tplan = lv === 3 ? expand(prog.kura) : [];
+    const kstate = { x: C.start.x, y: C.start.y, dir: C.dir };
+    const tstate = lv === 3 ? { x: C.turtle.start.x, y: C.turtle.start.y, dir: C.turtle.dir } : null;
+    let step = 0;
+    const maxStep = Math.max(plan.length, tplan.length);
+
+    const tick = () => {
+      if (step >= maxStep) { settle(); return; }
+      let fail = null;
+      /* The turtle moves first, so a turtle that reaches the switch on this
+         beat can hold the bridge for Kancil on the very same beat. */
+      if (tstate && step < tplan.length) {
+        const r = advance(tstate, tplan[step], true, false);
+        if (r !== true) fail = { who: "kura", i: step, why: r };
+      }
+      if (!fail && step < plan.length) {
+        const bridgeOpen = !!(tstate && C.switchAt && tstate.x === C.switchAt.x && tstate.y === C.switchAt.y);
+        const r = advance(kstate, plan[step], false, bridgeOpen);
+        if (r !== true) fail = { who: "kancil", i: step, why: r };
+      }
+      if (fail) {
+        running = false;
+        wrongs++;
+        /* show the failing program, then glow the exact card that broke */
+        if (lv === 3 && fail.who !== active) {
+          active = fail.who;
+          $("knWho").textContent = (active === "kancil" ? "🦌 Kancil" : "🐢 Kura-kura");
+          renderBar();
+        }
+        const idx = Math.min(prog[fail.who].length - 1, fail.i);
+        const el = $("knBar").querySelectorAll(".c")[idx];
+        if (el) el.classList.add("warn");
+        sfxWrong();
+        hint([["Berhenti di langkah " + (fail.i + 1) + ". " + fail.why[0], "Stopped at step " + (fail.i + 1) + ". " + fail.why[1]]], true);
+        say([fail.why]);
+        setTimeout(() => { resetTo(); }, 1100);
+        return;
+      }
+      if (step < plan.length) {
+        const el = $("knBar").querySelectorAll(".c")[step];
+        if (el) { el.classList.add("active"); setTimeout(() => el.classList.remove("active"), 260); }
+      }
+      tone(320 + step * 40, 0.08, "square", 0.07);
+      state.kx = kstate.x; state.ky = kstate.y; state.dir = kstate.dir;
+      if (tstate) { state.tx = tstate.x; state.ty = tstate.y; state.tdir = tstate.dir; }
+      render();
+      $("knStep").textContent = "👣 " + (step + 1);
+      /* pickups */
+      const here = kstate.x + "," + kstate.y;
+      C.picks.forEach((p) => {
+        if (p.x + "," + p.y === here && !collected.includes(p.label)) {
+          collected.push(p.label); sfxPop(collected.length);
+          $("knPick").textContent = "🥒 " + collected.length + "/" + C.picks.length;
+          say([["Bagus!", "Nice!"]]);
+        }
+      });
+      step++;
+      setTimeout(tick, 340);
+    };
+
+    function advance(st, cmd, isTurtle, bridgeOpen) {
+      if (cmd === "fwd" || cmd === "jump") {
+        const [dx, dy] = DIRS[st.dir];
+        const nx = st.x + dx, ny = st.y + dy;
+        if (!cellFree(nx, ny, cmd === "jump")) return cmd === "jump"
+          ? [["Tidak ada yang bisa dilompati di situ.", "There is nothing to jump there."]]
+          : [["Ada yang menghalangi. Coba belok.", "Something is in the way. Try turning."]];
+        if (C.bridge && !isTurtle && C.bridge.includes(nx + "," + ny) && !bridgeOpen) {
+          return [["Jembatannya masih terangkat. Kura-kura harus menginjak sakelar dulu.",
+                   "The bridge is still up. The turtle has to stand on the switch first."]];
+        }
+        st.x = nx; st.y = ny;
+        return true;
+      }
+      if (cmd === "left") { st.dir = (st.dir + 3) % 4; return true; }
+      if (cmd === "right") { st.dir = (st.dir + 1) % 4; return true; }
+      return [["Kartu tidak dikenal.", "Unknown card."]];
+    }
+
+    function settle() {
+      running = false;
+      const atGoal = kstate.x === C.goal.x && kstate.y === C.goal.y;
+      const turtleOk = lv !== 3 || (tstate.x === C.turtle.goal.x && tstate.y === C.turtle.goal.y);
+      const allPick = collected.length === C.picks.length;
+      if (atGoal && turtleOk) {
+        skill("switch", 2);
+        confetti();
+        finish(root, {
+          gameId: "kancil", level: lv, wrongs: wrongs + (allPick ? 0 : 1),
+          questions: Math.max(1, prog.kancil.length + (lv === 3 ? prog.kura.length : 0)),
+          title: T(["Misi berhasil!", "Mission complete!"]),
+          text: allPick ? T(["Semua mentimun terkumpul.", "Every cucumber collected."])
+                        : T(["Sampai di tujuan. Coba ambil semua mentimun.", "You reached the goal. Try collecting every cucumber."]),
+          again: () => open("kancil")
+        });
+      } else {
+        wrongs++;
+        sfxWrong();
+        hint([["Belum sampai. Tambah atau ubah kartunya.", "Not there yet. Add or change a card."]]);
+        resetTo();
+      }
+    }
+
+    function resetTo() {
+      state.kx = C.start.x; state.ky = C.start.y; state.dir = C.dir;
+      if (lv === 3) { state.tx = C.turtle.start.x; state.ty = C.turtle.start.y; state.tdir = C.turtle.dir; }
+      collected = [];
+      /* pickups come back when the run is reset: they belong to the course */
+      Object.values(cells).forEach((c) => { const s = c.querySelector(".pick"); if (s) s.remove(); });
+      $("knPick").textContent = "🥒 0/" + C.picks.length;
+      $("knStep").textContent = "👣 0";
+      render();
+    }
+
+    tick();
+  }
+
+  $("knRun").onclick = run;
+  $("knClear").onclick = () => { if (running) return; prog[active] = []; renderBar(); };
+  if (lv === 3) {
+    $("knWho").style.cursor = "pointer";
+    $("knWho").onclick = () => {
+      if (running) return;
+      active = active === "kancil" ? "kura" : "kancil";
+      $("knWho").textContent = (active === "kancil" ? "🦌 Kancil" : "🐢 Kura-kura");
+      renderBar();
+    };
+  }
+
+  renderTray(); renderBar(); render();
+  $("knPick").textContent = "🥒 0/" + C.picks.length;
+  hint(lv === 3
+    ? [["Susun 3 langkah untuk Kancil dan 3 untuk Kura-kura. Kura-kura harus berhenti di ubin oranye.", "Plan 3 steps for Kancil and 3 for Kura-kura. The turtle must stop on the orange tile."]]
+    : [["Susun kartu sampai Kancil mencapai bendera.", "Add cards until Kancil reaches the flag."]]);
+};
+
+/* ============================================================
+   GAME 5 — PABRIK SORTIR KILAT
+   A belt, three chutes, and a rule that changes under him. The
+   switch is the point: the first sort after a siren is where the
+   set-shifting happens, so the siren is loud and the rule bar
+   flashes rather than quietly changing.
+   ============================================================ */
+const SORT_RULES = {
+  1: [
+    { id: "color", label: ["Warna", "Colour"], chutes: [["Merah", "Red", "#FF6B5B", "🔴"], ["Biru", "Blue", "#7FC8FF", "🔵"], ["Hijau", "Green", "#5FE0A4", "🟢"]],
+      items: [["", "#FF6B5B", "🔴"], ["", "#7FC8FF", "🔵"], ["", "#5FE0A4", "🟢"]],
+      keyOf: (it) => it.color },
+    { id: "shape", label: ["Bentuk", "Shape"], chutes: [["Bulat", "Round", "#FFB247", "⭕"], ["Kotak", "Square", "#C79BFF", "⬛"], ["Segitiga", "Triangle", "#FF8FA3", "🔺"]],
+      items: [["⭕", "", ""], ["⬛", "", ""], ["🔺", "", ""]],
+      keyOf: (it) => it.shape }
+  ],
+  2: [
+    { id: "suku", label: ["Suku kata", "Syllable"], chutes: [["BA-", "BA-", "#FFB247", "🅰️"], ["BI-", "BI-", "#7FC8FF", "🅱️"], ["BU-", "BU-", "#C79BFF", "🅾️"]],
+      items: [["ba", "", ""], ["bi", "", ""], ["bu", "", ""]],
+      keyOf: (it) => it.syl },
+    { id: "math", label: ["Angka", "Number"], chutes: [["< 10", "< 10", "#5FE0A4", "🔽"], ["= 10", "= 10", "#FFB247", "🟰"], ["> 10", "> 10", "#FF6B5B", "🔼"]],
+      items: [["", "", ""], ["", "", ""], ["", "", ""]],
+      keyOf: (it) => (it.num < 10 ? 0 : it.num === 10 ? 1 : 2) }
+  ],
+  3: [
+    { id: "english", label: ["English", "English"], chutes: [["Animals", "Animals", "#5FE0A4", "🐾"], ["Food", "Food", "#FFB247", "🍎"], ["Other", "Other", "#7FC8FF", "📦"]],
+      items: [["", "", ""], ["", "", ""], ["", "", ""]],
+      keyOf: (it) => it.cat },
+    { id: "invert", label: ["Lampu ungu: geser satu!", "Purple lamp: shift one!"], chutes: [["Animals", "Animals", "#5FE0A4", "🐾"], ["Food", "Food", "#FFB247", "🍎"], ["Other", "Other", "#7FC8FF", "📦"]],
+      items: [["", "", ""], ["", "", ""], ["", "", ""]],
+      keyOf: (it) => it.cat, invert: true }
+  ]
+};
+const LW = ["🐱", "🐶", "🐟", "🐦", "🍎", "🍌", "🍞", "🥕", "📦", "⚽", "🚗", "🎈"];
+const EN_CATS = ["animal", "animal", "animal", "animal", "food", "food", "food", "food", "other", "other", "other", "other"];
+const SYL = ["ba", "bi", "bu", "be", "bo", "ba", "bi", "bu"];
+
+GAMES[4].mount = function (root, lv) {
+  S.view = "pabrik";
+  const rules = SORT_RULES[lv] || SORT_RULES[1];
+  const ROUND = 60;                     /* seconds */
+  const SWITCH = 20;                    /* seconds between rule flips */
+  const SPEED = lv === 1 ? 0.10 : (lv === 2 ? 0.13 : 0.15);  /* belts per second */
+
+  let ruleIdx = 0, t = 0, raf = 0, last = 0, running = false, ending = false;
+  let items = [], spawnAt = 0, score = 0, wrongs = 0, missed = 0, nextSwitch = SWITCH;
+  let idc = 0;
+
+  root.innerHTML = `
+    <div class="playhead">
+      <div class="ttl">🏭 ${T(["Pabrik Sortir Kilat", "Speed Sorting Factory"])}
+        <small>${T(["Tingkat", "Level"])} ${lv}</small></div>
+      <span class="pill" id="fbTime">⏱️ ${ROUND}</span>
+    </div>
+    <div class="hud">
+      <span class="pill" id="fbScore">✅ 0</span>
+      <span class="pill" id="fbWrong">❌ 0</span>
+      <span class="pill" id="fbNext">🔄 ${SWITCH}</span>
+    </div>
+    <div class="factory" id="fbStage">
+      <div class="rulebar" id="fbRule"></div>
+      <div class="belt" id="fbBelt"></div>
+      <div class="chutes" id="fbChutes"></div>
+    </div>`;
+
+  const belt = $("fbBelt");
+  const chutesEl = $("fbChutes");
+  const ruleBar = $("fbRule");
+
+  function rule() { return rules[ruleIdx]; }
+  function paintRule() {
+    const r = rule();
+    ruleBar.innerHTML = `<span>${T(["Aturannya:", "The rule:"])}</span><b>${TI(r.label)}</b>`;
+    chutesEl.innerHTML = r.chutes.map((c, i) =>
+      `<button class="chute" data-c="${i}" style="border-color:${c[2]};box-shadow:inset 0 -7px 0 ${c[2]}55">
+         <em>${c[3]}</em>${TI([c[0], c[1]])}</button>`).join("");
+    chutesEl.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => sort(Number(b.dataset.c), b));
+    /* keep the belt readable: item colours follow the rule */
+    items.forEach((it) => paintItem(it));
+  }
+  /* Every crate carries all of its attributes at once: a colour, a shape, a
+     number, a syllable and a category. That way a crate already on the belt
+     is always answerable after the rule flips, with nothing to relabel. */
+  const MATH_POOL = [3, 5, 7, 8, 10, 12, 14, 16, 18];
+  const SHAPE_FACE = ["\u2B55", "\u2B1B", "\uD83D\uDD3A"];   /* circle, square, triangle */
+  function newItem() {
+    const k = Math.floor(Math.random() * LW.length);
+    const it = {
+      id: "i" + (++idc), x: -0.15, done: false,
+      color: Math.floor(Math.random() * 3),
+      shape: Math.floor(Math.random() * 3),
+      num: MATH_POOL[Math.floor(Math.random() * MATH_POOL.length)],
+      syl: SYL[Math.floor(Math.random() * 3)],
+      cat: k < 4 ? 0 : (k < 8 ? 1 : 2),
+      picture: LW[k]
+    };
+    const el = document.createElement("div");
+    el.className = "item"; el.dataset.id = it.id;
+    belt.appendChild(el); it.el = el;
+    paintItem(it);
+    return it;
+  }
+
+  function answerFor(it, r) {
+    if (r.id === "color") return it.color;
+    if (r.id === "shape") return it.shape;
+    if (r.id === "suku") return ["ba", "bi", "bu"].indexOf(it.syl);
+    if (r.id === "math") return r.keyOf(it);
+    /* the purple lamp means "do the opposite": every category moves round one */
+    if (r.invert) return (it.cat + 1) % 3;
+    return it.cat;
+  }
+  function faceFor(it, r) {
+    if (r.id === "suku") return it.syl.toUpperCase();
+    if (r.id === "math") return String(it.num);
+    if (r.id === "color" || r.id === "shape") return SHAPE_FACE[it.shape];
+    return it.picture;
+  }
+  function paintItem(it) {
+    const r = rule();
+    const a = answerFor(it, r);
+    it.answer = a;
+    it.el.style.background = (r.id === "color") ? r.items[it.color][1] : r.chutes[a][2];
+    const face = faceFor(it, r);
+    const emoji = (r.id === "english" || r.id === "invert" || r.id === "shape" || r.id === "color");
+    it.el.innerHTML = `<b style="font-family:${emoji ? "var(--emoji)" : "Fredoka,sans-serif"}">${face}</b>`;
+  }
+
+  function sort(chute, btn) {
+    if (!running) return;
+    /* the item closest to the chutes that has not been sent yet */
+    const live = items.filter((i) => !i.done).sort((a, b) => b.x - a.x);
+    const it = live[0];
+    if (!it) return;
+    const right = it.answer === chute;
+    it.done = true;
+    if (right) {
+      score++; sfxPop(score % 6);
+      btn.classList.add("ok"); setTimeout(() => btn.classList.remove("ok"), 200);
+      it.el.style.transition = "transform .3s,opacity .3s";
+      it.el.style.transform = "translateY(-140%) scale(.6)"; it.el.style.opacity = "0";
+    } else {
+      wrongs++; sfxWrong();
+      btn.classList.add("no"); setTimeout(() => btn.classList.remove("no"), 260);
+      it.el.style.transition = "transform .3s,opacity .3s";
+      it.el.style.transform = "translateY(140%) scale(.6)"; it.el.style.opacity = "0";
+      $("fbWrong").textContent = "❌ " + wrongs;
+      ruleBar.classList.add("flash");
+      setTimeout(() => ruleBar.classList.remove("flash"), 700);
+    }
+    setTimeout(() => it.el.remove(), 340);
+    $("fbScore").textContent = "✅ " + score;
+  }
+
+  function tick(ts) {
+    raf = requestAnimationFrame(tick);
+    const now = ts || performance.now();
+    const dt = Math.min(0.06, (now - last) / 1000);
+    last = now;
+    if (!running) return;
+    t += dt;
+    const left = Math.max(0, Math.ceil(ROUND - t));
+    $("fbTime").textContent = "⏱️ " + left;
+    const toSwitch = Math.max(0, Math.ceil(nextSwitch - t));
+    $("fbNext").textContent = "🔄 " + toSwitch;
+
+    if (t >= nextSwitch && nextSwitch < ROUND) {
+      ruleIdx = (ruleIdx + 1) % rules.length;
+      nextSwitch += SWITCH;
+      paintRule();
+      ruleBar.classList.add("flash");
+      setTimeout(() => ruleBar.classList.remove("flash"), 2200);
+      sfxBell();
+      say([[rules[ruleIdx].label[0], rules[ruleIdx].label[1]]]);
+    }
+
+    spawnAt -= dt;
+    if (spawnAt <= 0) { items.push(newItem()); spawnAt = lv === 1 ? 1.9 : (lv === 2 ? 1.6 : 1.4); }
+
+    const w = belt.getBoundingClientRect().width || 600;
+    items.forEach((it) => {
+      if (it.done) return;
+      it.x += SPEED * dt;
+      it.el.style.left = (it.x * w) + "px";
+      if (it.x > 1.02) {
+        it.done = true; missed++;
+        it.el.style.opacity = "0";
+        setTimeout(() => it.el.remove(), 300);
+      }
+    });
+    items = items.filter((i) => !i.done || i.el.parentNode);
+
+    if (t >= ROUND) end();
+  }
+
+  function end() {
+    if (ending) return;
+    ending = true; running = false; cancelAnimationFrame(raf);
+    skill("switch", 3);
+    skill("inhibit", 1);
+    finish(root, {
+      gameId: "pabrik", level: lv, wrongs: Math.min(3, wrongs),
+      questions: Math.max(1, score + wrongs + missed),
+      title: T(["Shift selesai!", "Shift over!"]),
+      text: T(["Benar: " + score + " · Salah: " + wrongs + " · Terlewat: " + missed,
+               "Right: " + score + " · Wrong: " + wrongs + " · Missed: " + missed]),
+      again: () => open("pabrik")
+    });
+  }
+
+  paintRule();
+  running = true; last = performance.now(); spawnAt = 0.4;
+  raf = requestAnimationFrame(tick);
+  say([["Sortir sesuai aturan. Aturannya nanti berganti!", "Sort by the rule. The rule will change!"]]);
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function boot() {
+  const langs = ["id", "en", "both"];
+  const marks = { id: "🇮🇩", en: "🇬🇧", both: "🌐" };
+  $("lang").textContent = marks[S.lang] || "🇮🇩";
+  $("lang").onclick = () => {
+    S.lang = langs[(langs.indexOf(S.lang) + 1) % langs.length];
+    LS.set("petualangan.lang", S.lang);
+    $("lang").textContent = marks[S.lang];
+    if (S.view === "hub") hub(); else open(S.view);
+  };
+  $("snd").onclick = () => {
+    S.sound = !S.sound;
+    $("snd").textContent = S.sound ? "🔊" : "🔇";
+    if (!S.sound) stopAudio();
+  };
+  document.querySelectorAll("#tiers button").forEach((b) => {
+    b.onclick = () => {
+      S.level = Number(b.dataset.lv);
+      syncTierButtons();
+      if (S.view && S.view !== "hub") open(S.view); else hub();
+    };
+  });
+  try { if (window.SUPER && SUPER.bar) SUPER.bar.mount([]); } catch (e) {}
+  hub();
+})();
+</script>
+</body>
+</html>
