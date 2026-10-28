@@ -303,10 +303,10 @@ tiers each (TK, the transition year, and SD Kelas 1), and nothing ever locked.
 
 | Game | What he does | Skill it trains |
 |---|---|---|
-| 🚀 **Insinyur Jalur Roket** | Draws a track across a canyon with his finger, then watches the rover roll along it. The rover speeds down slopes, slows uphill and falls where the ink stops. Draw through two number-bond rings that add up to the target to fire the turbo. | Causal physics, velocity control, number bonds to 10 and 20 |
+| 🚀 **Insinyur Jalur Roket** | Three scenes per round. He draws a track across a canyon, then watches the rover roll it — speeding downhill, slowing uphill, falling where the ink stops. One scene adds an island to cross, one a purple wall with a hole to thread, one a boulder that drops and blocks the low road. Two number-bond rings that add up to the target fire the turbo. | Causal physics, velocity control, number bonds to 10 and 20 |
 | 🥁 **Irama Silang** | Four lanes, two hands. Green circles are a plain tap, purple stars need the other hand, blue diamonds show a number (left for even, right for odd), and red octagons are crab bombs that must not be touched. | Bilateral rhythm, midline crossing, inhibitory control |
 | 🔷 **Bengkel Tangram** | Drags, turns and flips the five core polygons onto a ghost shape. Tier 3 turns the board into a laser mirror: he moves the block on the left and the reflection has to land on the target. | Mental rotation, part-whole geometry, symmetry |
-| 🦌 **Misi Kancil Kode** | Lines up four to eight command cards (maju, kiri, kanan, lompat, ulangi 2×) and presses JALANKAN. The card that breaks glows amber, so he debugs one step instead of starting over. Tier 3 plans Kancil and Kura-kura together. | Working memory, sequencing, debugging |
+| 🦌 **Misi Kancil Kode** | Lines up four to eight command cards (maju, kiri, kanan, lompat, ulangi 2×) and presses JALANKAN. **Lompat** hops two tiles over a boulder, and a small arrow on the deer shows which way he faces, so turning is visible. The card that breaks glows amber, so he debugs one step instead of starting over. Tier 3 plans Kancil and Kura-kura together. | Working memory, sequencing, debugging |
 | 🏭 **Pabrik Sortir Kilat** | Sorts crates on a belt into three chutes. Every twenty seconds the siren flashes purple and the rule changes: colour to shape, syllables to numbers, English to "shift one". | Cognitive flexibility, set-shifting, reaction speed |
 
 Every game pays XP through `common.js` like the rest of the app, feeds the

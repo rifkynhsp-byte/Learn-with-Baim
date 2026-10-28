@@ -123,6 +123,7 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(23px,4vw,34px);margin:4px 0 
 .cell.switch{background:rgba(255,178,71,.28);box-shadow:inset 0 0 0 2px rgba(255,178,71,.6)}
 .cell.actor{background:rgba(95,224,164,.34)}
 .cell .who{position:absolute;font-family:var(--emoji);line-height:1}
+.cell .face{position:absolute;right:3px;bottom:2px;font-size:min(4vw,13px);line-height:1;opacity:.95}
 .cmdbar{flex:0 0 100%;min-height:56px;border-radius:16px;border:1px dashed rgba(247,233,204,.3);padding:6px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;background:rgba(4,26,32,.45)}
 .cmdbar .c{font-family:'Fredoka',sans-serif;font-size:13px;background:rgba(247,233,204,.14);border:1px solid rgba(247,233,204,.24);
  border-radius:10px;padding:6px 9px;cursor:pointer;display:flex;gap:4px;align-items:center}
@@ -1055,45 +1056,88 @@ const ROKET_WORDS = [["ku-da", "ku", "da"], ["ro-ket", "ro", "ket"], ["mo-bil", 
 
 GAMES[0].mount = function (root, lv) {
   S.view = "roket";
-  const W = 960, H = 560;            /* logical drawing board */
+
+  const W = 960, H = 560;                 /* logical drawing board */
   const groundY = H * 0.68;
   const startX = W * 0.10, goalX = W * 0.88;
-  const gapA = W * 0.26, gapB = W * 0.74;
-  const gates = lv === 1
-    ? [{ x: W * 0.36, y: H * 0.40, v: 4 }, { x: W * 0.56, y: H * 0.34, v: 6 }]
-    : [{ x: W * 0.33, y: H * 0.42, v: 7 }, { x: W * 0.50, y: H * 0.30, v: 4 },
-       { x: W * 0.66, y: H * 0.46, v: 6 }];
-  const target = lv === 1 ? 10 : (lv === 2 ? 11 : 13);   /* two gates must add up to this */
-  const stars = [];
-  const starCount = 6;
-  for (let i = 0; i < starCount; i++) {
-    const t = (i + 1) / (starCount + 1);
-    stars.push({ x: gapA + (gapB - gapA) * t, y: groundY - 40 - Math.sin(t * Math.PI * 3 + 1) * 90 - 40, got: false });
-  }
-  const tunnels = lv >= 2
-    ? [{ x: W * 0.44, top: H * 0.10, bottom: H * 0.34 }, { x: W * 0.62, top: H * 0.30, bottom: H * 0.56 }]
-    : [];
-  /* The ink budget is measured against the gap he actually has to cross, not
-     the canyon width: a straight line from the pad to the crate is already
-     749 units, so the old 1.9x canyon figure left almost no room to wobble. */
-  const inkMax = (goalX - startX) * (lv === 1 ? 2.1 : lv === 2 ? 1.8 : 1.55);
+  const STAGES = 3;                       /* three scenes per round */
+  const TARGET = lv === 1 ? 10 : (lv === 2 ? 11 : 13);
 
+  /* Each level plays three scenes, and every scene is a different puzzle:
+     a plain canyon, a canyon with an island in the middle, a wall with a hole
+     to thread, and a column where a boulder drops. */
+  const PLANS = {
+    1: ["canyon", "islands", "rocks"],
+    2: ["islands", "wall", "rocks"],
+    3: ["wall", "rocks", "islands"]
+  };
+
+  function pickPair(sum) {
+    const a = 1 + Math.floor(Math.random() * (sum - 2));
+    return [a, sum - a];
+  }
+
+  function makeScene(i) {
+    const kind = (PLANS[lv] || PLANS[1])[i] || "canyon";
+    const sc = { kind, walls: [], rocks: [], stars: [], gates: [], target: TARGET };
+
+    if (kind === "islands") {
+      sc.gaps = [[W * 0.22, W * 0.40], [W * 0.56, W * 0.76]];
+    } else {
+      const a = kind === "wall" ? W * 0.24 : W * 0.26;
+      const b = kind === "wall" ? W * 0.78 : W * 0.74;
+      sc.gaps = [[a, b]];
+    }
+    sc.left = sc.gaps[0][0];
+    sc.right = sc.gaps[sc.gaps.length - 1][1];
+
+    sc.platforms = [[0, sc.gaps[0][0]]];
+    for (let g = 0; g < sc.gaps.length - 1; g++) sc.platforms.push([sc.gaps[g][1], sc.gaps[g + 1][0]]);
+    sc.platforms.push([sc.gaps[sc.gaps.length - 1][1], W]);
+
+    if (kind === "wall") sc.walls.push({ x: W * 0.52, top: H * 0.14, bottom: H * 0.44 });
+    if (lv >= 2 && kind !== "wall") sc.walls.push({ x: W * 0.40, top: H * 0.10, bottom: H * 0.34 });
+    if (kind === "rocks") {
+      sc.rocks.push({ x: W * 0.52, restY: H * (lv === 1 ? 0.50 : 0.47), y: -70, state: "idle" });
+    }
+
+    const pair = pickPair(TARGET);
+    sc.gates.push({ x: W * 0.35, y: H * 0.34, v: pair[0] });
+    sc.gates.push({ x: W * 0.66, y: H * 0.30, v: pair[1] });
+
+    for (let k = 0; k < 5; k++) {
+      const t = (k + 1) / 6;
+      sc.stars.push({
+        x: sc.left + (sc.right - sc.left) * t,
+        y: Math.max(H * 0.16, groundY - 70 - Math.sin(t * Math.PI * 3 + 1) * 65),
+        got: false
+      });
+    }
+    return sc;
+  }
+
+  let scene = makeScene(0);
+  let stageIdx = 0;
   let path = [], stroke = [], drawing = false, continuing = false, ink = 0;
   let phase = "draw", wrongs = 0, turbo = false;
-  let rover = null, raf = 0, last = 0, gotStars = 0, passedGates = [], rubber = false;
+  let rover = null, raf = 0, last = 0, gotStars = 0, gatesHit = 0;
+  let passedGates = [], rubber = false, clocks = 0;
+
+  const inkMax = (goalX - startX) * (lv === 1 ? 2.1 : lv === 2 ? 1.8 : 1.55);
 
   root.innerHTML = `
     <div class="playhead">
       <div class="ttl">🚀 ${T(["Insinyur Jalur Roket", "Rocket Track Engineer"])}
-        <small>${T(["Tingkat", "Level"])} ${lv} · ${TI(LVNAME[lv - 1])}</small></div>
+        <small id="rkSub">${T(["Adegan", "Scene"])} 1/${STAGES} · ${TI(LVNAME[lv - 1])}</small></div>
       <button class="btn small" id="rkRub">🧽 ${T(["Hapus", "Erase"])}</button>
       ${lv >= 2 ? `<button class="btn small" id="rkMode">🎈 ${T(["Karet", "Rubber"])}</button>` : ""}
       <button class="btn go" id="rkGo">▶ ${T(["Jalankan", "Run"])}</button>
     </div>
     <div class="hud">
+      <span class="pill" id="rkScene">🎬 1/${STAGES}</span>
       <span class="pill" id="rkInk">🖊️ ${T(["Tinta", "Ink"])} 100%</span>
-      <span class="pill" id="rkStar">⭐ 0/${starCount}</span>
-      <span class="pill" id="rkGate">🔢 ${T(["Gerbang", "Gates"])} 0/2</span>
+      <span class="pill" id="rkStar">⭐ 0</span>
+      <span class="pill" id="rkGate">🔢 0/${STAGES * 2}</span>
     </div>
     <div class="stageBox" id="rkStage">
       <canvas id="rkCv"></canvas>
@@ -1102,7 +1146,8 @@ GAMES[0].mount = function (root, lv) {
     <div class="meter"><i id="rkMeter"></i></div>`;
 
   const c = $("rkCv"), ctx = c.getContext("2d");
-  let px = 1, py = 1, dpr = Math.min(2, window.devicePixelRatio || 1);
+  let px = 1, py = 1;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
   function fit() {
     const box = $("rkStage").getBoundingClientRect();
     px = box.width; py = box.height;
@@ -1112,7 +1157,10 @@ GAMES[0].mount = function (root, lv) {
     draw();
   }
   const sx = () => px / W, sy = () => py / H;
+  const frameIndex = (n) => ((window.SUPER && SUPER.anim) ? SUPER.anim.frameIndex(n)
+                                                          : Math.floor(performance.now() / 125) % (n || 4));
 
+  /* ---------------------------------------------------------------- geometry */
   function pathY(x) {
     if (path.length < 2) return null;
     if (x < path[0].x || x > path[path.length - 1].x) return null;
@@ -1125,16 +1173,137 @@ GAMES[0].mount = function (root, lv) {
     }
     return path[path.length - 1].y;
   }
-  function segLen(a, b) { return Math.hypot(b.x - a.x, b.y - a.y); }
-  function inkUsed() { let n = 0; for (let i = 1; i < path.length; i++) n += segLen(path[i - 1], path[i]); return n; }
 
-  function newRover() { return { x: startX, y: groundY, vx: 150, vy: 0, air: false, dead: false }; }
+  function newRover() {
+    return { x: startX, y: groundY, vx: 150, vy: 0, air: false, dead: false, won: false, reason: null };
+  }
 
-  /* the shared 8 FPS clock from common.js, with a local fallback */
-  const frameIndex = (n) => ((window.SUPER && SUPER.anim) ? SUPER.anim.frameIndex(n)
-                                                          : Math.floor(performance.now() / 125) % (n || 4));
+  function resetHazards() {
+    scene.rocks.forEach((k) => { k.y = -70; k.state = "idle"; });
+  }
 
+  /* ---------------------------------------------------------------- drawing */
+  function clampPoint(p) {
+    return { x: Math.max(0, Math.min(W, p.x)), y: Math.max(20, Math.min(H - 20, p.y)) };
+  }
+  function normalise(points) {
+    const sorted = points.slice().sort((a, b) => a.x - b.x);
+    const out = [];
+    for (const p of sorted) {
+      const prev = out[out.length - 1];
+      if (prev && Math.abs(p.x - prev.x) < 3) { prev.y = p.y; continue; }
+      out.push({ x: p.x, y: p.y });
+    }
+    return out;
+  }
+  function anchor(pts) {
+    if (!pts.length) return pts;
+    /* The track always begins exactly on the launch pad. Anything drawn left
+       of it is dropped, and the first point is replaced by the pad itself, so
+       pathY(startX) is always defined even when the touch landed a hair to the
+       right of it. */
+    const body = pts.filter((p) => p.x > startX + 1);
+    const out = [{ x: startX, y: groundY }].concat(body);
+    const end = out[out.length - 1];
+    if (end.x > goalX - 130 && end.x < goalX - 2) out.push({ x: goalX, y: groundY });
+    return out;
+  }
+  function commitStroke() {
+    if (!stroke.length) return;
+    const pts = normalise(stroke);
+    path = (continuing && path.length) ? normalise(path.concat(pts)) : pts;
+    path = anchor(path);
+    ink = 0;
+    for (let i = 1; i < path.length; i++) ink += Math.hypot(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y);
+    judgeTrack();
+  }
+
+  const toWorld = (e) => {
+    const r = c.getBoundingClientRect();
+    return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+  };
+
+  c.addEventListener("pointerdown", (e) => {
+    if (phase !== "draw") return;
+    const p = toWorld(e);
+    const tip = path[path.length - 1];
+    continuing = !!(tip && Math.hypot(p.x - tip.x, p.y - tip.y) < 80);
+    if (!continuing) { path = []; ink = 0; passedGates = []; turbo = false; scene.stars.forEach((s) => s.got = false); countStarsNow(); }
+    drawing = true;
+    stroke = [clampPoint(p)];
+    try { c.setPointerCapture(e.pointerId); } catch (er) {}
+    updHud(); draw();
+  });
+  c.addEventListener("pointermove", (e) => {
+    if (!drawing || phase !== "draw") return;
+    const q = clampPoint(toWorld(e));
+    const lastP = stroke[stroke.length - 1];
+    if (!lastP) { stroke.push(q); return; }
+    const d = Math.hypot(q.x - lastP.x, q.y - lastP.y);
+    if (d < 3) return;
+    if (ink + d > inkMax) {
+      hint([["Tintanya habis. Tekan Hapus lalu gambar lebih pendek.", "Out of ink. Tap Erase and draw a shorter line."]]);
+      return;
+    }
+    ink += d;
+    stroke.push(q);
+    updHud(); draw();
+  });
+  const endStroke = () => {
+    if (!drawing) return;
+    drawing = false;
+    commitStroke();
+    stroke = [];
+    draw();
+  };
+  c.addEventListener("pointerup", endStroke);
+  c.addEventListener("pointercancel", endStroke);
+
+  let sceneStars = 0;
+  function countStarsNow() {
+    sceneStars = scene.stars.filter((s) => s.got).length;
+  }
+
+  function judgeTrack() {
+    if (path.length < 2) {
+      hint([["Gambar dari roket di kiri sampai kotak hadiah di kanan.", "Draw from the rocket on the left to the present on the right."]]);
+      return;
+    }
+    scene.stars.forEach((s) => {
+      const was = s.got;
+      s.got = path.some((p) => Math.hypot(p.x - s.x, p.y - s.y) < 34);
+      if (s.got && !was) gotStars++;
+    });
+    passedGates = scene.gates.filter((gt) => path.some((p) => Math.hypot(p.x - gt.x, p.y - gt.y) < 40));
+    gatesHit = Math.max(gatesHit, 0);
+    turbo = passedGates.length >= 2 &&
+      passedGates[0].v + passedGates[1].v === scene.target;
+    countStarsNow();
+    updHud(); draw();
+    const end = path[path.length - 1];
+    if (end.x < goalX - 4) {
+      hint([["Jalurnya belum sampai ke seberang. Tarik terus sampai kotak hadiah.", "The track stops before the far side. Keep drawing to the present."]]);
+    } else if (turbo) {
+      hint([["Gerbangnya berjumlah " + scene.target + "! Turbo menyala!", "Those gates add up to " + scene.target + "! Turbo on!"]]);
+    } else {
+      hint([["Tekan Jalankan.", "Press Run."]]);
+    }
+  }
+
+  function updHud() {
+    const pct = Math.max(0, 100 - (ink / inkMax) * 100);
+    $("rkMeter").style.width = pct + "%";
+    $("rkInk").textContent = "🖊️ " + T(["Tinta", "Ink"]) + " " + Math.round(pct) + "%";
+    $("rkStar").textContent = "⭐ " + gotStars;
+    $("rkGate").textContent = "🔢 " + (gatesHit + passedGates.length) + "/" + (STAGES * 2);
+    $("rkScene").textContent = "🎬 " + (stageIdx + 1) + "/" + STAGES;
+  }
+
+  function hint(pair) { $("rkHint").innerHTML = T(pair); }
+
+  /* ---------------------------------------------------------------- render */
   function drawCliff(x0, x1) {
+    if (x1 - x0 < 2) return;
     const SX = sx(), SY = sy(), r = 10;
     ctx.beginPath();
     ctx.moveTo(x0 * SX, py);
@@ -1166,9 +1335,6 @@ GAMES[0].mount = function (root, lv) {
     ctx.fillStyle = "#1E293B"; ctx.fill();
   }
 
-  /* The rover: red and teal, two gear wheels, and a four-frame exhaust.
-     Physics is smooth; the sprite steps at 8 FPS, which is the look the
-     visual spec asks for. */
   function drawRover(r) {
     const SX = sx(), SY = sy();
     const s = Math.max(0.55, Math.min(1.25, (SX + SY) / 2.4));
@@ -1181,7 +1347,6 @@ GAMES[0].mount = function (root, lv) {
     ctx.save();
     ctx.translate(gx, gy - h / 2 + dip);
     ctx.strokeStyle = "#1E293B"; ctx.lineWidth = 2.4 * s;
-    /* chassis */
     ctx.fillStyle = "#0EA5E9";
     ctx.beginPath();
     ctx.moveTo(-w / 2, 0);
@@ -1190,12 +1355,10 @@ GAMES[0].mount = function (root, lv) {
     ctx.lineTo(w / 2, -h * 0.12);
     ctx.lineTo(w / 2, 0);
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    /* the red nose */
     ctx.fillStyle = "#EF4444";
     ctx.beginPath();
     ctx.ellipse(w / 2 - 7 * s, -h * 0.34, 12 * s, 10 * s, 0, 0, Math.PI * 2);
     ctx.fill(); ctx.stroke();
-    /* exhaust, four frames of flame */
     const flame = [10, 18, 26, 16][f] * s;
     ctx.fillStyle = f === 2 ? "#F59E0B" : "#FB923C";
     ctx.beginPath();
@@ -1214,7 +1377,6 @@ GAMES[0].mount = function (root, lv) {
     const SX = sx(), SY = sy();
     ctx.clearRect(0, 0, px, py);
 
-    /* warm cream paper with a faint dot grid, like the OT worksheets */
     ctx.fillStyle = "#FFFDF7";
     ctx.fillRect(0, 0, px, py);
     ctx.fillStyle = "rgba(30,41,59,.10)";
@@ -1224,56 +1386,84 @@ GAMES[0].mount = function (root, lv) {
       }
     }
 
-    /* the canyon, hatched so it reads as a drop */
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(gapA * SX, groundY * SY, (gapB - gapA) * SX, py - groundY * SY);
-    ctx.clip();
-    ctx.strokeStyle = "rgba(239,68,68,.22)";
-    ctx.lineWidth = 1.4;
-    for (let x = gapA * SX - py; x < gapB * SX; x += 16) {
+    /* the drops, hatched so they read as a fall */
+    scene.gaps.forEach((g) => {
+      ctx.save();
       ctx.beginPath();
-      ctx.moveTo(x, groundY * SY);
-      ctx.lineTo(x + (py - groundY * SY), py);
-      ctx.stroke();
-    }
-    ctx.restore();
+      ctx.rect(g[0] * SX, groundY * SY, (g[1] - g[0]) * SX, py - groundY * SY);
+      ctx.clip();
+      ctx.strokeStyle = "rgba(239,68,68,.22)";
+      ctx.lineWidth = 1.4;
+      for (let x = g[0] * SX - py; x < g[1] * SX; x += 16) {
+        ctx.beginPath();
+        ctx.moveTo(x, groundY * SY);
+        ctx.lineTo(x + (py - groundY * SY), py);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
 
-    drawCliff(0, gapA);
-    drawCliff(gapB, W);
+    scene.platforms.forEach((p) => drawCliff(p[0], p[1]));
 
-    /* level 1 keeps a wide glowing guide band, level 3 hardly any */
+    /* level 1 keeps a wide guide band over the whole crossing */
     if (lv === 1) {
       ctx.save();
-      ctx.strokeStyle = "rgba(16,185,129,.20)";
-      ctx.lineWidth = 36 * Math.min(SX, SY) * 0.8;
+      ctx.strokeStyle = "rgba(16,185,129,.18)";
+      ctx.lineWidth = 34 * Math.min(SX, SY) * 0.8;
       ctx.lineCap = "round";
       ctx.beginPath();
-      ctx.moveTo(gapA * SX, groundY * SY);
-      ctx.bezierCurveTo(W * 0.40 * SX, (groundY - 130) * SY,
-                        W * 0.60 * SX, (groundY - 130) * SY,
-                        gapB * SX, groundY * SY);
+      ctx.moveTo(scene.left * SX, groundY * SY);
+      ctx.bezierCurveTo(W * 0.40 * SX, (groundY - 140) * SY,
+                        W * 0.60 * SX, (groundY - 140) * SY,
+                        scene.right * SX, groundY * SY);
       ctx.stroke();
       ctx.restore();
     }
 
-    /* goal: the rescue crate with a zoo pet inside */
+    /* the crate at the far side */
     ctx.fillStyle = "#1E293B";
     ctx.fillRect(goalX * SX - 1, (groundY - 96) * SY, 3, 96 * SY);
     ctx.font = `${Math.round(34 * Math.min(SX, SY) * 1.1)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("🎁", goalX * SX + 26 * SX, (groundY - 74) * SY);
 
-    /* wind tunnels */
-    tunnels.forEach((t) => {
-      ctx.fillStyle = "rgba(139,92,246,.14)";
-      ctx.fillRect((t.x - 16) * SX, t.top * SY, 32 * SX, (t.bottom - t.top) * SY);
-      ctx.strokeStyle = "rgba(139,92,246,.75)"; ctx.lineWidth = 2;
-      ctx.strokeRect((t.x - 16) * SX, t.top * SY, 32 * SX, (t.bottom - t.top) * SY);
+    /* walls: a solid slab with a hole the track has to thread */
+    scene.walls.forEach((wl) => {
+      const x0 = (wl.x - 12) * SX, x1 = (wl.x + 12) * SX;
+      ctx.fillStyle = "#8B5CF6";
+      ctx.strokeStyle = "#4C1D95"; ctx.lineWidth = 2;
+      ctx.fillRect(x0, 0, x1 - x0, wl.top * SY);
+      ctx.strokeRect(x0, 0, x1 - x0, wl.top * SY);
+      ctx.fillRect(x0, wl.bottom * SY, x1 - x0, groundY * SY - wl.bottom * SY);
+      ctx.strokeRect(x0, wl.bottom * SY, x1 - x0, groundY * SY - wl.bottom * SY);
+      /* the hole glows so it reads as "go through here" */
+      ctx.fillStyle = "rgba(95,224,164,.22)";
+      ctx.fillRect(x0, wl.top * SY, x1 - x0, (wl.bottom - wl.top) * SY);
+      ctx.strokeStyle = "#10B981"; ctx.lineWidth = 2;
+      ctx.strokeRect(x0 + 1, wl.top * SY + 1, x1 - x0 - 2, (wl.bottom - wl.top) * SY - 2);
+    });
+
+    /* boulders: idle shows where it will land, then it drops when it hears him */
+    scene.rocks.forEach((k) => {
+      if (k.state === "idle") {
+        ctx.beginPath();
+        ctx.arc(k.x * SX, k.restY * SY, 26 * Math.min(SX, SY), 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(239,68,68,.10)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(239,68,68,.7)";
+        ctx.setLineDash([6, 5]); ctx.lineWidth = 2; ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(239,68,68,.85)";
+        ctx.font = `bold ${Math.round(15 * Math.min(SX, SY) * 1.2)}px Fredoka, sans-serif`;
+        ctx.fillText(T(["lompati", "cross high"]), k.x * SX, (k.restY + 48) * SY);
+      } else {
+        ctx.font = `${Math.round(44 * Math.min(SX, SY) * 1.2)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;
+        ctx.fillText("🪨", k.x * SX, (k.y) * SY);
+      }
     });
 
     /* number-bond rings */
-    gates.forEach((gt) => {
+    scene.gates.forEach((gt) => {
       const ok = passedGates.includes(gt);
       const rad = 30 * (SX + SY) / 2 * 0.55;
       ctx.beginPath();
@@ -1292,15 +1482,14 @@ GAMES[0].mount = function (root, lv) {
     });
 
     /* stars */
-    stars.forEach((s) => {
+    scene.stars.forEach((s) => {
       if (s.got) return;
       ctx.font = `${Math.round(26 * Math.min(SX, SY) * 1.2)}px "Segoe UI Emoji","Apple Color Emoji",sans-serif`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText("⭐", s.x * SX, s.y * SY);
     });
 
-    /* the drawn track: steel blue for rigid ink, magenta for bouncy ink.
-       While a stroke is in progress it is drawn as it is being drawn. */
+    /* the track */
     const inkColor = rubber ? "#EC4899" : "#0EA5E9";
     const drawLine = (line) => {
       if (line.length < 2) return;
@@ -1318,7 +1507,7 @@ GAMES[0].mount = function (root, lv) {
     drawLine(path);
     if (drawing) drawLine(stroke);
 
-    /* the launch pad, so it is obvious where a track has to begin */
+    /* the launch pad */
     ctx.beginPath();
     ctx.arc(startX * SX, groundY * SY, 15 * Math.min(SX, SY), 0, Math.PI * 2);
     ctx.fillStyle = "rgba(16,185,129,.16)";
@@ -1332,133 +1521,36 @@ GAMES[0].mount = function (root, lv) {
     drawRover(rover || { x: startX, y: groundY });
   }
 
-  function hint(pair) { $("rkHint").innerHTML = T(pair); }
-  function updHud() {
-    const pct = Math.max(0, 100 - (ink / inkMax) * 100);
-    $("rkMeter").style.width = pct + "%";
-    $("rkInk").textContent = "🖊️ " + T(["Tinta", "Ink"]) + " " + Math.round(pct) + "%";
-    $("rkStar").textContent = "⭐ " + gotStars + "/" + starCount;
-    $("rkGate").textContent = "🔢 " + T(["Gerbang", "Gates"]) + " " + passedGates.length + "/2";
-  }
-
-  const toWorld = (e) => {
-    const r = c.getBoundingClientRect();
-    return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
-  };
-
-  /* ---------- drawing ----------
-     A stroke can go in any direction. Points are collected as drawn and only
-     turned into a left-to-right track when the finger lifts, so dragging right
-     to left works as well as left to right, and two separate strokes glue
-     together when the second one starts where the first one stopped. */
-  function clampPoint(p) {
-    return { x: Math.max(0, Math.min(W, p.x)), y: Math.max(20, Math.min(H - 20, p.y)) };
-  }
-  /* the track has to be a function of x: sort, then collapse near-equal x */
-  function normalise(points) {
-    const sorted = points.slice().sort((a, b) => a.x - b.x);
-    const out = [];
-    for (const p of sorted) {
-      const prev = out[out.length - 1];
-      if (prev && Math.abs(p.x - prev.x) < 3) { prev.y = p.y; continue; }
-      out.push({ x: p.x, y: p.y });
-    }
-    return out;
-  }
-  /* Always leave the pad and, when the stroke gets close to the far cliff,
-     always reach the crate. Short of the goal is a real fail: he sees it. */
-  function anchor(pts) {
-    if (!pts.length) return pts;
-    if (pts[0].x > startX + 2) pts.unshift({ x: startX, y: groundY });
-    const end = pts[pts.length - 1];
-    if (end.x > goalX - 130 && end.x < goalX - 2) pts.push({ x: goalX, y: groundY });
-    return pts;
-  }
-
-  function commitStroke() {
-    if (!stroke.length) return;
-    const pts = normalise(stroke);
-    path = (continuing && path.length) ? normalise(path.concat(pts)) : pts;
-    path = anchor(path);
-    ink = 0;
-    for (let i = 1; i < path.length; i++) {
-      ink += Math.hypot(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y);
-    }
-    judgeTrack();
-  }
-
-  c.addEventListener("pointerdown", (e) => {
-    if (phase !== "draw") return;
-    const p = toWorld(e);
-    const tip = path[path.length - 1];
-    continuing = !!(tip && Math.hypot(p.x - tip.x, p.y - tip.y) < 80);
-    if (!continuing) {
-      path = []; ink = 0; gotStars = 0; passedGates = []; turbo = false;
-    }
-    drawing = true;
-    stroke = [clampPoint(p)];
-    try { c.setPointerCapture(e.pointerId); } catch (er) {}
-    updHud(); draw();
-  });
-  c.addEventListener("pointermove", (e) => {
-    if (!drawing || phase !== "draw") return;
-    const q = clampPoint(toWorld(e));
-    const lastP = stroke[stroke.length - 1];
-    if (!lastP) { stroke.push(q); return; }
-    const d = Math.hypot(q.x - lastP.x, q.y - lastP.y);
-    if (d < 3) return;
-    if (ink + d > inkMax) {
-      hint([["Tintanya habis. Tekan Hapus lalu gambar lebih pendek.", "Out of ink. Tap Erase and draw a shorter line."]]);
-      return;
-    }
-    ink += d;
-    stroke.push(q);
-    updHud(); draw();
-  });
-  const endStroke = () => {
-    if (!drawing) return;
-    drawing = false;
-    commitStroke();
-    stroke = [];
-    draw();
-  };
-  c.addEventListener("pointerup", endStroke);
-  c.addEventListener("pointercancel", endStroke);
-
-  /* First look at the line: which gates and stars it touches. */
-  function judgeTrack() {
-    if (path.length < 2) {
-      hint([["Gambar dari roket di kiri sampai kotak hadiah di kanan.", "Draw from the rocket on the left to the present on the right."]]);
-      return;
-    }
-    gotStars = 0;
-    stars.forEach((s) => {
-      s.got = path.some((p) => Math.hypot(p.x - s.x, p.y - s.y) < 34);
-      if (s.got) gotStars++;
-    });
-    passedGates = gates.filter((gt) => path.some((p) => Math.hypot(p.x - gt.x, p.y - gt.y) < 40));
-    turbo = passedGates.length >= 2 && !!(function () {
-      for (let i = 0; i < passedGates.length; i++)
-        for (let j = i + 1; j < passedGates.length; j++)
-          if (passedGates[i].v + passedGates[j].v === target) return true;
-      return false;
-    })();
-    updHud(); draw();
-    const end = path[path.length - 1];
-    if (end.x < goalX - 4) {
-      hint([["Jalurnya belum sampai ke seberang. Tarik terus sampai kotak hadiah.", "The track stops before the far side. Keep drawing to the present."]]);
-    } else if (turbo) {
-      hint([["Gerbangnya berjumlah " + target + "! Turbo menyala!", "Those gates add up to " + target + "! Turbo on!"]]);
-    } else {
-      hint([["Tekan Jalankan.", "Press Run."]]);
-    }
-  }
-
+  /* ---------------------------------------------------------------- run */
   function reset() {
     phase = "draw"; path = []; stroke = []; ink = 0; rover = null;
-    gotStars = 0; passedGates = []; turbo = false; drawing = false; continuing = false;
-    $("rkGo").disabled = false; updHud(); draw();
-    hint([["Mulai dari roket, tarik lewat gerbang berjumlah " + target + ", sampai kotak hadiah.", "Start at the rocket, draw through gates that add up to " + target + ", and reach the present."]]);
+    passedGates = []; turbo = false; drawing = false; continuing = false;
+    scene.stars.forEach((s) => s.got = false);
+    sceneStars = 0;
+    resetHazards();
+    $("rkGo").disabled = false;
+    updHud(); draw();
+    hint([["Adegan " + (stageIdx + 1) + ": mulai dari roket, tarik lewat gerbang berjumlah " +
+           scene.target + ", sampai kotak hadiah.", "Scene " + (stageIdx + 1) + ": start at the rocket, draw through gates that add up to " +
+           scene.target + ", and reach the present."]]);
+  }
+
+  function bankGates() {
+    gatesHit += passedGates.length;
+    passedGates = [];
+    updHud();
+  }
+
+  function nextStage() {
+    bankGates();
+    stageIdx++;
+    if (stageIdx >= STAGES) { stageIdx = STAGES - 1; return; }
+    scene = makeScene(stageIdx);
+    $("rkSub").textContent = T(["Adegan", "Scene"]) + " " + (stageIdx + 1) + "/" + STAGES + " · " + TI(LVNAME[lv - 1]);
+    sfxWin();
+    reset();
+    hint([["Bagus! Adegan berikutnya.", "Nice! Here comes the next one."]]);
+    say([["Bagus! Adegan berikutnya.", "Nice! Next scene."]]);
   }
 
   $("rkRub").onclick = () => { stop(); reset(); };
@@ -1473,8 +1565,12 @@ GAMES[0].mount = function (root, lv) {
   };
   $("rkGo").onclick = () => {
     if (phase !== "draw") return;
-    if (path.length < 2) { hint([["Gambarlah jalurnya dulu.", "Draw the track first."]]); return; }
+    if (path.length < 2) {
+      hint([["Gambarlah jalurnya dulu, dari roket sampai kotak hadiah.", "Draw the track first, from the rocket to the present."]]);
+      return;
+    }
     phase = "run"; $("rkGo").disabled = true;
+    resetHazards();
     rover = newRover();
     if (turbo) rover.vx = 260;
     last = performance.now();
@@ -1487,10 +1583,10 @@ GAMES[0].mount = function (root, lv) {
   function loop(t) {
     raf = requestAnimationFrame(loop);
     const now = t || performance.now();
-    let dt = Math.min(0.05, (now - last) / 1000);
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
     last = now;
     if (!rover || rover.dead) return;
-    step(dt * 1.0);
+    step(dt);
     draw();
     if (rover.won || rover.dead) { stop(); endRun(); }
   }
@@ -1504,10 +1600,21 @@ GAMES[0].mount = function (root, lv) {
       if (r.y > H + 60) r.dead = true;
       return;
     }
+
+    /* the boulder drops when he gets close, then it is a wall in the air */
+    scene.rocks.forEach((k) => {
+      if (k.state === "idle" && r.x > k.x - 240) k.state = "falling";
+      if (k.state === "falling") {
+        k.y += 1100 * dt;
+        if (k.y >= k.restY) { k.y = k.restY; k.state = "rest"; tone(120, 0.18, "square", 0.10); }
+      }
+      if (k.state === "rest" && Math.abs(r.x - k.x) < 30 && Math.abs((r.y - 26) - k.y) < 42) {
+        r.dead = true; r.reason = "rock"; return;
+      }
+    });
+
     let y = pathY(r.x);
     if (y == null && rubber) {
-      /* bouncy ink bridges a small break: the nearest ink within 70px holds
-         him up, and the rover gets a little hop out of it */
       let best = null, bd = 1e9;
       for (const p of path) {
         const d = Math.abs(p.x - r.x);
@@ -1516,13 +1623,12 @@ GAMES[0].mount = function (root, lv) {
       if (best && bd < 70) { y = best.y - 6; r.vx = Math.max(r.vx, 240); }
     }
     if (y == null) {
-      /* the ink stopped under him: he is in the air now, and gravity has him */
       r.air = true;
       r.reason = (path.length && path[path.length - 1].x < goalX - 10) ? "short" : "fell";
       r.vy = 60;
       return;
     }
-    /* on the track: slope decides the speed */
+
     const ahead = pathY(r.x + 14);
     const slope = ahead == null ? 0 : (ahead - y) / 14;
     const g = 1500;
@@ -1530,22 +1636,23 @@ GAMES[0].mount = function (root, lv) {
     const cap = turbo ? 620 : 420;
     r.vx = Math.max(70, Math.min(cap, r.vx));
     r.x += r.vx * dt;
-    /* Reaching the crate wins even if this step overshot the last drop of ink:
-       falling into the void one pixel before the flag is not a real mistake. */
     if (r.x >= goalX - 2) { r.won = true; r.x = goalX; r.y = groundY; return; }
     const ny = pathY(r.x);
     r.y = ny == null ? y : ny;
-    /* tunnels: the line has to go through the gap */
-    tunnels.forEach((t) => {
-      if (r.x > t.x - 6 && r.x < t.x + 6) {
-        if (r.y < t.top || r.y > t.bottom) {
-          r.dead = true; r.reason = "tunnel";
-        }
+
+    /* a wall only lets the track through its hole */
+    for (const wl of scene.walls) {
+      if (r.x > wl.x - 7 && r.x < wl.x + 7 && (r.y < wl.top || r.y > wl.bottom)) {
+        r.dead = true; r.reason = "wall";
+        return;
       }
-    });
-    /* stars and gates are collected as he passes */
-    stars.forEach((s) => {
-      if (!s.got && Math.hypot(r.x - s.x, r.y - s.y) < 34) { s.got = true; gotStars++; sfxPop(gotStars); }
+    }
+
+    /* stars are collected as he passes */
+    scene.stars.forEach((s) => {
+      if (!s.got && Math.hypot(r.x - s.x, r.y - s.y) < 34) {
+        s.got = true; gotStars++; sceneStars++; sfxPop(sceneStars);
+      }
     });
   }
 
@@ -1553,8 +1660,9 @@ GAMES[0].mount = function (root, lv) {
     const r = rover;
     if (r.won) {
       skill("trace", 2);
+      if (stageIdx < STAGES - 1) { phase = "between"; nextStage(); return; }
+      bankGates();
       phase = "won";
-      if (lv === 3) { hangar(); return; }
       if (lv === 1) { countStars(); return; }
       win();
       return;
@@ -1562,23 +1670,25 @@ GAMES[0].mount = function (root, lv) {
     wrongs++;
     phase = "draw";
     sfxWrong();
-    const why = r.reason === "tunnel"
-      ? ["Jalurnya menabrak dinding angin. Coba lewat celahnya.", "The track hit a wind tunnel wall. Try through the gap."]
-      : r.reason === "short"
-        ? ["Jalurnya berhenti sebelum seberang. Tarik terus sampai kotak hadiah.", "The track stopped before the far side. Draw all the way to the present."]
-        : ["Roketnya jatuh ke jurang. Jalurnya harus menyambung sampai seberang.", "The rocket fell into the canyon. The track has to reach the other side."];
+    const why = r.reason === "wall"
+      ? ["Jalurnya menabrak dinding. Coba lewat lubangnya.", "The track hit the wall. Try through the hole."]
+      : r.reason === "rock"
+        ? ["Batu Besar jatuh menimpanya. Gambar jalurnya lebih tinggi di situ.", "The boulder landed on it. Draw the track higher there."]
+        : r.reason === "short"
+          ? ["Jalurnya berhenti sebelum seberang. Tarik terus sampai kotak hadiah.", "The track stopped before the far side. Draw all the way to the present."]
+          : ["Roketnya jatuh ke jurang. Jalurnya harus menyambung sampai seberang.", "The rocket fell into the canyon. The track has to reach the other side."];
     hint(why);
     say([why]);
+    resetHazards();
     $("rkGo").disabled = false;
     rover = null;
     draw();
   }
 
-  /* Level 1 asks him to count what he collected: stars 1 to 10. */
+  /* Level 1 asks him to count what he collected across all three scenes. */
   function countStars() {
     phase = "ask";
     const right = Math.min(10, gotStars);
-    /* four distinct choices, always: the answer plus three others */
     const others = [];
     for (let v = 0; v <= 10; v++) if (v !== right) others.push(v);
     others.sort(() => Math.random() - 0.5);
@@ -1626,21 +1736,23 @@ GAMES[0].mount = function (root, lv) {
     setTimeout(fitH, 30); window.addEventListener("resize", fitH);
     onCleanup(() => window.removeEventListener("resize", fitH));
     const hpt = (e) => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-    cv.addEventListener("pointerdown", (e) => { drawing2 = true; hp = []; try { cv.setPointerCapture(e.pointerId); } catch (er) {} const p = hpt(e); hp.push(p); });
+    cv.addEventListener("pointerdown", (e) => {
+      drawing2 = true; hp = [];
+      try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+      hp.push(hpt(e));
+    });
     cv.addEventListener("pointermove", (e) => {
       if (!drawing2) return;
-      const p = hpt(e); const a = hp[hp.length - 1] || p;
+      const p = hpt(e);
+      const a = hp[hp.length - 1] || p;
       if (Math.hypot(p.x - a.x, p.y - a.y) < 2) return;
       hp.push(p);
       hc.strokeStyle = "#1C6B7A"; hc.lineWidth = 6; hc.lineCap = "round";
       hc.beginPath(); hc.moveTo(a.x, a.y); hc.lineTo(p.x, p.y); hc.stroke();
-      const r = cv.getBoundingClientRect();
-      /* coverage: how much of the word box the ink has touched */
-      const gx = word[0].length * 34, gy = 34;
-      cover = Math.min(100, Math.round(100 * Math.min(1, (hp.length * 3) / (gx + gy))));
+      cover = Math.min(100, Math.round(100 * Math.min(1, hp.length / 90)));
       $("hwMeter").style.width = cover + "%";
     });
-    cv.addEventListener("pointerup", () => drawing2 = false);
+    cv.addEventListener("pointerup", () => { drawing2 = false; });
     $("hwDone").onclick = () => {
       if (cover >= 45 || hp.length > 60) { box.remove(); win(); }
       else { sfxWrong(); wrongs++; say([["Tebalkan lebih penuh lagi.", "Trace more of the word."]]); }
@@ -1652,9 +1764,10 @@ GAMES[0].mount = function (root, lv) {
     phase = "won";
     finish($("rkStage"), {
       gameId: "roket", level: lv, wrongs,
-      questions: 1 + passedGates.length + (gotStars ? 1 : 0),
+      questions: 3 + gatesHit + (gotStars ? 1 : 0),
       title: T(["Roketnya mendarat!", "The rocket landed!"]),
-      text: T(["Bintang: " + gotStars + " · Gerbang: " + passedGates.length + "/2", "Stars: " + gotStars + " · Gates: " + passedGates.length + "/2"]),
+      text: T(["Bintang: " + gotStars + " · Gerbang: " + gatesHit + "/" + (STAGES * 2) + " · Adegan: " + STAGES + "/" + STAGES,
+               "Stars: " + gotStars + " · Gates: " + gatesHit + "/" + (STAGES * 2) + " · Scenes: " + STAGES + "/" + STAGES]),
       again: () => open("roket")
     });
   }
@@ -1777,7 +1890,7 @@ GAMES[1].mount = function (root, lv) {
   function tick(t) {
     raf = requestAnimationFrame(tick);
     const now = t || performance.now();
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
     last = now;
     if (!running) return;
     const h = hallH();
@@ -2227,23 +2340,23 @@ const CMD = {
 GAMES[3].mount = function (root, lv) {
   S.view = "kancil";
   const N = lv === 1 ? 4 : (lv === 2 ? 6 : 6);
-  const goalSteps = lv === 1 ? 6 : (lv === 2 ? 7 : 3);
+  const goalSteps = lv === 1 ? 5 : (lv === 2 ? 6 : 3);
 
   /* A hand-made course per level. Every one is solvable with the cards on
      the tray; the count in goalSteps is the shortest sensible plan. */
   const courses = {
     1: {
       size: 4, start: { x: 0, y: 3 }, dir: 0,
-      walls: ["3,3", "0,1"],
-      rocks: ["1,2"],
-      picks: [{ x: 1, y: 3, label: "1" }, { x: 2, y: 3, label: "2" }, { x: 2, y: 2, label: "3" }],
+      walls: ["0,1"],
+      rocks: ["1,3"],                       /* right in front: he has to jump it */
+      picks: [{ x: 2, y: 3, label: "1" }, { x: 2, y: 2, label: "2" }, { x: 2, y: 1, label: "3" }],
       goal: { x: 2, y: 0 }
     },
     2: {
       size: 6, start: { x: 0, y: 5 }, dir: 0,
       walls: ["0,4", "2,2", "3,3", "4,4", "5,1"],
-      rocks: ["4,3"],
-      picks: [{ x: 1, y: 4, label: "1" }, { x: 1, y: 3, label: "2" }, { x: 1, y: 2, label: "3" }],
+      rocks: ["1,3"],                       /* blocks the corridor, jump over it */
+      picks: [{ x: 1, y: 4, label: "1" }, { x: 1, y: 2, label: "2" }, { x: 1, y: 1, label: "3" }],
       goal: { x: 1, y: 0 }
     },
     3: {
@@ -2309,15 +2422,22 @@ GAMES[3].mount = function (root, lv) {
       const c = cells[p.x + "," + p.y];
       if (c && !c.querySelector(".pick")) { const s = document.createElement("span"); s.className = "pick"; s.textContent = "🥒"; c.appendChild(s); }
     });
-    const put = (who, x, y, emo) => {
+    const put = (who, x, y, emo, dir) => {
       const c = cells[x + "," + y]; if (!c) return;
       c.classList.add("actor");
-      const s = document.createElement("span"); s.className = "who"; s.textContent = emo;
+      const s = document.createElement("span");
+      s.className = "who";
+      s.textContent = emo;
       s.style.fontSize = "min(7vw,30px)";
       c.appendChild(s);
+      /* which way he is facing, so turning is visible */
+      const a = document.createElement("span");
+      a.className = "face";
+      a.textContent = ["➡️", "⬇️", "⬅️", "⬆️"][((dir % 4) + 4) % 4];
+      c.appendChild(a);
     };
-    put("kancil", state.kx, state.ky, "🦌");
-    if (lv === 3) put("kura", state.tx, state.ty, "🐢");
+    put("kancil", state.kx, state.ky, "🦌", state.dir);
+    if (lv === 3) put("kura", state.tx, state.ty, "🐢", state.tdir);
   }
 
   const state = { kx: C.start.x, ky: C.start.y, dir: C.dir, tx: 0, ty: 0, tdir: 0 };
@@ -2334,7 +2454,9 @@ GAMES[3].mount = function (root, lv) {
     });
   }
   function renderTray() {
-    const keys = lv === 2 || lv === 3 ? ["fwd", "left", "right", "loop"] : ["fwd", "left", "right", "jump"];
+    const keys = lv === 1 ? ["fwd", "left", "right", "jump"]
+               : lv === 2 ? ["fwd", "left", "right", "jump", "loop"]
+               : ["fwd", "left", "right", "jump", "loop"];
     $("knTray").innerHTML = keys.map((k) =>
       `<button class="c" data-k="${k}"><em>${CMD[k].e}</em>${TI([CMD[k].id, CMD[k].en])}</button>`).join("");
     $("knTray").querySelectorAll("[data-k]").forEach((b) => b.onclick = () => {
@@ -2435,12 +2557,33 @@ GAMES[3].mount = function (root, lv) {
     };
 
     function advance(st, cmd, isTurtle, bridgeOpen) {
-      if (cmd === "fwd" || cmd === "jump") {
+      if (cmd === "fwd") {
         const [dx, dy] = DIRS[st.dir];
         const nx = st.x + dx, ny = st.y + dy;
-        if (!cellFree(nx, ny, cmd === "jump")) return cmd === "jump"
-          ? [["Tidak ada yang bisa dilompati di situ.", "There is nothing to jump there."]]
-          : [["Ada yang menghalangi. Coba belok.", "Something is in the way. Try turning."]];
+        if (C.rocks.includes(nx + "," + ny)) {
+          return [["Ada batu di depan. Pakai kartu Lompat.", "There is a rock ahead. Use the Jump card."]];
+        }
+        if (!cellFree(nx, ny, false)) {
+          return [["Ada yang menghalangi. Coba belok.", "Something is in the way. Try turning."]];
+        }
+        if (C.bridge && !isTurtle && C.bridge.includes(nx + "," + ny) && !bridgeOpen) {
+          return [["Jembatannya masih terangkat. Kura-kura harus menginjak sakelar dulu.",
+                   "The bridge is still up. The turtle has to stand on the switch first."]];
+        }
+        st.x = nx; st.y = ny;
+        return true;
+      }
+      if (cmd === "jump") {
+        /* a jump clears exactly one rock and lands two tiles ahead */
+        const [dx, dy] = DIRS[st.dir];
+        const mid = (st.x + dx) + "," + (st.y + dy);
+        const nx = st.x + dx * 2, ny = st.y + dy * 2;
+        if (!C.rocks.includes(mid)) {
+          return [["Lompat hanya untuk melewati batu.", "Jump is only for clearing a rock."]];
+        }
+        if (!cellFree(nx, ny, true)) {
+          return [["Tempat mendaratnya terhalang.", "The landing spot is blocked."]];
+        }
         if (C.bridge && !isTurtle && C.bridge.includes(nx + "," + ny) && !bridgeOpen) {
           return [["Jembatannya masih terangkat. Kura-kura harus menginjak sakelar dulu.",
                    "The bridge is still up. The turtle has to stand on the switch first."]];
@@ -2667,7 +2810,7 @@ GAMES[4].mount = function (root, lv) {
   function tick(ts) {
     raf = requestAnimationFrame(tick);
     const now = ts || performance.now();
-    const dt = Math.min(0.06, (now - last) / 1000);
+    const dt = Math.max(0, Math.min(0.06, (now - last) / 1000));
     last = now;
     if (!running) return;
     t += dt;
