@@ -298,7 +298,7 @@ a bell at each change, and XP and a gross-motor reading at the end.
 ## Lab Petualangan — the age-6 brain and motor lab
 
 `petualangan.html` is the section built for the year Baim turns six: the point
-where worksheets stop being enough and he wants a game. Five games, three
+where worksheets stop being enough and he wants a game. Six games, three
 tiers each (TK, the transition year, and SD Kelas 1), and nothing ever locked.
 
 | Game | What he does | Skill it trains |
@@ -308,6 +308,7 @@ tiers each (TK, the transition year, and SD Kelas 1), and nothing ever locked.
 | 🔷 **Bengkel Tangram** | Drags, turns and flips the five core polygons onto a ghost shape. Tier 3 turns the board into a laser mirror: he moves the block on the left and the reflection has to land on the target. | Mental rotation, part-whole geometry, symmetry |
 | 🦌 **Misi Kancil Kode** | **Ten mazes**, pickable from the numbered strip and saved with stars. Walls, rivers and boulders grow in number as the levels go on; **Lompat** hops two tiles over a boulder, and a small arrow shows which way the deer faces. A 💡 hint hands over one correct card at a time. Tier 10 is a co-op finale: Kancil and Kura-kura plan together. | Working memory, sequencing, debugging |
 | 🏭 **Pabrik Sortir Kilat** | Sorts crates on a belt into three chutes. Every twenty seconds the siren flashes purple and the rule changes: colour to shape, syllables to numbers, English to "shift one". | Cognitive flexibility, set-shifting, reaction speed |
+| 🏃 **Lari Tiga Jalur** | The sensory runner with the camera taken out. Three lanes, four big buttons (⬅️ ➡️ ⬆️ ⬇️), jump the ground animal, duck the flying one, change lane for the elephant, collect fruit. Five nature zones — water cycle, butterfly, sea life, wildlife, food chain — each with a spoken fact. | Reaction speed, inhibitory control, task switching |
 
 Every game pays XP through `common.js` like the rest of the app, feeds the
 zoo, and records what it trained in the **motor and mind radar** on the Koleksi
