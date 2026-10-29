@@ -98,6 +98,8 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(23px,4vw,34px);margin:4px 0 
 .note.num{background:var(--steel);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 .note.cross{background:var(--switch);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 .note.bomb{background:var(--nogo);clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+.note.hold{background:linear-gradient(180deg,#7FC8FF,#0284C7);border-radius:14px}
+.note.holding{box-shadow:0 0 0 4px rgba(95,224,164,.85),0 6px 12px rgba(0,0,0,.3)}
 .note.gone{transition:transform .12s,opacity .12s;opacity:0}
 .pads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .pad{font-family:var(--emoji);font-size:26px;height:64px;border-radius:16px;cursor:pointer;border:1px solid rgba(247,233,204,.22);
@@ -109,7 +111,8 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(23px,4vw,34px);margin:4px 0 
 .carry small{font-size:.5em;opacity:.85}
 
 /* ---------- tangram ---------- */
-.tangram{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;touch-action:none;
+.tangram{position:relative;width:min(100%,58vh);aspect-ratio:1/1;margin:0 auto;flex:0 0 auto;
+ border-radius:22px;overflow:hidden;touch-action:none;
  background:radial-gradient(circle at 50% 40%,#0E4A56,#04191F)}
 .tangram svg.ghost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .piece{position:absolute;cursor:grab;touch-action:none;transform-origin:50% 50%;will-change:transform;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
@@ -145,7 +148,7 @@ h1{font-family:'Fredoka',sans-serif;font-size:clamp(23px,4vw,34px);margin:4px 0 
 .levels button{font-family:'Fredoka',sans-serif;font-size:13px;min-width:40px;height:34px;border-radius:11px;
  border:1px solid rgba(247,233,204,.22);background:rgba(247,233,204,.1);color:var(--bone);cursor:pointer;transition:.15s}
 .levels button.on{background:var(--amber);color:#40230A;border-color:var(--amber)}
-.levels button.done{border-color:var(--kelp);color:var(--kelp)}
+.levels button.won{border-color:var(--kelp);color:var(--kelp)}
 .padRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
 .bigbtn{height:74px;border-radius:20px;border:1px solid rgba(247,233,204,.25);background:rgba(247,233,204,.12);
  color:var(--bone);font-size:27px;line-height:1;cursor:pointer;display:grid;place-items:center;gap:2px;
@@ -1080,7 +1083,7 @@ GAMES[0].mount = function (root, lv) {
   const W = 960, H = 560;                 /* logical drawing board */
   const groundY = H * 0.68;
   const startX = W * 0.10, goalX = W * 0.88;
-  const STAGES = 10;
+  const STAGES = 15;
   const SCENES = [
     { n: ["Lembah", "Valley"], gaps: [[0.26, 0.74]], sky: "#E7F6EF", cliff: "#F3E8D2" },
     { n: ["Pulau", "Island"], gaps: [[0.20, 0.38], [0.52, 0.70]], sky: "#E7F1FB", cliff: "#EDE6D6" },
@@ -1091,9 +1094,14 @@ GAMES[0].mount = function (root, lv) {
     { n: ["Dua Batu", "Twin Boulder"], gaps: [[0.26, 0.74]], rocks: [0.38, 0.62], sky: "#FBEDE5", cliff: "#F2E1D2" },
     { n: ["Tiga Pulau", "Three Islands"], gaps: [[0.16, 0.30], [0.42, 0.56], [0.68, 0.82]], sky: "#E5F6F8", cliff: "#E7E7D8" },
     { n: ["Badai", "Storm"], gaps: [[0.22, 0.80]], hole: [0.18, 0.44], walls: [0.36], rocks: [0.62], sky: "#EDEDF6", cliff: "#E4E4EE" },
-    { n: ["Puncak", "Summit"], gaps: [[0.20, 0.82]], hole: [0.16, 0.42], walls: [0.34, 0.52], rocks: [0.66], sky: "#FFF0E0", cliff: "#F6E0C8" }
+    { n: ["Puncak", "Summit"], gaps: [[0.20, 0.82]], hole: [0.16, 0.42], walls: [0.34, 0.52], rocks: [0.66], sky: "#FFF0E0", cliff: "#F6E0C8" },
+    { n: ["Gerbang", "Gate"], gaps: [[0.20, 0.40], [0.56, 0.76]], hole: [0.16, 0.44], walls: [0.48], sky: "#E9F1FB", cliff: "#E6E9F0" },
+    { n: ["Lembah Batu", "Boulder Valley"], gaps: [[0.18, 0.82]], rocks: [0.34, 0.64], sky: "#FBEFE4", cliff: "#F0E0CC" },
+    { n: ["Menara", "Tower"], gaps: [[0.22, 0.80]], hole: [0.16, 0.44], walls: [0.30, 0.50, 0.70], sky: "#EFEAFB", cliff: "#E7E2F2" },
+    { n: ["Samudra", "Ocean"], gaps: [[0.14, 0.28], [0.40, 0.54], [0.66, 0.80]], rocks: [0.60], sky: "#E4F6F8", cliff: "#E2E8E4" },
+    { n: ["Puncak Akhir", "Final Summit"], gaps: [[0.18, 0.82]], hole: [0.15, 0.40], walls: [0.30, 0.46], rocks: [0.62], sky: "#FFEDD8", cliff: "#F6DFC4" }
   ];
-  const TARGETS = [10, 10, 10, 10, 11, 11, 11, 12, 12, 13];
+  const TARGETS = [10, 10, 10, 10, 11, 11, 11, 12, 12, 13, 11, 12, 12, 13, 13];
 
   /* Ten scenes, each with its own silhouette, its own colour and its own
      hazard mix. The numbers are fractions of the board, so the same recipe
@@ -1820,279 +1828,308 @@ GAMES[0].mount = function (root, lv) {
 
 /* ============================================================
    GAME 2 — IRAMA SILANG (Go / No-Go)
-   Four lanes, two hands. Green is a plain tap, purple is a cross
-   (the other hand takes it), a red crab bomb must be left alone,
-   and from level 2 a number means "left hand for even, right hand
-   for odd". Level 3 takes the notes away and asks for the pattern
-   back from memory.
+   Fifteen levels. Four lanes, two hands: green circles are a plain
+   tap, purple stars cross the hands, blue diamonds hold, red
+   octagons are crab bombs that must be left alone.
    ============================================================ */
+const RHYTHM_LEVELS = 15;
 const PAD_KEYS = ["a", "s", "j", "k"];
+const RHYTHM_SETTINGS = [
+  { bpm: 72,  bars: 12, mix: { bomb: 0.10 } },
+  { bpm: 78,  bars: 14, mix: { bomb: 0.14 } },
+  { bpm: 84,  bars: 16, mix: { bomb: 0.18 } },
+  { bpm: 88,  bars: 16, mix: { bomb: 0.14, cross: 0.16 } },
+  { bpm: 92,  bars: 18, mix: { bomb: 0.16, cross: 0.22 } },
+  { bpm: 96,  bars: 18, mix: { bomb: 0.18, cross: 0.26 } },
+  { bpm: 100, bars: 20, mix: { bomb: 0.16, cross: 0.20, num: 0.20 } },
+  { bpm: 104, bars: 20, mix: { bomb: 0.18, cross: 0.20, num: 0.24 } },
+  { bpm: 108, bars: 22, mix: { bomb: 0.20, cross: 0.22, num: 0.28 } },
+  { bpm: 112, bars: 22, mix: { bomb: 0.16, cross: 0.20, num: 0.22, hold: 0.18 } },
+  { bpm: 118, bars: 24, mix: { bomb: 0.16, cross: 0.22, num: 0.20, hold: 0.22 } },
+  { bpm: 124, bars: 24, mix: { bomb: 0.18, cross: 0.22, num: 0.24, hold: 0.22 } },
+  { bpm: 132, bars: 26, mix: { bomb: 0.18, cross: 0.22, num: 0.24, hold: 0.22 }, double: 0.10 },
+  { bpm: 140, bars: 26, mix: { bomb: 0.18, cross: 0.24, num: 0.26, hold: 0.22 }, double: 0.16 },
+  { bpm: 148, bars: 28, mix: { bomb: 0.20, cross: 0.24, num: 0.26, hold: 0.24 }, double: 0.22 }
+];
 
 GAMES[1].mount = function (root, lv) {
   S.view = "irama";
-  const bpm = lv === 1 ? 80 : (lv === 2 ? 100 : 112);
-  const beatMs = 60000 / bpm;
-  const fallBeats = 2.2;                 /* a note takes this many beats to fall */
+  const BEST = LS.get("petualangan.irama", {});
+  let levelIdx = 0;
 
-  let notes = [], raf = 0, last = 0, spawnAt = 0, beat = 0;
-  let wrongs = 0, hits = 0, misses = 0, running = false, ending = false;
-  const ROUND = lv === 1 ? 22 : (lv === 2 ? 26 : 24);
-  const endAt = beat + ROUND;
+  function build() {
+    const idx = levelIdx;
+    const cfg = RHYTHM_SETTINGS[idx] || RHYTHM_SETTINGS[0];
+    const beatMs = 60000 / cfg.bpm;
+    const fallBeats = Math.max(1.5, 2.2 - idx * 0.04);
+    const ROUND = cfg.bars;
+    const showHold = !!cfg.mix.hold;
 
-  root.innerHTML = `
-    <div class="playhead">
-      <div class="ttl">🥁 ${T(["Irama Silang", "Cross-Hand Rhythm"])}
-        <small>${T(["Tingkat", "Level"])} ${lv} · ${bpm} BPM</small></div>
-      <button class="btn small" id="irStop">⏹ ${T(["Berhenti", "Stop"])}</button>
-    </div>
-    <div class="hud">
-      <span class="pill" id="irHit">✅ 0</span>
-      <span class="pill" id="irMiss">❌ 0</span>
-      <span class="pill" id="irBeat">🎵 0/${ROUND}</span>
-    </div>
-    <div class="lanes" id="irLanes">
-      <div class="carry" id="irCall"></div>
-      ${[0, 1, 2, 3].map((i) => `<div class="lane" data-l="${i}"><div class="judge"></div></div>`).join("")}
-    </div>
-    <div class="pads">${[0, 1, 2, 3].map((i) =>
-      `<button class="pad" data-p="${i}">${["🖐️", "✋", "🤚", "🖐️"][i]}<small>${PAD_KEYS[i].toUpperCase()}</small></button>`).join("")}</div>
-    <div class="hint" style="position:static;transform:none;margin-top:6px;border-radius:14px" id="irHint"></div>`;
+    let notes = [], raf = 0, last = 0, nextBeat = 0, beat = 0;
+    let hits = 0, wrongs = 0, misses = 0, running = false, ending = false;
+    let judgeY = 0;
+    const heldPads = new Set();
 
-  if (lv === 3) return echoMode();
-
-  const lanes = Array.from(root.querySelectorAll(".lane"));
-  const pads = Array.from(root.querySelectorAll(".pad"));
-  const hallH = () => $("irLanes").getBoundingClientRect().height || 320;
-  let judgeY = 0;
-  setTimeout(() => { judgeY = hallH() - 70; }, 50);
-
-  function hint(pair) { $("irHint").innerHTML = T(pair); }
-  function upd() {
-    $("irHit").textContent = "✅ " + hits;
-    $("irMiss").textContent = "❌ " + wrongs;
-    $("irBeat").textContent = "🎵 " + Math.min(ROUND, beat) + "/" + ROUND;
-  }
-
-  function makeNote(k) {
-    const roll = Math.random();
-    const lane = Math.floor(Math.random() * 4);
-    let kind = "tap";
-    if (lv === 1) kind = roll < 0.15 ? "bomb" : "tap";
-    else if (lv === 2) kind = roll < 0.16 ? "bomb" : roll < 0.40 ? "cross" : roll < 0.70 ? "num" : "tap";
-    else kind = roll < 0.14 ? "bomb" : roll < 0.36 ? "cross" : roll < 0.64 ? "num" : "tap";
-    const n = { lane, kind, y: -60, done: false, id: "n" + Math.random().toString(36).slice(2, 7) };
-    if (kind === "num") n.value = 1 + Math.floor(Math.random() * 9);
-    if (kind === "cross") n.lane = lane;
-    return n;
-  }
-  /* Which pads are allowed to take this note? */
-  function wantPads(n) {
-    if (n.kind === "tap") return [n.lane];
-    if (n.kind === "cross") return [3 - n.lane];
-    if (n.kind === "num") return n.value % 2 === 0 ? [0, 1] : [2, 3];
-    return [];
-  }
-  function label(n) {
-    if (n.kind === "bomb") return "🦀";
-    if (n.kind === "cross") return "🌟";
-    if (n.kind === "num") return n.value;
-    return "●";
-  }
-
-  function drawNote(n) {
-    if (!n.el) {
-      const el = document.createElement("div");
-      el.className = "note " + n.kind;
-      el.textContent = label(n);
-      lanes[n.lane].appendChild(el);
-      n.el = el;
-    }
-    n.el.style.top = n.y + "px";
-    n.el.style.transform = "";
-  }
-
-  function spawn() {
-    if (beat >= endAt) return;
-    const b = beat;
-    /* rest beats keep the pulse without crowding the screen */
-    if (b % 4 === 3 && Math.random() < 0.35) { beat++; return; }
-    const n = makeNote(b);
-    notes.push(n);
-    if (n.kind !== "tap") {
-      const call = n.kind === "bomb" ? ["Jangan ketuk!", "Don't tap!"]
-        : n.kind === "cross" ? ["Silang! Tangan lain!", "Cross! Other hand!"]
-        : [n.value % 2 === 0 ? "Genap, kiri!" : "Ganjil, kanan!", n.value % 2 === 0 ? "Even, left!" : "Odd, right!"];
-      $("irCall").innerHTML = T(call);
-    }
-    beat++;
-  }
-
-  function tick(t) {
-    raf = requestAnimationFrame(tick);
-    const now = t || performance.now();
-    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
-    last = now;
-    if (!running) return;
-    const h = hallH();
-    judgeY = h - 70;
-    if (now >= spawnAt) { spawn(); spawnAt = now + beatMs; }
-    const v = (h + 60) / (fallBeats * beatMs / 1000);   /* px per second */
-    notes.forEach((n) => { n.y += v * dt; drawNote(n); });
-    /* notes that passed the line untouched */
-    notes.forEach((n) => {
-      if (n.done) return;
-      if (n.y > judgeY + 34) {
-        n.done = true;
-        if (n.kind !== "bomb") { misses++; if (n.kind !== "tap") wrongs++; }
-        n.el.classList.add("gone");
-        setTimeout(() => n.el.remove(), 200);
-      }
-    });
-    upd();
-    if (beat >= endAt && notes.every((n) => n.done)) end();
-  }
-
-  function tap(padIdx) {
-    if (!running) return;
-    const pad = pads[padIdx];
-    pad.classList.add("on"); setTimeout(() => pad.classList.remove("on"), 110);
-    tone(300 + padIdx * 70, 0.08, "sine", 0.1);
-    const h = hallH();
-    /* nearest live note in the judge window */
-    let best = null, bestD = 1e9;
-    notes.forEach((n) => {
-      if (n.done) return;
-      if (Math.abs(n.y - (h - 70)) > 62) return;
-      const d = Math.abs(n.y - (h - 70));
-      if (d < bestD) { bestD = d; best = n; }
-    });
-    if (!best) return;
-    const want = wantPads(best);
-    if (best.kind === "bomb") {
-      wrongs++; sfxWrong(); best.done = true;
-      best.el.classList.add("gone"); setTimeout(() => best.el.remove(), 200);
-      $("irCall").innerHTML = T(["Aduh, itu bom!", "Oops, that was a bomb!"]);
-      return;
-    }
-    if (want.includes(padIdx)) {
-      hits++; best.done = true; sfxPop(hits % 6);
-      best.el.classList.add("gone"); setTimeout(() => best.el.remove(), 200);
-      $("irCall").innerHTML = "✅";
-    } else {
-      wrongs++; sfxWrong();
-      best.el.style.background = "#FF6B5B";
-      $("irCall").innerHTML = T(["Tangan lain!", "The other hand!"]);
-    }
-    upd();
-  }
-
-  pads.forEach((p, i) => p.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); }));
-  lanes.forEach((ln, i) => ln.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); }));
-  const key = (e) => {
-    const i = PAD_KEYS.indexOf(e.key.toLowerCase());
-    if (i >= 0) { e.preventDefault(); tap(i); }
-  };
-  listenWindow("keydown", key);
-
-  function end() {
-    if (ending) return;
-    ending = true; running = false; cancelAnimationFrame(raf);
-    skill("rhythm", Math.max(1, Math.round(hits / 4)));
-    skill("inhibit", Math.max(1, Math.round((hits - wrongs) / 6)));
-    finish(root, {
-      gameId: "irama", level: lv, wrongs: Math.min(3, wrongs),
-      questions: Math.max(1, hits + wrongs + misses),
-      title: T(["Iramanya selesai!", "The rhythm is done!"]),
-      text: T(["Tepat: " + hits + " · Meleset: " + (wrongs + misses), "On time: " + hits + " · Missed: " + (wrongs + misses)]),
-      again: () => open("irama")
-    });
-  }
-
-  $("irStop").onclick = () => { running = false; cancelAnimationFrame(raf); open("irama"); };
-  hint([["Ketuk pad saat not melewati garis. Merah = jangan!", "Tap the pad as a note crosses the line. Red = never!"]]);
-  running = true; last = performance.now(); spawnAt = last + 900;
-  raf = requestAnimationFrame(tick);
-  say([["Siap? Ikuti iramanya.", "Ready? Follow the beat."]]);
-
-  /* ---------- level 3: echo blackout ---------- */
-  function echoMode() {
-    const INSTR = [
-      { e: "🥁", f: 180, name: ["drum", "drum"] },
-      { e: "🔔", f: 660, name: ["bell", "bell"] },
-      { e: "🎹", f: 440, name: ["piano", "piano"] },
-      { e: "🎺", f: 523, name: ["trumpet", "terompet"] }
-    ];
-    let round = 0, seq = [], input = [], phase2 = "ready", wrongs2 = 0;
-    const padRow = [0, 1, 2, 3].map((i) => `<button class="pad" data-e="${i}">${INSTR[i].e}<small>${PAD_KEYS[i].toUpperCase()}</small></button>`).join("");
     root.innerHTML = `
       <div class="playhead">
         <div class="ttl">🥁 ${T(["Irama Silang", "Cross-Hand Rhythm"])}
-          <small>${T(["Tingkat 3", "Level 3"])} · ${T(["Echo Blackout", "Echo Blackout"])}</small></div>
+          <small>${T(["Tingkat", "Level"])} ${idx + 1}/${RHYTHM_LEVELS} · ${cfg.bpm} BPM</small></div>
         <button class="btn small" id="irStop">⏹ ${T(["Berhenti", "Stop"])}</button>
       </div>
-      <div class="hud"><span class="pill" id="ecRound">🎵 1/3</span><span class="pill" id="ecState">👀</span></div>
-      <div class="stageBox" style="min-height:180px;display:grid;place-items:center;text-align:center">
-        <div>
-          <div id="ecShow" style="font-family:var(--emoji);font-size:clamp(38px,9vw,64px);letter-spacing:10px;min-height:70px"></div>
-          <div id="ecMsg" style="font-family:Fredoka,sans-serif;font-size:17px;margin-top:8px"></div>
-        </div>
+      <div class="levels" id="irLevels">${Array.from({ length: RHYTHM_LEVELS }, (_, i) =>
+        `<button data-l="${i}" class="${i === idx ? "on" : ""}${BEST[i] ? " won" : ""}">${BEST[i] ? "⭐" : ""}${i + 1}</button>`).join("")}</div>
+      <div class="hud">
+        <span class="pill" id="irHit">✅ 0</span>
+        <span class="pill" id="irMiss">❌ 0</span>
+        <span class="pill" id="irBeat">🎵 0/${ROUND}</span>
       </div>
-      <div class="pads">${padRow}</div>`;
-    const pads2 = Array.from(root.querySelectorAll("[data-e]"));
-    const msg = (pair) => { $("ecMsg").innerHTML = T(pair); };
-    function playSeq() {
-      phase2 = "play"; input = [];
-      seq = [0, 0, 0, 0].map(() => Math.floor(Math.random() * 4));
-      $("ecShow").textContent = "";
-      msg([["Dengarkan dulu...", "Listen first..."]]);
-      $("ecState").textContent = "👂";
-      seq.forEach((i, k) => setTimeout(() => {
-        $("ecShow").textContent = INSTR[i].e;
-        tone(INSTR[i].f, 0.3, "triangle", 0.18);
-        setTimeout(() => { $("ecShow").textContent = ""; }, 260);
-        if (k === seq.length - 1) setTimeout(() => { phase2 = "input"; msg([["Sekarang ulangi!", "Now repeat it!"]]); $("ecState").textContent = "🙌"; }, 420);
-      }, 520 * k + 300));
+      <div class="lanes" id="irLanes">
+        ${[0, 1, 2, 3].map((i) => `<div class="lane" data-l="${i}"><div class="judge"></div></div>`).join("")}
+      </div>
+      <div class="pads">${[0, 1, 2, 3].map((i) =>
+        `<button class="pad" data-p="${i}">${["🖐️", "✋", "🤚", "🖐️"][i]}<small>${PAD_KEYS[i].toUpperCase()}</small></button>`).join("")}</div>
+      <div class="hint" style="position:static;transform:none;margin-top:6px;border-radius:14px" id="irHint">
+        ${T(["Hijau: ketuk · Ungu: tangan lain · Biru: tahan · Merah: jangan!",
+             "Green: tap · Purple: other hand · Blue: hold · Red: never!"])}
+      </div>`;
+
+    const lanes = Array.from(root.querySelectorAll(".lane"));
+    const pads = Array.from(root.querySelectorAll(".pad"));
+    const hallH = () => $("irLanes").getBoundingClientRect().height || 320;
+
+    function upd() {
+      $("irHit").textContent = "✅ " + hits;
+      $("irMiss").textContent = "❌ " + (wrongs + misses);
+      $("irBeat").textContent = "🎵 " + Math.min(ROUND, beat) + "/" + ROUND;
     }
-    function press(i) {
-      if (phase2 !== "input") return;
-      tone(INSTR[i].f, 0.22, "triangle", 0.16);
-      input.push(i);
-      $("ecShow").textContent = INSTR[i].e;
-      setTimeout(() => { $("ecShow").textContent = ""; }, 200);
-      if (input.length === 4) {
-        const ok = input.every((v, k) => v === seq[k]);
-        if (!ok) { wrongs2++; sfxWrong(); msg([["Hampir! Coba ingat lagi.", "Almost! Remember it again."]]); }
-        else { sfxPop(round); msg([["Tepat!", "Exactly!"]]); }
-        round++;
-        $("ecRound").textContent = "🎵 " + Math.min(3, round + 1) + "/3";
-        if (round >= 3) {
-          skill("rhythm", 4); skill("inhibit", 2);
-          finish(root, {
-            gameId: "irama", level: 3, wrongs: Math.min(3, wrongs2),
-            title: T(["Ingatan iramamu kuat!", "Your rhythm memory is strong!"]),
-            text: T(["Tiga pola diingat.", "Three patterns remembered."]),
-            again: () => open("irama")
-          });
-          return;
-        }
-        setTimeout(playSeq, 900);
+
+    function pickKind() {
+      const m = cfg.mix;
+      const r = Math.random();
+      let acc = 0;
+      for (const k of ["bomb", "cross", "num", "hold", "tap"]) {
+        acc += m[k] || 0;
+        if (r < acc) return k;
       }
+      return "tap";
     }
-    pads2.forEach((p, i) => p.addEventListener("pointerdown", (e) => { e.preventDefault(); press(i); }));
-    listenWindow("keydown", (e) => { const i = PAD_KEYS.indexOf(e.key.toLowerCase()); if (i >= 0) { e.preventDefault(); press(i); } });
-    $("irStop").onclick = () => open("irama");
-    setTimeout(playSeq, 600);
-    say([["Dengarkan empat bunyi, lalu ulangi.", "Listen to four sounds, then repeat them."]]);
+
+    function makeNote(kind, lane) {
+      const n = {
+        lane, kind, y: -60, done: false, holding: false, holdPad: -1,
+        value: kind === "num" ? 1 + Math.floor(Math.random() * 9) : 0
+      };
+      return n;
+    }
+
+    function drawNote(n) {
+      if (!n.el) {
+        const el = document.createElement("div");
+        el.className = "note " + n.kind;
+        el.textContent = label(n);
+        lanes[n.lane].appendChild(el);
+        n.el = el;
+      }
+      n.el.style.top = n.y + "px";
+      n.el.style.transform = "";
+      if (n.kind === "hold" && n.holding) n.el.classList.add("holding");
+    }
+    function label(n) {
+      if (n.kind === "bomb") return "🦀";
+      if (n.kind === "cross") return "🌟";
+      if (n.kind === "num") return n.value;
+      if (n.kind === "hold") return "◆";
+      return "●";
+    }
+    function wantPads(n) {
+      if (n.kind === "tap" || n.kind === "hold") return [n.lane];
+      if (n.kind === "cross") return [3 - n.lane];
+      if (n.kind === "num") return n.value % 2 === 0 ? [0, 1] : [2, 3];
+      return [];
+    }
+
+    function spawn() {
+      if (beat >= ROUND) return;
+      if (cfg.double && Math.random() < cfg.double) {
+        const a = Math.floor(Math.random() * 4);
+        let b = Math.floor(Math.random() * 4);
+        if (b === a) b = (a + 2) % 4;
+        notes.push(makeNote("tap", a));
+        notes.push(makeNote("tap", b));
+        beat++;
+        return;
+      }
+      const kind = pickKind();
+      const lane = Math.floor(Math.random() * 4);
+      notes.push(makeNote(kind, lane));
+      beat++;
+    }
+
+    function complete(n) {
+      n.done = true;
+      n.el.classList.add("gone");
+      setTimeout(() => n.el.remove(), 200);
+    }
+    function fail(n) {
+      n.done = true;
+      n.el.classList.add("gone");
+      setTimeout(() => n.el.remove(), 200);
+    }
+
+    function tap(padIdx) {
+      if (!running) return;
+      const pad = pads[padIdx];
+      pad.classList.add("on");
+      setTimeout(() => pad.classList.remove("on"), 110);
+      tone(300 + padIdx * 70, 0.08, "sine", 0.1);
+      heldPads.add(padIdx);
+
+      const h = hallH();
+      judgeY = h - 80;
+      let best = null, bestD = 1e9;
+      notes.forEach((n) => {
+        if (n.done) return;
+        const d = Math.abs(n.y - judgeY);
+        if (d > 64) return;
+        if (d < bestD) { bestD = d; best = n; }
+      });
+      if (!best) return;
+
+      if (best.kind === "bomb") {
+        wrongs++;
+        sfxWrong();
+        fail(best);
+        return;
+      }
+      if (best.kind === "hold") {
+        if (wantPads(best).includes(padIdx)) {
+          best.holding = true;
+          best.holdPad = padIdx;
+          best.el.classList.add("holding");
+        } else {
+          wrongs++; sfxWrong();
+        }
+        return;
+      }
+      if (wantPads(best).includes(padIdx)) {
+        hits++;
+        complete(best);
+        sfxPop(hits % 6);
+      } else {
+        wrongs++;
+        sfxWrong();
+        best.el.style.background = "#FF6B5B";
+      }
+      upd();
+    }
+
+    function release(padIdx) {
+      heldPads.delete(padIdx);
+      notes.forEach((n) => {
+        if (n.kind !== "hold" || !n.holding || n.done || n.holdPad !== padIdx) return;
+        if (n.y < judgeY + 20) { misses++; wrongs++; sfxWrong(); fail(n); }
+        else { hits++; complete(n); sfxPop(hits % 6); }
+      });
+      upd();
+    }
+
+    pads.forEach((p, i) => {
+      p.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); });
+      p.addEventListener("pointerup", (e) => { e.preventDefault(); release(i); });
+      p.addEventListener("pointerleave", () => release(i));
+    });
+    lanes.forEach((ln, i) => ln.addEventListener("pointerdown", (e) => { e.preventDefault(); tap(i); }));
+    listenWindow("keydown", (e) => {
+      const i = PAD_KEYS.indexOf(e.key.toLowerCase());
+      if (i >= 0) { e.preventDefault(); tap(i); }
+    });
+    listenWindow("keyup", (e) => {
+      const i = PAD_KEYS.indexOf(e.key.toLowerCase());
+      if (i >= 0) release(i);
+    });
+
+    function frame(dt, now) {
+      if (!running) return;
+      const h = hallH();
+      judgeY = h - 80;
+      if (now >= nextBeat) { spawn(); nextBeat = now + beatMs; }
+      const v = (h + 60) / (fallBeats * beatMs / 1000);
+      notes.forEach((n) => {
+        if (n.done) return;
+        n.y += v * dt;
+        drawNote(n);
+      });
+      notes.forEach((n) => {
+        if (n.done) return;
+        if (n.kind === "hold") {
+          if (n.holding && n.y >= judgeY + 45) { hits++; complete(n); sfxPop(hits % 6); }
+          else if (n.y > judgeY + 80) { misses++; wrongs++; fail(n); }
+        } else if (n.y > judgeY + 44) {
+          if (n.kind !== "bomb") { misses++; wrongs++; }
+          fail(n);
+        }
+      });
+      upd();
+      if (beat >= ROUND && notes.every((n) => n.done)) end();
+    }
+
+    function tick(ts) {
+      raf = requestAnimationFrame(tick);
+      const now = ts || performance.now();
+      const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
+      last = now;
+      frame(dt, now);
+    }
+
+    function end() {
+      if (ending) return;
+      ending = true;
+      running = false;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      skill("rhythm", 2 + Math.min(3, Math.floor(idx / 4)));
+      skill("inhibit", 1 + Math.min(2, Math.floor(idx / 6)));
+      const stars = wrongs === 0 ? 3 : (wrongs <= 3 ? 2 : 1);
+      BEST[idx] = Math.max(BEST[idx] || 0, stars);
+      LS.set("petualangan.irama", BEST);
+      const isLast = idx >= RHYTHM_LEVELS - 1;
+      finish(root, {
+        gameId: "irama", level: idx + 1, wrongs: Math.min(3, wrongs),
+        questions: Math.max(1, hits + wrongs + misses),
+        title: isLast ? T(["Semua irama selesai!", "Every rhythm done!"]) : T(["Iramanya selesai!", "The rhythm is done!"]),
+        text: T(["Tepat: " + hits + " · Meleset: " + (wrongs + misses), "On time: " + hits + " · Missed: " + (wrongs + misses)]),
+        againLabel: isLast ? T(["Main dari awal", "Start again"]) : T(["Level berikutnya", "Next level"]),
+        again: () => {
+          levelIdx = isLast ? 0 : idx + 1;
+          build();
+        }
+      });
+    }
+
+    $("irStop").onclick = () => { running = false; cancelAnimationFrame(raf); open("irama"); };
+    $("irLevels").querySelectorAll("[data-l]").forEach((b) => b.onclick = () => {
+      levelIdx = Number(b.dataset.l);
+      build();
+    });
+
+    running = true;
+    last = performance.now();
+    nextBeat = last + 900;
+    raf = requestAnimationFrame(tick);
+    say([["Siap? Ikuti iramanya.", "Ready? Follow the beat."]]);
   }
+
+  build();
 };
 
 /* ============================================================
    GAME 3 — BENGKEL TANGRAM & CERMIN
-   Drag the pieces onto the ghost shape. Rotate in 90 degree steps
-   at level 1, 45 at level 2, and at level 3 the ghost is a mirror
-   reflection: he moves the left-hand block, the reflection on the
-   right has to land on the target.
+   Fifteen builds, each a different picture made of the five core
+   polygons. The ghost is the target: drag, turn and flip a piece
+   until it lands on its own slot (18 px and 10 degrees of grace).
    ============================================================ */
+const TANGRAM_LEVELS = 15;
+
 const SHAPES = {
   tri: "50,0 100,100 0,100",      /* equilateral, point up */
   triR: "0,0 100,50 0,100",       /* right triangle */
@@ -2102,264 +2139,270 @@ const SHAPES = {
   trap: "20,0 80,0 100,100 0,100", /* isosceles trapezoid */
   hex: "50,0 93,25 93,75 50,100 7,75 7,25"
 };
-/* the five core polygons of the visual spec, each with one meaning */
 const SHAPE_COLORS = {
-  tri: "#0EA5E9",    /* sky blue, equilateral */
-  triR: "#F97316",   /* orange, right triangle */
-  para: "#8B5CF6",   /* purple, parallelogram */
-  trap: "#EAB308",   /* gold, trapezoid */
-  hex: "#10B981",    /* green, hexagon */
-  sq: "#F59E0B",
-  thin: "#94A3B8"
+  tri: "#0EA5E9", triR: "#F97316", para: "#8B5CF6",
+  trap: "#EAB308", hex: "#10B981", sq: "#F59E0B", thin: "#94A3B8"
 };
 
-/* A layout: where each piece belongs, in percent of the board. */
-const LAYOUTS = {
-  1: {   /* rocket, 5 pieces, seams shown */
-    name: ["Roket", "Rocket"],
-    pieces: [
-      { s: "tri", size: 18, x: 50, y: 12, rot: 0, flip: 1 },
-      { s: "sq", size: 18, x: 50, y: 30, rot: 0, flip: 1 },
-      { s: "thin", size: 18, x: 50, y: 46, rot: 0, flip: 1 },
-      { s: "triR", size: 15, x: 38, y: 60, rot: 0, flip: 1 },
-      { s: "triR", size: 15, x: 62, y: 60, rot: 0, flip: -1 }
-    ]
-  },
-  2: {   /* kancil / deer head, 7 pieces, silhouette only */
-    name: ["Rusa", "Deer"],
-    pieces: [
-      { s: "tri", size: 16, x: 46, y: 18, rot: 0, flip: 1 },
-      { s: "tri", size: 12, x: 32, y: 9, rot: 45, flip: 1 },
-      { s: "tri", size: 12, x: 60, y: 9, rot: -45, flip: -1 },
-      { s: "hex", size: 15, x: 46, y: 36, rot: 0, flip: 1 },
-      { s: "para", size: 15, x: 46, y: 54, rot: 0, flip: 1 },
-      { s: "trap", size: 14, x: 34, y: 70, rot: 0, flip: 1 },
-      { s: "trap", size: 14, x: 60, y: 70, rot: 180, flip: -1 }
-    ]
-  },
-  3: {   /* mirror workshop */
-    name: ["Cermin Laser", "Laser Mirror"],
-    mirror: true,
-    pieces: [
-      { s: "tri", size: 15, x: 22, y: 22, rot: 0, flip: 1 },
-      { s: "sq", size: 14, x: 22, y: 44, rot: 0, flip: 1 },
-      { s: "para", size: 14, x: 22, y: 64, rot: 0, flip: 1 },
-      { s: "triR", size: 13, x: 30, y: 80, rot: 90, flip: 1 }
-    ],
-    targets: [ { x: 78, y: 22 }, { x: 78, y: 44 }, { x: 78, y: 64 }, { x: 70, y: 80 } ]
+/* spine: [shape, size, y, rot] on the centre line.
+   wings: [shape, size, dx, y, rot], mirrored either side of it. */
+const TANGRAM_SPECS = [
+  { n: ["Roket", "Rocket"], spine: [["tri", 16, 14, 0], ["sq", 16, 30, 0], ["thin", 16, 46, 0]], wings: [["triR", 14, 16, 62, 0]] },
+  { n: ["Rusa", "Deer"], spine: [["tri", 16, 16, 0], ["hex", 15, 34, 0], ["para", 15, 52, 0]], wings: [["tri", 11, 16, 8, 45], ["trap", 13, 16, 70, 180]] },
+  { n: ["Perahu", "Boat"], spine: [["tri", 18, 18, 0], ["para", 18, 38, 0], ["thin", 18, 54, 0]], wings: [["triR", 13, 18, 66, 90]] },
+  { n: ["Kupu-kupu", "Butterfly"], spine: [["sq", 12, 44, 0]], wings: [["tri", 13, 16, 22, -45], ["tri", 13, 18, 42, 0], ["tri", 13, 16, 62, 45]] },
+  { n: ["Ikan", "Fish"], spine: [["tri", 16, 40, 0], ["thin", 14, 56, 90]], wings: [["para", 13, 18, 40, 0], ["tri", 12, 28, 26, 45]] },
+  { n: ["Komodo", "Komodo"], spine: [["sq", 14, 38, 0], ["thin", 14, 56, 0]], wings: [["tri", 12, 18, 28, 45], ["triR", 12, 20, 50, 90]] },
+  { n: ["Rumah", "House"], spine: [["tri", 17, 18, 0], ["sq", 17, 40, 0]], wings: [["triR", 14, 16, 60, 0], ["trap", 12, 16, 74, 180]] },
+  { n: ["Bintang", "Star"], spine: [["hex", 14, 44, 0]], wings: [["tri", 12, 15, 22, 45], ["tri", 12, 15, 66, -45], ["tri", 10, 28, 44, 90]] },
+  { n: ["Menara", "Tower"], spine: [["thin", 14, 16, 0], ["sq", 14, 30, 0], ["sq", 14, 46, 0], ["tri", 14, 62, 0]], wings: [["para", 12, 17, 38, 0]] },
+  { n: ["Kucing", "Cat"], spine: [["tri", 15, 22, 0], ["hex", 15, 42, 0], ["thin", 13, 58, 0]], wings: [["tri", 11, 13, 10, 45], ["trap", 12, 17, 72, 180]] },
+  { n: ["Pohon", "Tree"], spine: [["tri", 18, 24, 0], ["thin", 14, 44, 0], ["sq", 13, 60, 0]], wings: [["triR", 12, 16, 48, 90], ["triR", 10, 24, 64, -90]] },
+  { n: ["Mobil", "Car"], spine: [["sq", 16, 46, 0], ["thin", 12, 30, 0]], wings: [["triR", 12, 18, 58, 0], ["triR", 12, 26, 46, 90]] },
+  { n: ["Burung", "Bird"], spine: [["sq", 12, 42, 0]], wings: [["tri", 14, 18, 26, -45], ["tri", 12, 26, 44, 0], ["triR", 11, 16, 62, 90]] },
+  { n: ["Mahkota", "Crown"], spine: [["hex", 13, 50, 0]], wings: [["tri", 12, 14, 24, 0], ["tri", 10, 26, 30, 45], ["trap", 11, 16, 66, 180]] },
+  { n: ["Cermin", "Mirror"], mirror: true, spine: [["tri", 15, 24, 0], ["sq", 14, 44, 0], ["para", 14, 62, 0], ["triR", 13, 80, 90]] }
+];
+
+function tangramLevel(i) {
+  const spec = TANGRAM_SPECS[i] || TANGRAM_SPECS[0];
+  const pieces = [];
+  spec.spine.forEach(([s, size, y, rot]) => pieces.push({ s, size, x: 50, y, rot, flip: 1 }));
+  (spec.wings || []).forEach(([s, size, dx, y, rot]) => {
+    pieces.push({ s, size, x: 50 - dx, y, rot, flip: -1 });
+    pieces.push({ s, size, x: 50 + dx, y, rot, flip: 1 });
+  });
+  if (spec.mirror) {
+    pieces.forEach((p) => { p.x = Math.min(p.x, 34); });
   }
-};
+  return { name: spec.n, mirror: !!spec.mirror, pieces };
+}
 
 GAMES[2].mount = function (root, lv) {
   S.view = "tangram";
-  const L = LAYOUTS[lv] || LAYOUTS[1];
-  const step = lv === 1 ? 90 : 45;
-  const SNAP_PX = 18;      /* the spec: within 18 screen pixels */
-  const SNAP_DEG = 10;     /* and within ten degrees */
-  let placed = 0, wrongs = 0, sel = null, dragging = null;
+  const BEST = LS.get("petualangan.tangram", {});
+  let levelIdx = 0;
 
-  root.innerHTML = `
-    <div class="playhead">
-      <div class="ttl">🔷 ${T(["Bengkel Tangram", "Tangram Workshop"])}
-        <small>${T(["Tingkat", "Level"])} ${lv} · ${TI(L.name)}</small></div>
-      <button class="btn small" id="tgHint">👀 ${T(["Lihat bentuk", "Show shape"])}</button>
-    </div>
-    <div class="hud"><span class="pill" id="tgProg">🧩 0/${L.pieces.length}</span>
-      <span class="pill" id="tgTip">${T(["Sentuh potongan, lalu putar", "Tap a piece, then turn it"])}</span></div>
-    <div class="tangram" id="tgBoard">
-      <svg class="ghost" id="tgGhost" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-    </div>
-    <div class="tools">
-      <button class="btn go" id="tgRot">↻ ${T(["Putar", "Turn"])}</button>
-      <button class="btn" id="tgFlip">↔ ${T(["Balik", "Flip"])}</button>
-      <button class="btn small" id="tgReset">🧽 ${T(["Ulang", "Reset"])}</button>
-    </div>`;
+  function starsFor(w) { return w === 0 ? 3 : (w === 1 ? 2 : 1); }
 
-  const board = $("tgBoard");
-  const ghost = $("tgGhost");
-  const total = L.pieces.length;
+  function build() {
+    const idx = levelIdx;
+    const L = tangramLevel(idx);
+    const step = idx < 5 ? 90 : 45;
+    const flipRequired = idx >= 10;
+    const total = L.pieces.length;
+    let placed = 0, wrongs = 0, sel = null, dragging = null;
 
-  function paintGhost() {
-    ghost.innerHTML = "";
-    if (L.mirror) {
-      /* targets on the right, and the laser axis in the middle */
-      L.targets.forEach((t) => {
+    const tray = [];
+    L.pieces.forEach((p, i) => {
+      tray.push({ x: 14 + (i % 4) * 24, y: 66 + Math.floor(i / 4) * 12 });
+    });
+
+    root.innerHTML = `
+      <div class="playhead">
+        <div class="ttl">🔷 ${T(["Bengkel Tangram", "Tangram Workshop"])}
+          <small>${T(["Tingkat", "Level"])} ${idx + 1}/${TANGRAM_LEVELS} · ${TI(L.name)}</small></div>
+        <button class="btn small" id="tgHint">👀 ${T(["Lihat", "Show"])}</button>
+        <button class="btn small" id="tgReset">🧽 ${T(["Ulang", "Reset"])}</button>
+      </div>
+      <div class="levels" id="tgLevels">${Array.from({ length: TANGRAM_LEVELS }, (_, i) =>
+        `<button data-l="${i}" class="${i === idx ? "on" : ""}${BEST[i] ? " won" : ""}">${BEST[i] ? "⭐" : ""}${i + 1}</button>`).join("")}</div>
+      <div class="hud">
+        <span class="pill" id="tgProg">🧩 0/${total}</span>
+        <span class="pill" id="tgTip">${T(["Sentuh potongan, lalu putar", "Tap a piece, then turn it"])}</span>
+      </div>
+      <div class="tangram" id="tgBoard">
+        <svg class="ghost" id="tgGhost" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="tools">
+        <button class="btn go" id="tgRot">↻ ${T(["Putar", "Turn"])}</button>
+        <button class="btn" id="tgFlip">↔ ${T(["Balik", "Flip"])}</button>
+      </div>`;
+
+    const board = $("tgBoard");
+    const ghost = $("tgGhost");
+
+    function paintGhost() {
+      ghost.innerHTML = "";
+      if (L.mirror) {
+        /* targets on the right, and the laser axis down the middle */
+        L.pieces.forEach((p) => {
+          ghost.insertAdjacentHTML("beforeend",
+            `<circle cx="${100 - p.x}" cy="${p.y}" r="${Math.max(7, p.size / 2)}" fill="none"
+               stroke="rgba(255,107,91,.8)" stroke-width="0.6" stroke-dasharray="2 2"/>`);
+        });
         ghost.insertAdjacentHTML("beforeend",
-          `<circle cx="${t.x}" cy="${t.y}" r="9" fill="none" stroke="rgba(255,107,91,.75)" stroke-width="0.7" stroke-dasharray="2 2"/>`);
+          `<line x1="50" y1="3" x2="50" y2="97" stroke="rgba(199,155,255,.85)" stroke-width="0.6" stroke-dasharray="3 2"/>`);
+        return;
+      }
+      /* The transform order matters: centre the polygon first, then shrink,
+         then turn. Doing it the other way round throws every shape off the
+         board, which is exactly what was wrong before. */
+      L.pieces.forEach((p) => {
+        ghost.insertAdjacentHTML("beforeend",
+          `<g transform="translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${p.flip} 1) scale(${p.size / 100}) translate(-50 -50)">
+             <polygon points="${SHAPES[p.s]}" fill="rgba(95,224,164,.16)" stroke="rgba(16,185,129,.65)" stroke-width="1.6"/>
+           </g>`);
       });
-      ghost.insertAdjacentHTML("beforeend",
-        `<line x1="50" y1="4" x2="50" y2="96" stroke="rgba(199,155,255,.8)" stroke-width="0.6" stroke-dasharray="3 2"/>`);
-      return;
     }
-    if (lv === 2) {
-      /* silhouette only: the union is drawn as a soft blob behind the slots */
-      const pts = L.pieces.map((p) => `${p.x},${p.y}`);
-      ghost.innerHTML = `<g opacity=".22">${L.pieces.map((p) =>
-        `<polygon points="${SHAPES[p.s]}" fill="#5FE0A4"
-          transform="translate(${p.x} ${p.y}) rotate(${p.rot}) scale(${p.flip} 1) translate(-50 -50) scale(${p.size / 100})"/>`).join("")}</g>`;
-      return;
-    }
-    /* level 1 keeps the seams so he can see how the pieces tile */
-    L.pieces.forEach((p) => {
-      const rot = p.rot, fl = p.flip, sz = p.size;
-      ghost.insertAdjacentHTML("beforeend",
-        `<g transform="translate(${p.x} ${p.y}) rotate(${rot}) scale(${fl} 1) translate(-50 -50)">
-           <polygon points="${SHAPES[p.s]}" fill="rgba(95,224,164,.14)" stroke="rgba(95,224,164,.6)" stroke-width="0.6"
-             transform="scale(${sz / 100})"/>
-         </g>`);
-    });
-  }
-  paintGhost();
+    paintGhost();
 
-  const pieces = L.pieces.map((spec, i) => {
-    const el = document.createElement("div");
-    el.className = "piece";
-    const w = spec.size, h = spec.size;
-    el.style.width = w + "%"; el.style.height = h + "%";
-    el.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none">
-      <polygon points="${SHAPES[spec.s]}" fill="${SHAPE_COLORS[spec.s] || "#94A3B8"}" stroke="rgba(30,41,59,.55)" stroke-width="2"/></svg>`;
-    board.appendChild(el);
+    const pieces = L.pieces.map((spec, i) => {
+      const el = document.createElement("div");
+      el.className = "piece";
+      el.style.width = spec.size + "%";
+      el.style.height = spec.size + "%";
+      el.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${SHAPES[spec.s]}"
+        fill="${SHAPE_COLORS[spec.s] || "#94A3B8"}" stroke="rgba(30,41,59,.55)" stroke-width="2"/></svg>`;
+      board.appendChild(el);
 
-    /* At level 3 every block carries a live mirror twin, so he can watch the
-       reflection travel while he is still moving the block itself. */
-    let twin = null;
-    if (L.mirror) {
-      twin = el.cloneNode(true);
-      twin.className = "piece";
-      twin.style.pointerEvents = "none";
-      twin.style.opacity = ".8";
-      board.appendChild(twin);
-    }
+      let twin = null;
+      if (L.mirror) {
+        twin = el.cloneNode(true);
+        twin.className = "piece";
+        twin.style.pointerEvents = "none";
+        twin.style.opacity = ".8";
+        board.appendChild(twin);
+      }
 
-    const p = {
-      el, twin, spec, i, locked: false,
-      rot: (i % 2 ? step : 0),
-      flip: 1,
-      x: 10 + (i * 80) / Math.max(1, total - 1),
-      y: 90
-    };
-    apply(p);
-    el.addEventListener("pointerdown", (e) => {
-      if (p.locked) return;
-      e.preventDefault();
-      sel = p; markSel();
-      dragging = { id: e.pointerId, dx: 0, dy: 0 };
-      const r = board.getBoundingClientRect();
-      const cxp = r.left + (p.x / 100) * r.width, cyp = r.top + (p.y / 100) * r.height;
-      dragging.dx = cxp - e.clientX; dragging.dy = cyp - e.clientY;
-      try { el.setPointerCapture(e.pointerId); } catch (er) {}
-    });
-    el.addEventListener("pointermove", (e) => {
-      if (!dragging || dragging.id !== e.pointerId || p.locked) return;
-      const r = board.getBoundingClientRect();
-      p.x = Math.max(3, Math.min(97, ((e.clientX + dragging.dx - r.left) / r.width) * 100));
-      p.y = Math.max(3, Math.min(97, ((e.clientY + dragging.dy - r.top) / r.height) * 100));
+      const p = {
+        el, twin, spec, i, locked: false,
+        rot: (i % 3) * step,
+        flip: 1,
+        x: tray[i].x,
+        y: tray[i].y
+      };
       apply(p);
+
+      el.addEventListener("pointerdown", (e) => {
+        if (p.locked) return;
+        e.preventDefault();
+        sel = p; markSel();
+        const r = board.getBoundingClientRect();
+        dragging = {
+          id: e.pointerId,
+          dx: (r.left + (p.x / 100) * r.width) - e.clientX,
+          dy: (r.top + (p.y / 100) * r.height) - e.clientY
+        };
+        try { el.setPointerCapture(e.pointerId); } catch (er) {}
+      });
+      el.addEventListener("pointermove", (e) => {
+        if (!dragging || dragging.id !== e.pointerId || p.locked) return;
+        const r = board.getBoundingClientRect();
+        p.x = Math.max(3, Math.min(97, ((e.clientX + dragging.dx - r.left) / r.width) * 100));
+        p.y = Math.max(3, Math.min(97, ((e.clientY + dragging.dy - r.top) / r.height) * 100));
+        apply(p);
+      });
+      const drop = () => { if (dragging) { dragging = null; trySnap(p); } };
+      el.addEventListener("pointerup", drop);
+      el.addEventListener("pointercancel", drop);
+      return p;
     });
-    const drop = () => { if (dragging) { dragging = null; trySnap(p); } };
-    el.addEventListener("pointerup", drop);
-    el.addEventListener("pointercancel", drop);
-    return p;
-  });
 
-  function apply(p) {
-    p.el.style.left = p.x + "%";
-    p.el.style.top = p.y + "%";
-    p.el.style.transform = `translate(-50%,-50%) rotate(${p.rot}deg) scaleX(${p.flip})`;
-    if (p.twin) {
-      p.twin.style.left = (100 - p.x) + "%";
-      p.twin.style.top = p.y + "%";
-      p.twin.style.transform = `translate(-50%,-50%) rotate(${-p.rot}deg) scaleX(${-p.flip})`;
+    function apply(p) {
+      p.el.style.left = p.x + "%";
+      p.el.style.top = p.y + "%";
+      p.el.style.transform = `translate(-50%,-50%) rotate(${p.rot}deg) scaleX(${p.flip})`;
+      if (p.twin) {
+        p.twin.style.left = (100 - p.x) + "%";
+        p.twin.style.top = p.y + "%";
+        p.twin.style.transform = `translate(-50%,-50%) rotate(${-p.rot}deg) scaleX(${-p.flip})`;
+      }
     }
-  }
-  function markSel() {
-    pieces.forEach((p) => p.el.classList.toggle("sel", p === sel));
-  }
-  /* full turns are the same turn: 360 is 0 */
-  const norm = (d) => ((d % 360) + 360) % 360;
-  /* distance in screen pixels, so the tolerance means the same thing on a
-     phone and on an iPad */
-  function gapPx(x0, y0, x1, y1) {
-    const r = board.getBoundingClientRect();
-    return Math.hypot((x0 - x1) / 100 * r.width, (y0 - y1) / 100 * r.height);
-  }
+    function markSel() { pieces.forEach((p) => p.el.classList.toggle("sel", p === sel)); }
+    const norm = (d) => ((d % 360) + 360) % 360;
+    function gapPx(x0, y0, x1, y1) {
+      const r = board.getBoundingClientRect();
+      return Math.hypot((x0 - x1) / 100 * r.width, (y0 - y1) / 100 * r.height);
+    }
 
-  function trySnap(p) {
-    if (L.mirror) {
-      /* Only the reflection has to land: the block itself stays where he put it. */
-      const t = L.targets[p.i];
-      if (gapPx(100 - p.x, p.y, t.x, t.y) < SNAP_PX) {
+    function trySnap(p) {
+      if (L.mirror) {
+        const t = L.pieces[p.i];
+        if (gapPx(100 - p.x, p.y, 100 - t.x, t.y) < 18) {
+          p.locked = true; p.el.classList.add("locked");
+          if (p.twin) p.twin.style.opacity = "1";
+          placed++; sfxPop(placed); tone(440 + placed * 55, 0.18, "triangle", 0.15);
+          $("tgProg").textContent = "🧩 " + placed + "/" + total;
+          if (placed === total) done();
+        }
+        return;
+      }
+      const t = p.spec;
+      const d = gapPx(p.x, p.y, t.x, t.y);
+      const rotOk = Math.abs(norm(p.rot - t.rot)) < 10 || Math.abs(norm(p.rot - t.rot) - 360) < 10;
+      const flipSym = t.s === "sq" || t.s === "tri";
+      const flipOk = !flipRequired || flipSym || p.flip === t.flip;
+      if (d < 18 && rotOk && flipOk) {
+        p.x = t.x; p.y = t.y; p.rot = t.rot; p.flip = t.flip;
         p.locked = true; p.el.classList.add("locked");
-        if (p.twin) p.twin.style.opacity = "1";
+        apply(p);
         placed++; sfxPop(placed); tone(440 + placed * 55, 0.18, "triangle", 0.15);
         $("tgProg").textContent = "🧩 " + placed + "/" + total;
+        $("tgTip").innerHTML = T(["Pas! Lanjut.", "It fits! Keep going."]);
         if (placed === total) done();
+      } else if (d < 44) {
+        $("tgTip").innerHTML = rotOk
+          ? T(["Dekat! Geser sedikit lagi.", "Close! Slide it a little."])
+          : T(["Dekat! Coba putar atau balik.", "Close! Try turning or flipping it."]);
       }
-      return;
     }
-    const t = p.spec;
-    const d = gapPx(p.x, p.y, t.x, t.y);
-    const rotOk = Math.abs(norm(p.rot - t.rot)) < SNAP_DEG ||
-                  Math.abs(norm(p.rot - t.rot) - 360) < SNAP_DEG;
-    /* a square and an isoceles triangle look the same when flipped */
-    const flipSym = t.s === "sq" || t.s === "tri";
-    const flipOk = lv === 1 || flipSym || p.flip === t.flip;
-    if (d < SNAP_PX && rotOk && flipOk) {
-      p.x = t.x; p.y = t.y; p.rot = t.rot; p.flip = t.flip;
-      p.locked = true; p.el.classList.add("locked");
-      apply(p);
-      placed++; sfxPop(placed); tone(440 + placed * 55, 0.18, "triangle", 0.15);
-      $("tgProg").textContent = "🧩 " + placed + "/" + total;
-      $("tgTip").innerHTML = T(["Pas! Lanjut.", "It fits! Keep going."]);
-      if (placed === total) done();
-    } else if (d < SNAP_PX * 3) {
-      $("tgTip").innerHTML = T(["Dekat! Coba putar atau balik.", "Close! Try turning or flipping it."]);
+
+    function rotate() {
+      if (!sel || sel.locked) { $("tgTip").innerHTML = T(["Sentuh satu potongan dulu.", "Tap a piece first."]); return; }
+      sel.rot = (sel.rot + step) % 360;
+      apply(sel); tone(560, 0.1, "sine", 0.1); trySnap(sel);
     }
-  }
+    function flip() {
+      if (!sel || sel.locked) { $("tgTip").innerHTML = T(["Sentuh satu potongan dulu.", "Tap a piece first."]); return; }
+      sel.flip = -sel.flip;
+      apply(sel); tone(420, 0.1, "sine", 0.1); trySnap(sel);
+    }
+    $("tgRot").onclick = rotate;
+    $("tgFlip").onclick = flip;
+    $("tgReset").onclick = () => build();
+    $("tgHint").onclick = () => { ghost.style.opacity = ghost.style.opacity === "0" ? "1" : "0"; };
+    const keyTurn = (e) => {
+      if (e.key === "r") rotate();
+      if (e.key === "f") flip();
+    };
+    listenWindow("keydown", keyTurn);
 
-  function rotate() {
-    if (!sel || sel.locked) { hintSel(); return; }
-    sel.rot = (sel.rot + step) % 360;
-    apply(sel); tone(560, 0.1, "sine", 0.1); trySnap(sel);
-  }
-  function flip() {
-    if (!sel || sel.locked) { hintSel(); return; }
-    sel.flip = -sel.flip;
-    apply(sel); tone(420, 0.1, "sine", 0.1); trySnap(sel);
-  }
-  function hintSel() {
-    $("tgTip").innerHTML = T(["Sentuh satu potongan dulu.", "Tap a piece first."]);
-  }
-  $("tgRot").onclick = rotate;
-  $("tgFlip").onclick = flip;
-  $("tgHint").onclick = () => {
-    ghost.style.opacity = ghost.style.opacity === "0" ? "1" : "0";
-  };
-  $("tgReset").onclick = () => open("tangram");
-  const keyTurn = (e) => {
-    if (e.key === "r") rotate();
-    if (e.key === "f") flip();
-  };
-  listenWindow("keydown", keyTurn);
+    function done() {
+      skill("rotation", 3);
+      confetti();
+      const stars = starsFor(wrongs);
+      BEST[idx] = Math.max(BEST[idx] || 0, stars);
+      LS.set("petualangan.tangram", BEST);
+      const isLast = idx >= TANGRAM_LEVELS - 1;
+      finish(board, {
+        gameId: "tangram", level: idx + 1, wrongs,
+        questions: total,
+        title: isLast ? T(["Semua bentuk selesai!", "Every shape done!"])
+                      : (L.mirror ? T(["Cerminnya tepat!", "The mirror is exact!"]) : T(["Bentuknya jadi!", "The shape is complete!"])),
+        text: L.mirror ? T(["Semua pantulan mengenai sasaran.", "Every reflection hit its target."])
+                       : T([total + " potongan tersusun.", total + " pieces fitted."]),
+        againLabel: isLast ? T(["Main dari awal", "Start again"]) : T(["Level berikutnya", "Next level"]),
+        again: () => {
+          levelIdx = isLast ? 0 : idx + 1;
+          build();
+        }
+      });
+    }
 
-  function done() {
-    skill("rotation", 3);
-    confetti();
-    finish(board, {
-      gameId: "tangram", level: lv, wrongs,
-      questions: total,
-      title: T(["Bentuknya jadi!", "The shape is complete!"]),
-      text: L.mirror ? T(["Semua pantulan mengenai sasaran.", "Every reflection hit its target."])
-                     : T([total + " potongan tersusun.", total + " pieces fitted."]),
-      again: () => open("tangram")
+    $("tgLevels").querySelectorAll("[data-l]").forEach((b) => b.onclick = () => {
+      levelIdx = Number(b.dataset.l);
+      build();
     });
+
+    $("tgProg").textContent = "🧩 0/" + total;
+    $("tgTip").innerHTML = L.mirror
+      ? T(["Geser balok kiri sampai pantulannya kena lingkaran.", "Move the left block until its reflection lands in a circle."])
+      : T(["Geser potongan ke bayangannya.", "Drag each piece onto its ghost."]);
+    say([[L.mirror ? "Cermin laser" : "Susun potongannya", L.mirror ? "Laser mirror" : "Build the shape"]]);
   }
 
-  $("tgProg").textContent = "🧩 0/" + total;
-  $("tgTip").innerHTML = L.mirror
-    ? T(["Geser balok kiri sampai pantulannya kena lingkaran.", "Move the left block until its reflection lands in a circle."])
-    : T(["Geser potongan ke bayangannya.", "Drag each piece onto its ghost."]);
-  say([[L.mirror ? "Cermin laser" : "Susun potongannya", L.mirror ? "Laser mirror" : "Build the shape"]]);
+  build();
 };
 
 /* ============================================================
@@ -2459,7 +2502,7 @@ GAMES[3].mount = function (root, lv) {
 
   function levelStrip(idx) {
     return `<div class="levels" id="knLevels">${Array.from({ length: TOTAL }, (_, i) =>
-      `<button data-l="${i}" class="${i === idx ? "on" : ""}${BEST[i] ? " done" : ""}">${BEST[i] ? "⭐" : ""}${i + 1}</button>`).join("")}</div>`;
+      `<button data-l="${i}" class="${i === idx ? "on" : ""}${BEST[i] ? " won" : ""}">${BEST[i] ? "⭐" : ""}${i + 1}</button>`).join("")}</div>`;
   }
 
   function build() {
